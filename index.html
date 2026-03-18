@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VITAL — Biological Age Estimator</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #05070a; --surface: #0c1018; --surface2: #111827;
+  --border: rgba(255,255,255,0.06); --text: #f0f4ff; --muted: #6b7a99;
+  --accent: #00e5a0; --bad: #ff6b6b; --warn: #ffa94d; --mid: #ffd43b;
+}
+body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
+.ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(ellipse 70% 50% at 20% 10%, rgba(0,229,160,0.06) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(123,92,250,0.07) 0%, transparent 60%); }
+.wrap { position: relative; z-index: 1; width: 100%; max-width: 560px; }
+.logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; letter-spacing: -1px; text-align: center; margin-bottom: 8px; }
+.logo span { color: var(--accent); }
+.tagline { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 40px; letter-spacing: 1px; }
+.upload-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 40px; text-align: center; }
+.mode-selector { display: flex; gap: 10px; margin-bottom: 24px; }
+.mode-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; cursor: pointer; transition: all 0.15s; }
+.mode-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,229,160,0.06); }
+.mode-btn:hover { border-color: var(--accent); color: var(--accent); }
+.upload-zone { border: 2px dashed rgba(0,229,160,0.2); border-radius: 14px; padding: 48px 20px; cursor: pointer; transition: all 0.2s; margin-bottom: 24px; position: relative; }
+.upload-zone:hover { border-color: var(--accent); background: rgba(0,229,160,0.03); }
+.upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-icon { font-size: 40px; margin-bottom: 12px; }
+.upload-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; margin-bottom: 8px; }
+.upload-sub { font-size: 11px; color: var(--muted); }
+.camera-zone { display: none; margin-bottom: 24px; }
+.camera-feed { width: 100%; border-radius: 14px; background: #000; display: block; max-height: 320px; object-fit: cover; }
+.capture-btn { width: 100%; margin-top: 12px; background: var(--surface2); border: 1px solid var(--accent); color: var(--accent); border-radius: 12px; padding: 14px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.15s; }
+.capture-btn:hover { background: rgba(0,229,160,0.1); }
+canvas { display: none; }
+.preview-img { width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px; margin-bottom: 24px; display: none; }
+.analyze-btn { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; transition: all 0.15s; display: none; }
+.analyze-btn:hover { background: #00ffb3; transform: translateY(-2px); }
+.loading { display: none; text-align: center; padding: 40px 0; }
+.loading-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin: 0 4px; animation: bounce 1.2s infinite; }
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.loading-text { font-size: 12px; color: var(--muted); margin-top: 16px; }
+.results { display: none; }
+.bio-age-display { background: linear-gradient(135deg, rgba(0,229,160,0.08), rgba(123,92,250,0.05)); border: 1px solid rgba(0,229,160,0.15); border-radius: 16px; padding: 32px; text-align: center; margin-bottom: 16px; }
+.bio-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 80px; letter-spacing: -4px; color: var(--accent); line-height: 1; }
+.bio-label { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+.bio-diff { font-size: 13px; color: var(--muted); margin-top: 10px; }
+.bio-diff strong { color: var(--text); }
+.metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.metric-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.metric-name { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.metric-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; }
+.insights-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.insights-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.insight-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; font-size: 11px; color: var(--muted); line-height: 1.6; }
+.insight-item::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+.retry-btn { width: 100%; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 12px; padding: 14px; font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; transition: all 0.15s; margin-top: 8px; }
+.retry-btn:hover { border-color: var(--accent); color: var(--accent); }
+.disclaimer { font-size: 10px; color: var(--muted); text-align: center; margin-top: 20px; line-height: 1.6; opacity: 0.6; }
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+<div class="wrap">
+  <div class="logo">VIT<span>AL</span></div>
+  <p class="tagline">AI · Biological Age Estimator</p>
+  <div class="upload-card">
+    <img class="preview-img" id="preview" alt="Your photo">
+    <div class="mode-selector" id="modeSelector">
+      <button class="mode-btn active" id="btnUpload" onclick="setMode('upload')">⬆ Upload Photo</button>
+      <button class="mode-btn" id="btnCamera" onclick="setMode('camera')">◎ Use Camera</button>
+    </div>
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this)">
+      <div class="upload-icon">◎</div>
+      <div class="upload-title">Upload your selfie</div>
+      <div class="upload-sub">Take a clear, well-lit photo facing forward<br>JPG or PNG · Max 10MB</div>
+    </div>
+    <div class="camera-zone" id="cameraZone">
+      <video id="cameraFeed" class="camera-feed" autoplay playsinline></video>
+      <canvas id="cameraCanvas"></canvas>
+      <button class="capture-btn" onclick="capturePhoto()">◎ Take Photo</button>
+    </div>
+    <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">Analyze My Biological Age →</button>
+    <div class="loading" id="loading">
+      <div>
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+      </div>
+      <div class="loading-text">VITAL is analyzing your facial markers...</div>
+    </div>
+    <div class="results" id="results">
+      <div class="bio-age-display">
+        <div class="bio-num" id="bioAge">--</div>
+        <div class="bio-label">Estimated Biological Age</div>
+        <div class="bio-diff" id="bioDiff"></div>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-name">Skin Health</div>
+          <div class="metric-val" id="skinHealth">--</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-name">Hydration</div>
+          <div class="metric-val" id="hydration">--</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-name">Inflammation</div>
+          <div class="metric-val" id="inflammation">--</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-name">Sleep Signal</div>
+          <div class="metric-val" id="sleepSignal">--</div>
+        </div>
+      </div>
+      <div class="insights-card">
+        <div class="insights-title">AI Health Insights</div>
+        <div id="insightsList"></div>
+      </div>
+      <button class="retry-btn" onclick="reset()">← Scan another photo</button>
+    </div>
+  </div>
+  <p class="disclaimer">VITAL is a wellness tool. Results are AI estimates — not medical diagnoses.<br>Always consult a healthcare professional for medical advice.</p>
+</div>
+<script>
+var selectedFile = null;
+var stream = null;
+
+function setMode(mode) {
+  document.getElementById('btnUpload').classList.toggle('active', mode === 'upload');
+  document.getElementById('btnCamera').classList.toggle('active', mode === 'camera');
+  document.getElementById('uploadZone').style.display = mode === 'upload' ? 'block' : 'none';
+  document.getElementById('cameraZone').style.display = mode === 'camera' ? 'block' : 'none';
+  if (mode === 'camera') { startCamera(); } else { stopCamera(); }
+}
+
+function startCamera() {
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+    .then(function(s) {
+      stream = s;
+      document.getElementById('cameraFeed').srcObject = s;
+    })
+    .catch(function(err) {
+      alert('Camera access denied. Please allow camera access or use Upload instead.');
+      setMode('upload');
+    });
+}
+
+function stopCamera() {
+  if (stream) { stream.getTracks().forEach(function(t) { t.stop(); }); stream = null; }
+}
+
+function capturePhoto() {
+  var video = document.getElementById('cameraFeed');
+  var canvas = document.getElementById('cameraCanvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  canvas.toBlob(function(blob) {
+    selectedFile = new File([blob], 'selfie.jpg', { type: 'image/jpeg' });
+    var preview = document.getElementById('preview');
+    preview.src = canvas.toDataURL('image/jpeg');
+    preview.style.display = 'block';
+    document.getElementById('modeSelector').style.display = 'none';
+    document.getElementById('cameraZone').style.display = 'none';
+    document.getElementById('analyzeBtn').style.display = 'block';
+    stopCamera();
+  }, 'image/jpeg', 0.9);
+}
+
+function handleFile(input) {
+  var file = input.files[0];
+  if (!file) return;
+  selectedFile = file;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var preview = document.getElementById('preview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    document.getElementById('uploadZone').style.display = 'none';
+    document.getElementById('modeSelector').style.display = 'none';
+    document.getElementById('analyzeBtn').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function analyze() {
+  if (!selectedFile) return;
+  document.getElementById('analyzeBtn').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+  var formData = new FormData();
+  formData.append('photo', selectedFile);
+  try {
+    var response = await fetch('/analyze', { method: 'POST', body: formData });
+    var result = await response.json();
+    if (result.success) {
+      var d = result.data;
+      document.getElementById('bioAge').textContent = d.biologicalAge;
+      document.getElementById('bioDiff').innerHTML = '<strong>' + d.chronologicalAgeDiff + '</strong> · Aging ' + d.agingVelocity;
+      document.getElementById('skinHealth').textContent = d.skinHealth;
+      document.getElementById('hydration').textContent = d.hydration;
+      document.getElementById('inflammation').textContent = d.inflammation;
+      document.getElementById('sleepSignal').textContent = d.sleepSignal;
+      var insightsList = document.getElementById('insightsList');
+      insightsList.innerHTML = '';
+      d.topInsights.forEach(function(insight) {
+        insightsList.innerHTML += '<div class="insight-item">' + insight + '</div>';
+      });
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('results').style.display = 'block';
+    }
+  } catch (error) {
+    alert('Something went wrong. Please try again.');
+    reset();
+  }
+}
+
+function reset() {
+  selectedFile = null;
+  stopCamera();
+  document.getElementById('preview').style.display = 'none';
+  document.getElementById('modeSelector').style.display = 'flex';
+  document.getElementById('uploadZone').style.display = 'block';
+  document.getElementById('cameraZone').style.display = 'none';
+  document.getElementById('analyzeBtn').style.display = 'none';
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('btnUpload').classList.add('active');
+  document.getElementById('btnCamera').classList.remove('active');
+}
+</script>
+</body>
+</html>
