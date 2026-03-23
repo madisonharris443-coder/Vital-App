@@ -7,7 +7,8 @@ const app = express();
 const upload = multer({ dest: "uploads/" });
 const client = new Anthropic({ apiKey: "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" });
 
-app.use(express.static("public"));
+app.use(express.static(__dirname));
+
 
 app.post("/analyze", upload.single("photo"), async (req, res) => {
   try {
