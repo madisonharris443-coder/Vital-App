@@ -5,7 +5,8 @@ const fs = require("fs");
 
 const app = express();
 const upload = multer({ dest: "uploads/" });
-const  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const client = new Anthropic({ apiKey:process.env.ANTHROPIC_API_KEY });
+
 
 
 app.use(express.static(__dirname));
