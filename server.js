@@ -7,8 +7,7 @@ const app = express();
 const upload = multer({ dest: "uploads/" });
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-app.use(express.static("public"));
-
+app.use(express.static(__dirname));
 app.post("/analyze", upload.single("photo"), async (req, res) => {
   try {
     const imageData = fs.readFileSync(req.file.path);
