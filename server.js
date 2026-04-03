@@ -26,6 +26,11 @@ app.post("/analyze", upload.single("photo"), async (req, res) => {
     if (userData.alcohol) profile += "Alcohol: " + userData.alcohol + ". ";
     if (userData.diseases && userData.diseases.length > 0) {
       profile += "Family history: " + userData.diseases.join(", ") + ". ";
+    if (userData.bloodType) profile += "Blood type: " + userData.bloodType + ". ";
+    if (userData.sunExposure) profile += "Sun exposure: " + userData.sunExposure + ". ";
+    if (userData.exerciseDays) profile += "Exercise frequency: " + userData.exerciseDays + " days per week. ";
+    if (userData.screenTime) profile += "Daily screen time: " + userData.screenTime + ". ";
+    if (userData.supplements) profile += "Supplements: " + userData.supplements + ". ";
     }
     var prompt = "You are VITAL, an AI health intelligence system. Health profile: " + profile + " Analyze this selfie carefully. Respond ONLY with valid JSON and nothing else: {\"biologicalAge\": 25, \"chronologicalAgeDiff\": \"older by 2 years\", \"agingVelocity\": \"faster than average\", \"agingRate\": \"1.2x faster than baseline\", \"skinHealth\": \"72/100\", \"hydration\": \"68%\", \"inflammation\": \"mild\", \"sleepSignal\": \"deprived\", \"oilBalance\": \"combination\", \"collagenScore\": \"74/100\", \"stressMarkers\": \"moderate\", \"diseaseRisk\": {\"metabolic\": \"28%\", \"cardiovascular\": \"12%\", \"inflammation\": \"35%\", \"hormonal\": \"18%\"}, \"topInsights\": [\"insight 1\", \"insight 2\", \"insight 3\"], \"positives\": [\"positive 1\", \"positive 2\"], \"recommendations\": [\"rec 1\", \"rec 2\", \"rec 3\"]}. Replace ALL placeholder values with your real analysis of the photo and health profile provided.";
     const response = await client.messages.create({
