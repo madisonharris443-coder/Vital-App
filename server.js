@@ -16,23 +16,29 @@ app.post("/analyze", upload.single("photo"), async (req, res) => {
       try { userData = JSON.parse(req.body.userData); } catch(e) {}
     }
     var profile = "";
-    if (userData.age) profile += "Age: " + userData.age + ". ";
+    if (userData.age) profile += "Chronological age: " + userData.age + ". ";
     if (userData.sex) profile += "Sex: " + userData.sex + ". ";
-    if (userData.ethnicity) profile += "Ethnicity: " + userData.ethnicity + ". ";
-    if (userData.sleep) profile += "Sleep: " + userData.sleep + " hrs. ";
-    if (userData.stress) profile += "Stress: " + userData.stress + ". ";
+    if (userData.height) profile += "Height: " + userData.height + ". ";
+    if (userData.weight) profile += "Weight: " + userData.weight + ". ";
+    if (userData.ethnicity) profile += "Ethnicity: " + userData.ethnicity + " (use as baseline for skin tone analysis). ";
+    if (userData.fitness) profile += "Fitness level: " + userData.fitness + ". ";
+    if (userData.sleep) profile += "Sleep: " + userData.sleep + " hours per night. ";
+    if (userData.water) profile += "Water intake: " + userData.water + "L per day. ";
     if (userData.diet) profile += "Diet: " + userData.diet + ". ";
-    if (userData.smoker) profile += "Smoker: " + userData.smoker + ". ";
-    if (userData.alcohol) profile += "Alcohol: " + userData.alcohol + ". ";
-    if (userData.diseases && userData.diseases.length > 0) {
-      profile += "Family history: " + userData.diseases.join(", ") + ". ";
+    if (userData.stress) profile += "Stress level: " + userData.stress + ". ";
+    if (userData.smoker && userData.smoker !== "no") profile += "Smoking: " + userData.smoker + ". ";
+    if (userData.alcohol && userData.alcohol !== "none") profile += "Alcohol: " + userData.alcohol + ". ";
     if (userData.bloodType) profile += "Blood type: " + userData.bloodType + ". ";
     if (userData.sunExposure) profile += "Sun exposure: " + userData.sunExposure + ". ";
-    if (userData.exerciseDays) profile += "Exercise frequency: " + userData.exerciseDays + " days per week. ";
-    if (userData.screenTime) profile += "Daily screen time: " + userData.screenTime + ". ";
+    if (userData.exerciseDays) profile += "Exercise: " + userData.exerciseDays + " days per week. ";
+    if (userData.screenTime) profile += "Screen time: " + userData.screenTime + " daily. ";
     if (userData.supplements) profile += "Supplements: " + userData.supplements + ". ";
+    if (userData.diseases && userData.diseases.length > 0) {
+      profile += "Family disease history: " + userData.diseases.join(", ") + ". ";
     }
-    var prompt = "You are VITAL, an AI health intelligence system. Health profile: " + profile + " Analyze this selfie carefully. Respond ONLY with valid JSON and nothing else: {\"biologicalAge\": 25, \"chronologicalAgeDiff\": \"older by 2 years\", \"agingVelocity\": \"faster than average\", \"agingRate\": \"1.2x faster than baseline\", \"skinHealth\": \"72/100\", \"hydration\": \"68%\", \"inflammation\": \"mild\", \"sleepSignal\": \"deprived\", \"oilBalance\": \"combination\", \"collagenScore\": \"74/100\", \"stressMarkers\": \"moderate\", \"diseaseRisk\": {\"metabolic\": \"28%\", \"cardiovascular\": \"12%\", \"inflammation\": \"35%\", \"hormonal\": \"18%\"}, \"topInsights\": [\"insight 1\", \"insight 2\", \"insight 3\"], \"positives\": [\"positive 1\", \"positive 2\"], \"recommendations\": [\"rec 1\", \"rec 2\", \"rec 3\"]}. Replace ALL placeholder values with your real analysis of the photo and health profile provided.";
+
+    var prompt = "You are VITAL, a world-class AI health intelligence system. You are analyzing a real photo combined with the following health profile.\n\nHEALTH PROFILE:\n" + profile + "\n\nYour task is to perform a deep facial biomarker analysis. Look carefully at:\n\n1. SKIN: texture, pore size, hydration (plumpness vs dullness), oiliness, redness, pigmentation, sun damage, acne\n2. AGING: wrinkle depth at forehead, crow feet, nasolabial folds, skin laxity at jawline, volume loss in cheeks\n3. INFLAMMATION: puffiness, under-eye bags, facial swelling, redness patterns\n4. LIFESTYLE SIGNALS: dark circles (sleep deprivation), dull complexion (dehydration), stress lines, cortisol patterns\n5. COLLAGEN: skin plumpness, elasticity, firmness appearance\n\nBIOLOGICAL AGE RULES - apply these adjustments to what you see:\n- Poor sleep (under 6hrs): add 2-4 years\n- High stress: add 1-3 years\n- Smoker: add 3-7 years\n- Heavy alcohol: add 2-4 years\n- Athlete/very active: subtract 2-4 years\n- Mediterranean diet: subtract 1-2 years\n- High sun exposure without protection: add 2-5 years\n- Good supplements (omega3, vit D, collagen): subtract 1-2 years\n- Family history of early aging diseases: add 1-3 years\n\nBe honest and precise. Do not over-flatter. Give real analysis.\n\nRespond ONLY with this exact JSON structure, no other text:\n{\"biologicalAge\": 25, \"chronologicalAgeDiff\": \"older by 2 years\", \"agingVelocity\": \"faster than average\", \"agingRate\": \"1.2x faster than baseline\", \"skinHealth\": \"72/100\", \"hydration\": \"68%\", \"inflammation\": \"mild\", \"sleepSignal\": \"deprived\", \"oilBalance\": \"combination\", \"collagenScore\": \"74/100\", \"stressMarkers\": \"moderate\", \"diseaseRisk\": {\"metabolic\": \"28%\", \"cardiovascular\": \"12%\", \"inflammation\": \"35%\", \"hormonal\": \"18%\"}, \"topInsights\": [\"specific insight about what you actually see in the photo\", \"specific insight 2\", \"specific insight 3\", \"specific insight 4\"], \"positives\": [\"specific positive marker you observe\", \"specific positive 2\"], \"recommendations\": [\"specific actionable recommendation based on analysis\", \"specific recommendation 2\", \"specific recommendation 3\"]}\n\nReplace ALL placeholder values with your real analysis. Make insights specific to what you actually observe - not generic.";
+
     const response = await client.messages.create({
       model: "claude-opus-4-6",
       max_tokens: 2000,
