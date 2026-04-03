@@ -163,6 +163,11 @@ canvas { display: none; }
           <div class="form-group"><label class="form-label">Stress Level</label><select class="form-select" id="stress"><option value="">Select</option><option value="low">Low</option><option value="moderate">Moderate</option><option value="high">High</option><option value="very high">Very High</option></select></div>
           <div class="form-group"><label class="form-label">Smoker?</label><select class="form-select" id="smoker"><option value="no">No</option><option value="occasionally">Occasionally</option><option value="yes">Yes</option><option value="ex-smoker">Ex-smoker</option></select></div>
           <div class="form-group"><label class="form-label">Alcohol?</label><select class="form-select" id="alcohol"><option value="none">None</option><option value="occasionally">Occasionally</option><option value="moderate">Moderate</option><option value="heavy">Heavy</option></select></div>
+          <div class="form-group"><label class="form-label">Blood Type</label><select class="form-select" id="bloodType"><option value="">Unknown</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="O+">O+</option><option value="O-">O-</option></select></div>
+          <div class="form-group"><label class="form-label">Sun Exposure</label><select class="form-select" id="sunExposure"><option value="minimal">Minimal</option><option value="moderate">Moderate</option><option value="high">High</option><option value="always protected">Always Protected</option></select></div>
+          <div class="form-group"><label class="form-label">Exercise (days/wk)</label><select class="form-select" id="exerciseDays"><option value="0">0 days</option><option value="1-2">1-2 days</option><option value="3-4">3-4 days</option><option value="5-6">5-6 days</option><option value="7">Every day</option></select></div>
+          <div class="form-group"><label class="form-label">Screen Time</label><select class="form-select" id="screenTime"><option value="under 2hrs">Under 2 hrs</option><option value="2-4hrs">2-4 hrs</option><option value="4-6hrs">4-6 hrs</option><option value="6-8hrs">6-8 hrs</option><option value="8hrs+">8+ hrs</option></select></div>
+          <div class="form-group full"><label class="form-label">Supplements (optional)</label><input class="form-input" type="text" id="supplements" placeholder="e.g. Vitamin D, Omega-3"></div>
         </div>
       </div>
       <div class="form-section">
@@ -317,6 +322,11 @@ function goToScan() {
   userData.stress = document.getElementById("stress").value;
   userData.smoker = document.getElementById("smoker").value;
   userData.alcohol = document.getElementById("alcohol").value;
+  userData.bloodType = document.getElementById("bloodType") ? document.getElementById("bloodType").value : "";
+  userData.sunExposure = document.getElementById("sunExposure") ? document.getElementById("sunExposure").value : "";
+  userData.exerciseDays = document.getElementById("exerciseDays") ? document.getElementById("exerciseDays").value : "";
+  userData.screenTime = document.getElementById("screenTime") ? document.getElementById("screenTime").value : "";
+  userData.supplements = document.getElementById("supplements") ? document.getElementById("supplements").value : "";
   document.getElementById("page1").classList.remove("active");
   document.getElementById("page2").classList.add("active");
   document.getElementById("step1").classList.remove("active");
