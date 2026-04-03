@@ -138,8 +138,8 @@ canvas { display: none; }
         <div class="form-grid">
           <div class="form-group"><label class="form-label">Age</label><input class="form-input" type="number" id="age" placeholder="e.g. 25" min="13" max="100"></div>
           <div class="form-group"><label class="form-label">Sex</label><select class="form-select" id="sex"><option value="">Select</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
-          <div class="form-group"><label class="form-label">Height (cm)</label><input class="form-input" type="number" id="height" placeholder="e.g. 175"></div>
-          <div class="form-group"><label class="form-label">Weight (kg)</label><input class="form-input" type="number" id="weight" placeholder="e.g. 70"></div>
+          <div class="form-group full"><label class="form-label">Height</label><div style="display:flex;gap:8px;"><input class="form-input" type="text" id="height" placeholder="e.g. 175 cm or 5'9          <div class="form-group"><label class="form-label">Height (cm)</label><input class="form-input" type="number" id="height" placeholder="e.g. 175"></div>quot;" style="flex:1"><select class="form-select" id="heightUnit" style="width:80px"><option value="cm">cm</option><option value="ft">ft</option></select></div></div>
+          <div class="form-group full"><label class="form-label">Weight</label><div style="display:flex;gap:8px;"><input class="form-input" type="text" id="weight" placeholder="e.g. 70 kg or 154 lbs" style="flex:1"><select class="form-select" id="weightUnit" style="width:80px"><option value="kg">kg</option><option value="lbs">lbs</option></select></div></div>
           <div class="form-group"><label class="form-label">Ethnicity</label><select class="form-select" id="ethnicity"><option value="">Select</option><option value="asian">Asian</option><option value="black">Black / African</option><option value="hispanic">Hispanic / Latino</option><option value="white">White / Caucasian</option><option value="mixed">Mixed</option><option value="other">Other</option></select></div>
           <div class="form-group"><label class="form-label">Fitness Level</label><select class="form-select" id="fitness"><option value="">Select</option><option value="sedentary">Sedentary</option><option value="light">Lightly Active</option><option value="moderate">Moderately Active</option><option value="very active">Very Active</option><option value="athlete">Athlete</option></select></div>
         </div>
@@ -314,8 +314,8 @@ function toggleDisease(el, disease) {
 function goToScan() {
   userData.age = document.getElementById("age").value;
   userData.sex = document.getElementById("sex").value;
-  userData.height = document.getElementById("height").value;
-  userData.weight = document.getElementById("weight").value;
+  var hVal = document.getElementById("height").value; var hUnit = document.getElementById("heightUnit") ? document.getElementById("heightUnit").value : "cm"; userData.height = hVal ? hVal + " " + hUnit : "";
+  var wVal = document.getElementById("weight").value; var wUnit = document.getElementById("weightUnit") ? document.getElementById("weightUnit").value : "kg"; userData.weight = wVal ? wVal + " " + wUnit : "";
   userData.ethnicity = document.getElementById("ethnicity").value;
   userData.fitness = document.getElementById("fitness").value;
   userData.diet = document.getElementById("diet").value;
