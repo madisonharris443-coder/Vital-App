@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const multer = require("multer");
 const Anthropic = require("@anthropic-ai/sdk");
@@ -6,6 +7,14 @@ const app = express();
 const upload = multer({ dest: "uploads/" });
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 app.use(express.static("public"));
+
+app.get("/config", (req, res) => {
+  res.json({
+    supabaseUrl: process.env.SUPABASE_URL || "",
+    supabaseKey: process.env.SUPABASE_KEY || ""
+  });
+});
+
 app.post("/analyze", upload.single("photo"), async (req, res) => {
   try {
     const imageData = fs.readFileSync(req.file.path);
@@ -36,9 +45,7 @@ app.post("/analyze", upload.single("photo"), async (req, res) => {
     if (userData.diseases && userData.diseases.length > 0) {
       profile += "Family disease history: " + userData.diseases.join(", ") + ". ";
     }
-
-    var prompt = "You are VITAL, a world-class AI health intelligence system. You are analyzing a real photo combined with the following health profile.\n\nHEALTH PROFILE:\n" + profile + "\n\nYour task is to perform a deep facial biomarker analysis. Look carefully at:\n\n1. SKIN: texture, pore size, hydration (plumpness vs dullness), oiliness, redness, pigmentation, sun damage, acne\n2. AGING: wrinkle depth at forehead, crow feet, nasolabial folds, skin laxity at jawline, volume loss in cheeks\n3. INFLAMMATION: puffiness, under-eye bags, facial swelling, redness patterns\n4. LIFESTYLE SIGNALS: dark circles (sleep deprivation), dull complexion (dehydration), stress lines, cortisol patterns\n5. COLLAGEN: skin plumpness, elasticity, firmness appearance\n\nBIOLOGICAL AGE RULES - apply these adjustments to what you see:\n- Poor sleep (under 6hrs): add 2-4 years\n- High stress: add 1-3 years\n- Smoker: add 3-7 years\n- Heavy alcohol: add 2-4 years\n- Athlete/very active: subtract 2-4 years\n- Mediterranean diet: subtract 1-2 years\n- High sun exposure without protection: add 2-5 years\n- Good supplements (omega3, vit D, collagen): subtract 1-2 years\n- Family history of early aging diseases: add 1-3 years\n\nBe honest and precise. Do not over-flatter. Give real analysis.\n\nRespond ONLY with this exact JSON structure, no other text:\n{\"biologicalAge\": 25, \"chronologicalAgeDiff\": \"older by 2 years\", \"agingVelocity\": \"faster than average\", \"agingRate\": \"1.2x faster than baseline\", \"skinHealth\": \"72/100\", \"hydration\": \"68%\", \"inflammation\": \"mild\", \"sleepSignal\": \"deprived\", \"oilBalance\": \"combination\", \"collagenScore\": \"74/100\", \"stressMarkers\": \"moderate\", \"diseaseRisk\": {\"metabolic\": \"28%\", \"cardiovascular\": \"12%\", \"inflammation\": \"35%\", \"hormonal\": \"18%\"}, \"topInsights\": [\"specific insight about what you actually see in the photo\", \"specific insight 2\", \"specific insight 3\", \"specific insight 4\"], \"positives\": [\"specific positive marker you observe\", \"specific positive 2\"], \"recommendations\": [\"specific actionable recommendation based on analysis\", \"specific recommendation 2\", \"specific recommendation 3\"]}\n\nReplace ALL placeholder values with your real analysis. Make insights specific to what you actually observe - not generic.";
-
+    var prompt = "You are VITAL, a world-class AI health intelligence system. You are analyzing a real photo combined with the following health profile.\n\nHEALTH PROFILE:\n" + profile + "\n\nYour task is to perform a deep facial biomarker analysis. Look carefully at:\n\n1. SKIN: texture, pore size, hydration (plumpness vs dullness), oiliness, redness, pigmentation, sun damage, acne\n2. AGING: wrinkle depth at forehead, crow feet, nasolabial folds, skin laxity at jawline, volume loss in cheeks\n3. INFLAMMATION: puffiness, under-eye bags, facial swelling, redness patterns\n4. LIFESTYLE SIGNALS: dark circles (sleep deprivation), dull complexion (dehydration), stress lines, cortisol patterns\n5. COLLAGEN: skin plumpness, elasticity, firmness appearance\n\nBIOLOGICAL AGE RULES:\n- Poor sleep under 6hrs: add 2-4 years\n- High stress: add 1-3 years\n- Smoker: add 3-7 years\n- Heavy alcohol: add 2-4 years\n- Athlete or very active: subtract 2-4 years\n- Mediterranean diet: subtract 1-2 years\n- High sun exposure without protection: add 2-5 years\n- Good supplements omega3 vit D collagen: subtract 1-2 years\n- Family history of early aging diseases: add 1-3 years\n\nBe honest and precise. Do not over-flatter. Give real analysis.\n\nRespond ONLY with this exact JSON structure, no other text:\n{\"biologicalAge\": 25, \"chronologicalAgeDiff\": \"older by 2 years\", \"agingVelocity\": \"faster than average\", \"agingRate\": \"1.2x faster than baseline\", \"skinHealth\": \"72/100\", \"hydration\": \"68%\", \"inflammation\": \"mild\", \"sleepSignal\": \"deprived\", \"oilBalance\": \"combination\", \"collagenScore\": \"74/100\", \"stressMarkers\": \"moderate\", \"diseaseRisk\": {\"metabolic\": \"28%\", \"cardiovascular\": \"12%\", \"inflammation\": \"35%\", \"hormonal\": \"18%\"}, \"topInsights\": [\"specific insight 1\", \"specific insight 2\", \"specific insight 3\", \"specific insight 4\"], \"positives\": [\"specific positive 1\", \"specific positive 2\"], \"recommendations\": [\"specific recommendation 1\", \"specific recommendation 2\", \"specific recommendation 3\"]}\n\nReplace ALL placeholder values with your real analysis. Make insights specific to what you actually observe.";
     const response = await client.messages.create({
       model: "claude-opus-4-6",
       max_tokens: 2000,
