@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VITAL — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --bg: #05070a; --surface: #0c1018; --surface2: #111827; --border: rgba(255,255,255,0.06); --text: #f0f4ff; --muted: #6b7a99; --accent: #00e5a0; --bad: #ff6b6b; }
+body { background: var(--bg); color: var(--text); font-family: "DM Mono", monospace; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(ellipse 70% 50% at 20% 10%, rgba(0,229,160,0.06) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(123,92,250,0.07) 0%, transparent 60%); }
+.wrap { position: relative; z-index: 1; width: 100%; max-width: 400px; }
+.logo { font-family: "Syne", sans-serif; font-weight: 800; font-size: 28px; letter-spacing: -1px; text-align: center; margin-bottom: 8px; }
+.logo span { color: var(--accent); }
+.tagline { text-align: center; font-size: 11px; color: var(--muted); margin-bottom: 40px; letter-spacing: 1px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 36px; }
+.tabs { display: flex; gap: 0; margin-bottom: 28px; border-bottom: 1px solid var(--border); }
+.tab { flex: 1; padding: 10px; text-align: center; font-size: 12px; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; letter-spacing: 0.5px; }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.form-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.form-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; font-family: "DM Mono", monospace; font-size: 12px; color: var(--text); outline: none; width: 100%; transition: border-color 0.15s; }
+.form-input:focus { border-color: var(--accent); }
+.submit-btn { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 14px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 14px; cursor: pointer; transition: all 0.15s; margin-top: 8px; }
+.submit-btn:hover { background: #00ffb3; transform: translateY(-2px); }
+.error-msg { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); border-radius: 8px; padding: 10px 14px; font-size: 11px; color: var(--bad); margin-top: 12px; display: none; }
+.success-msg { background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.2); border-radius: 8px; padding: 10px 14px; font-size: 11px; color: var(--accent); margin-top: 12px; display: none; }
+.divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+.divider-line { flex: 1; height: 1px; background: var(--border); }
+.divider-text { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+.guest-btn { width: 100%; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 12px; padding: 14px; font-family: "DM Mono", monospace; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+.guest-btn:hover { border-color: var(--accent); color: var(--accent); }
+.form-panel { display: none; }
+.form-panel.active { display: block; }
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+<div class="wrap">
+  <div class="logo">VIT<span>AL</span></div>
+  <p class="tagline">AI · Health Intelligence Platform</p>
+  <div class="card">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('signin')">Sign In</div>
+      <div class="tab" onclick="switchTab('signup')">Create Account</div>
+    </div>
+
+    <div class="form-panel active" id="signinPanel">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="signinEmail" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="signinPassword" placeholder="Your password">
+      </div>
+      <button class="submit-btn" onclick="signIn()">Sign In</button>
+      <div class="error-msg" id="signinError"></div>
+    </div>
+
+    <div class="form-panel" id="signupPanel">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input class="form-input" type="text" id="signupName" placeholder="Your name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="signupEmail" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="signupPassword" placeholder="Create a password">
+      </div>
+      <button class="submit-btn" onclick="signUp()">Create Account</button>
+      <div class="error-msg" id="signupError"></div>
+      <div class="success-msg" id="signupSuccess"></div>
+    </div>
+
+    <div class="divider"><div class="divider-line"></div><div class="divider-text">OR</div><div class="divider-line"></div></div>
+    <button class="guest-btn" onclick="continueAsGuest()">Continue without account</button>
+  </div>
+</div>
+
+<script>
+var SUPABASE_URL = "";
+var SUPABASE_KEY = "";
+var supabase = null;
+
+fetch("/config").then(function(r) { return r.json(); }).then(function(config) {
+  SUPABASE_URL = config.supabaseUrl;
+  SUPABASE_KEY = config.supabaseKey;
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+}).catch(function() {
+  console.log("Config not available");
+});
+
+function switchTab(tab) {
+  document.querySelectorAll(".tab").forEach(function(t, i) {
+    t.classList.toggle("active", (i === 0 && tab === "signin") || (i === 1 && tab === "signup"));
+  });
+  document.getElementById("signinPanel").classList.toggle("active", tab === "signin");
+  document.getElementById("signupPanel").classList.toggle("active", tab === "signup");
+}
+
+async function signIn() {
+  if (!supabase) { alert("Auth not configured. Continue as guest."); return; }
+  var email = document.getElementById("signinEmail").value;
+  var password = document.getElementById("signinPassword").value;
+  if (!email || !password) { showError("signinError", "Please fill in all fields"); return; }
+  var result = await supabase.auth.signInWithPassword({ email: email, password: password });
+  if (result.error) { showError("signinError", result.error.message); return; }
+  localStorage.setItem("vital_user", JSON.stringify(result.data.user));
+  window.location.href = "/index.html";
+}
+
+async function signUp() {
+  if (!supabase) { alert("Auth not configured. Continue as guest."); return; }
+  var name = document.getElementById("signupName").value;
+  var email = document.getElementById("signupEmail").value;
+  var password = document.getElementById("signupPassword").value;
+  if (!name || !email || !password) { showError("signupError", "Please fill in all fields"); return; }
+  if (password.length < 6) { showError("signupError", "Password must be at least 6 characters"); return; }
+  var result = await supabase.auth.signUp({ email: email, password: password, options: { data: { full_name: name } } });
+  if (result.error) { showError("signupError", result.error.message); return; }
+  document.getElementById("signupError").style.display = "none";
+  document.getElementById("signupSuccess").textContent = "Account created! Check your email to confirm, then sign in.";
+  document.getElementById("signupSuccess").style.display = "block";
+}
+
+function continueAsGuest() {
+  localStorage.setItem("vital_guest", "true");
+  window.location.href = "/index.html";
+}
+
+function showError(id, msg) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = "block";
+}
+</script>
+</body>
+</html>
