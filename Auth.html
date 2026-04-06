@@ -46,7 +46,6 @@ body { background: var(--bg); color: var(--text); font-family: "DM Mono", monosp
       <div class="tab active" onclick="switchTab('signin')">Sign In</div>
       <div class="tab" onclick="switchTab('signup')">Create Account</div>
     </div>
-
     <div class="form-panel active" id="signinPanel">
       <div class="form-group">
         <label class="form-label">Email</label>
@@ -59,7 +58,6 @@ body { background: var(--bg); color: var(--text); font-family: "DM Mono", monosp
       <button class="submit-btn" onclick="signIn()">Sign In</button>
       <div class="error-msg" id="signinError"></div>
     </div>
-
     <div class="form-panel" id="signupPanel">
       <div class="form-group">
         <label class="form-label">Full Name</label>
@@ -71,30 +69,28 @@ body { background: var(--bg); color: var(--text); font-family: "DM Mono", monosp
       </div>
       <div class="form-group">
         <label class="form-label">Password</label>
-        <input class="form-input" type="password" id="signupPassword" placeholder="Create a password">
+        <input class="form-input" type="password" id="signupPassword" placeholder="Create a password (min 6 chars)">
       </div>
       <button class="submit-btn" onclick="signUp()">Create Account</button>
       <div class="error-msg" id="signupError"></div>
       <div class="success-msg" id="signupSuccess"></div>
     </div>
-
     <div class="divider"><div class="divider-line"></div><div class="divider-text">OR</div><div class="divider-line"></div></div>
     <button class="guest-btn" onclick="continueAsGuest()">Continue without account</button>
   </div>
 </div>
 
 <script>
-var SUPABASE_URL = "";
-var SUPABASE_KEY = "";
 var supabase = null;
 
-fetch("/config").then(function(r) { return r.json(); }).then(function(config) {
-  SUPABASE_URL = config.supabaseUrl;
-  SUPABASE_KEY = config.supabaseKey;
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-}).catch(function() {
-  console.log("Config not available");
-});
+fetch("/config")
+  .then(function(r) { return r.json(); })
+  .then(function(config) {
+    if (config.supabaseUrl && config.supabaseKey && config.supabaseUrl !== "") {
+      supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+    }
+  })
+  .catch(function(e) { console.log("Config error:", e); });
 
 function switchTab(tab) {
   document.querySelectorAll(".tab").forEach(function(t, i) {
@@ -105,7 +101,7 @@ function switchTab(tab) {
 }
 
 async function signIn() {
-  if (!supabase) { alert("Auth not configured. Continue as guest."); return; }
+  if (!supabase) { window.location.href = "/index.html"; return; }
   var email = document.getElementById("signinEmail").value;
   var password = document.getElementById("signinPassword").value;
   if (!email || !password) { showError("signinError", "Please fill in all fields"); return; }
@@ -116,7 +112,7 @@ async function signIn() {
 }
 
 async function signUp() {
-  if (!supabase) { alert("Auth not configured. Continue as guest."); return; }
+  if (!supabase) { showError("signupError", "Auth service unavailable. Try again later."); return; }
   var name = document.getElementById("signupName").value;
   var email = document.getElementById("signupEmail").value;
   var password = document.getElementById("signupPassword").value;
