@@ -7,10 +7,10 @@ const app = express();
 const upload = multer({ dest: "uploads/" });
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 app.use(express.static("public"));
-app.get("/", (req, res) => { res.redirect("/auth.html"); });app.get("/config", (req, res) => {
+app.get("/config", (req, res) => {
   res.json({
-    supabaseUrl: process.env.SUPABASE_URL || "",
-    supabaseKey: process.env.SUPABASE_KEY || ""
+    supabaseUrl: "https://xdtvecuitjnumobmsrhj.supabase.co",
+    supabaseKey: "sb_publishable_HqxQ_1RqmVazq4BfkMhNwg_Th6JKCsL"
   });
 });
 
