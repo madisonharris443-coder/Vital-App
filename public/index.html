@@ -122,7 +122,9 @@ canvas { display: none; }
 <div class="wrap">
   <div class="logo">VIT<span>AL</span></div>
   <p class="tagline">AI · Health Intelligence Platform</p>
-  <div class="steps">
+<div id="userBar" style="display:none;text-align:center;margin-bottom:16px;font-size:10px;color:#6b7a99;letter-spacing:1px;">
+  Signed in as <span id="userEmail" style="color:#00e5a0;"></span> · <a href="/auth.html" onclick="signOut()" style="color:#6b7a99;text-decoration:underline;cursor:pointer;">Sign out</a>
+</div>  <div class="steps">
     <div class="step active" id="step1"><div class="step-num">1</div><span>Profile</span></div>
     <div class="step-line"></div>
     <div class="step" id="step2"><div class="step-num">2</div><span>Scan</span></div>
@@ -497,6 +499,26 @@ function reset() {
   document.getElementById("loading").style.display = "none";
   document.getElementById("fileInput").value = "";
 }
-</script>
+async function signOut() {
+  var config = await fetch("/config").then(function(r) { return r.json(); });
+  var sb = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+  await sb.auth.signOut();
+  window.location.href = "/auth.html";
+}
+
+(async function() {
+  try {
+    var config = await fetch("/config").then(function(r) { return r.json(); });
+    if (config.supabaseUrl) {
+      var sb = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+      var { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        document.getElementById("userEmail").textContent = session.user.email;
+        document.getElementById("userBar").style.display = "block";
+      }
+    }
+  } catch(e) {}
+})();
+  /script>
 </body>
 </html>
