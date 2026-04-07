@@ -108,9 +108,10 @@ async function signIn() {
   if (!email || !password) { showError("signinError", "Please fill in all fields"); return; }
   var result = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
   if (result.error) { showError("signinError", result.error.message); return; }
+  localStorage.setItem("vital_user", JSON.stringify(result.data.user));
+  localStorage.setItem("vital_session", result.data.session.access_token);
   window.location.href = "/index.html";
 }
-
 async function signUp() {
   if (!supabaseClient) { showError("signupError", "Auth service unavailable"); return; }
   var name = document.getElementById("signupName").value;
