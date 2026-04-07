@@ -75,8 +75,9 @@ async function init() {
     var response = await fetch("/config");
     var config = await response.json();
     if (config.supabaseUrl && config.supabaseKey && config.supabaseUrl.length > 10) {
-      supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
-      var { data: { session } } = await supabaseClient.auth.getSession();
+      supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey, {
+  auth: { persistSession: true, storageKey: "vital-auth" }
+});      var { data: { session } } = await supabaseClient.auth.getSession();
       if (session) {
         window.location.href = "/index.html";
         return;
