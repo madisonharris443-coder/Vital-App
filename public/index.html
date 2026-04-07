@@ -510,8 +510,7 @@ async function signOut() {
   try {
     var config = await fetch("/config").then(function(r) { return r.json(); });
     if (config.supabaseUrl) {
-      var sb = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
-      var { data: { session } } = await sb.auth.getSession();
+      var sb = window.supabase.createClient(config.supabaseUrl, config.supabaseKey, { auth: { persistSession: true, storageKey: "vital-auth" } });      var { data: { session } } = await sb.auth.getSession();
       if (session) {
         document.getElementById("userEmail").textContent = session.user.email;
         document.getElementById("userBar").style.display = "block";
