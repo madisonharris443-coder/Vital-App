@@ -75,13 +75,11 @@ async function init() {
     var response = await fetch("/config");
     var config = await response.json();
     if (config.supabaseUrl && config.supabaseKey && config.supabaseUrl.length > 10) {
-      supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey, {
-  auth: { persistSession: true, storageKey: "vital-auth" }
-});      var { data: { session } } = await supabaseClient.auth.getSession();
+      supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+      var { data: { session } } = await supabaseClient.auth.getSession();
       if (session) {
-        localStorage.setItem("vital_user", JSON.stringify(result.data.user));
-localStorage.setItem("vital_session", result.data.session.access_token);
-window.location.href = "/index.html";        return;
+        window.location.href = "/index.html";
+        return;
       }
     }
   } catch(e) {
@@ -108,12 +106,10 @@ async function signIn() {
   if (!email || !password) { showError("signinError", "Please fill in all fields"); return; }
   var result = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
   if (result.error) { showError("signinError", result.error.message); return; }
-  alert("User: " + JSON.stringify(result.data.user?.email) + " Session: " + result.data.session?.access_token?.substring(0,10));
-  localStorage.setItem("vital_user", JSON.stringify(result.data.user));
-  localStorage.setItem("vital_session", result.data.session.access_token);
   window.location.href = "/index.html";
 }
-  async function signUp() {
+
+async function signUp() {
   if (!supabaseClient) { showError("signupError", "Auth service unavailable"); return; }
   var name = document.getElementById("signupName").value;
   var email = document.getElementById("signupEmail").value;
