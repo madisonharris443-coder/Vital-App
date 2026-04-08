@@ -361,9 +361,28 @@ var selectedFile = null;
 var stream = null;
 var userData = { sleep: 7, water: 2, diseases: [] };
 
-// Safe storage helper — works in Safari
-function safeGet(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
-function safeSet(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
+// Cookie-based storage — works in Safari and Chrome
+var _vitalData = null;
+async function loadVitalData() {
+  if (_vitalData) return _vitalData;
+  try { _vitalData = await fetch("/get-data").then(function(r) { return r.json(); }); } catch(e) { _vitalData = { user: null, scans: "[]" }; }
+  return _vitalData;
+}
+function safeGet(key) {
+  if (key === "vital_user") return _vitalData ? _vitalData.user : null;
+  if (key === "vital_scans") return _vitalData ? _vitalData.scans : "[]";
+  if (key === "vital_avatar") return _vitalData ? _vitalData.avatar : null;
+  try { return localStorage.getItem(key); } catch(e) { return null; }
+}
+async function safeSet(key, val) {
+  if (key === "vital_scans") {
+    try { await fetch("/save-scans", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scans: JSON.parse(val) }) }); } catch(e) {}
+    if (_vitalData) _vitalData.scans = val;
+  } else if (key === "vital_avatar") {
+    try { await fetch("/save-avatar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ avatar: val }) }); } catch(e) {}
+    if (_vitalData) _vitalData.avatar = val;
+  }
+}
 
 function toggleDisease(el, disease) {
   el.classList.toggle("checked");
@@ -500,9 +519,9 @@ async function analyze() {
       if (d.recommendations) d.recommendations.forEach(function(r) { recsList.innerHTML += '<div class="rec-item">' + r + '</div>'; });
 
       // Save scan to localStorage
-      var scans = JSON.parse(safeGet("vital_scans") || "[]");
+      var scansRaw = safeGet("vital_scans"); var scans = scansRaw ? (typeof scansRaw === "string" ? JSON.parse(scansRaw) : scansRaw) : [];
       scans.push({ date: new Date().toISOString(), biologicalAge: d.biologicalAge, chronologicalAgeDiff: d.chronologicalAgeDiff, agingRate: d.agingRate || d.agingVelocity, skinHealth: d.skinHealth, hydration: d.hydration, inflammation: d.inflammation, sleepSignal: d.sleepSignal, collagenScore: d.collagenScore, stressMarkers: d.stressMarkers, oilBalance: d.oilBalance, diseaseRisk: d.diseaseRisk });
-      safeSet("vital_scans", JSON.stringify(scans));
+      await safeSet("vital_scans", JSON.stringify(scans));
 
       document.getElementById("loading").style.display = "none";
       document.getElementById("page2").classList.remove("active");
@@ -574,6 +593,7 @@ function uploadProfileAvatar(input) {
 
 function loadProfileData() {
   var userStr = safeGet("vital_user");
+  if (!userStr && _vitalData) userStr = _vitalData.user;
   if (!userStr) return;
   var user = JSON.parse(userStr);
   var name = (user.user_metadata && user.user_metadata.full_name) ? user.user_metadata.full_name : user.email.split("@")[0];
@@ -590,7 +610,7 @@ function loadProfileData() {
     var created = new Date(user.created_at);
     document.getElementById("profileSince").textContent = "Member since " + created.toLocaleDateString("en-US", { month: "long", year: "numeric" });
   }
-  var scans = JSON.parse(safeGet("vital_scans") || "[]");
+  var scansRaw = safeGet("vital_scans"); var scans = scansRaw ? (typeof scansRaw === "string" ? JSON.parse(scansRaw) : scansRaw) : [];
   document.getElementById("profileTotalScans").textContent = scans.length;
   if (scans.length > 0) {
     document.getElementById("profileBioAge").textContent = scans[scans.length - 1].biologicalAge;
@@ -604,18 +624,18 @@ function loadProfileData() {
   document.getElementById("profileStreak").textContent = scans.length > 0 ? 1 : 0;
 }
 
-function doSignOut() {
-  safeSet("vital_user", "");
-  safeSet("vital_session", "");
+async function doSignOut() {
+  try { await fetch("/signout", { method: "POST" }); } catch(e) {}
   window.location.href = "/auth.html";
 }
 
-// Init — show avatar if logged in
-(function() {
+// Init — load data from server then show avatar
+(async function() {
+  await loadVitalData();
   var userStr = safeGet("vital_user");
-  if (userStr && userStr.length > 2) {
+  if (userStr && (typeof userStr === "object" || userStr.length > 2)) {
     try {
-      var user = JSON.parse(userStr);
+      var user = typeof userStr === "string" ? JSON.parse(userStr) : userStr;
       var name = (user.user_metadata && user.user_metadata.full_name) ? user.user_metadata.full_name : user.email.split("@")[0];
       var initial = name.charAt(0).toUpperCase();
       var btn = document.getElementById("userAvatarBtn");
