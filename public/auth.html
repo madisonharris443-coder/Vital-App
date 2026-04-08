@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VITAL — Sign In</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root { --bg: #05070a; --surface: #0c1018; --surface2: #111827; --border: rgba(255,255,255,0.06); --text: #f0f4ff; --muted: #6b7a99; --accent: #00e5a0; --bad: #ff6b6b; }
@@ -15,22 +16,20 @@ body { background: var(--bg); color: var(--text); font-family: "DM Mono", monosp
 .logo span { color: var(--accent); }
 .tagline { text-align: center; font-size: 11px; color: var(--muted); margin-bottom: 40px; letter-spacing: 1px; }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 36px; }
-.tabs { display: flex; gap: 0; margin-bottom: 28px; border-bottom: 1px solid var(--border); }
+.tabs { display: flex; margin-bottom: 28px; border-bottom: 1px solid var(--border); }
 .tab { flex: 1; padding: 10px; text-align: center; font-size: 12px; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; }
 .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
 .form-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
 .form-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; font-family: "DM Mono", monospace; font-size: 12px; color: var(--text); outline: none; width: 100%; transition: border-color 0.15s; }
 .form-input:focus { border-color: var(--accent); }
-.submit-btn { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 14px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 14px; cursor: pointer; transition: all 0.15s; margin-top: 8px; }
-.submit-btn:hover { background: #00ffb3; }
+.submit-btn { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 14px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 14px; cursor: pointer; margin-top: 8px; }
 .error-msg { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); border-radius: 8px; padding: 10px 14px; font-size: 11px; color: var(--bad); margin-top: 12px; display: none; }
 .success-msg { background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.2); border-radius: 8px; padding: 10px 14px; font-size: 11px; color: var(--accent); margin-top: 12px; display: none; }
 .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
 .divider-line { flex: 1; height: 1px; background: var(--border); }
 .divider-text { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
-.guest-btn { width: 100%; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 12px; padding: 14px; font-family: "DM Mono", monospace; font-size: 12px; cursor: pointer; transition: all 0.15s; }
-.guest-btn:hover { border-color: var(--accent); color: var(--accent); }
+.guest-btn { width: 100%; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 12px; padding: 14px; font-family: "DM Mono", monospace; font-size: 12px; cursor: pointer; }
 .form-panel { display: none; }
 .form-panel.active { display: block; }
 #loadingState { text-align: center; padding: 20px; font-size: 11px; color: var(--muted); }
@@ -65,26 +64,21 @@ body { background: var(--bg); color: var(--text); font-family: "DM Mono", monosp
     <button class="guest-btn" onclick="continueAsGuest()">Continue without account</button>
   </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 var supabaseClient = null;
 
 async function init() {
   try {
-    var response = await fetch("/config");
-    var config = await response.json();
-    if (config.supabaseUrl && config.supabaseKey && config.supabaseUrl.length > 10) {
-      supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
-      var { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) {
-        window.location.href = "/index.html";
-        return;
-      }
+    var data = await fetch("/get-data").then(function(r) { return r.json(); });
+    if (data.user) {
+      window.location.href = "/index.html";
+      return;
     }
-  } catch(e) {
-    console.log("Config error:", e);
-  }
+    var config = await fetch("/config").then(function(r) { return r.json(); });
+    if (config.supabaseUrl && config.supabaseKey) {
+      supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+    }
+  } catch(e) { console.log("Init error:", e); }
   document.getElementById("loadingState").style.display = "none";
   document.getElementById("mainCard").style.display = "block";
 }
@@ -106,8 +100,8 @@ async function signIn() {
   if (!email || !password) { showError("signinError", "Please fill in all fields"); return; }
   var result = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
   if (result.error) { showError("signinError", result.error.message); return; }
-  localStorage.setItem("vital_user", JSON.stringify(result.data.user));
-  setTimeout(function() { window.location.href = "/index.html"; }, 300);
+  await fetch("/save-user", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user: result.data.user, session: result.data.session.access_token }) });
+  window.location.href = "/index.html";
 }
 
 async function signUp() {
@@ -125,7 +119,6 @@ async function signUp() {
 }
 
 function continueAsGuest() {
-  localStorage.setItem("vital_guest", "true");
   window.location.href = "/index.html";
 }
 
