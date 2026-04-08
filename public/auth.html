@@ -106,7 +106,8 @@ async function signIn() {
   if (!email || !password) { showError("signinError", "Please fill in all fields"); return; }
   var result = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
   if (result.error) { showError("signinError", result.error.message); return; }
-  window.location.href = "/index.html";
+  localStorage.setItem("vital_user", JSON.stringify(result.data.user));
+  setTimeout(function() { window.location.href = "/index.html"; }, 300);
 }
 
 async function signUp() {
