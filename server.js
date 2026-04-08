@@ -5,10 +5,15 @@ const fs = require("fs");
 const app = express();
 const upload = multer({ dest: "uploads/" });
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-app.use(express.static("public"));
 app.get("/", (req, res) => { res.redirect("/auth.html"); });
+app.use(express.static("public"));
 app.get("/config", (req, res) => {
   res.json({
+    supabaseUrl: "https://xdtvecuitjnumobmsrhj.supabase.co",
+    supabaseKey: "sb_publishable_HqxQ_1RqmVazq4BfkMhNwg_Th6JKCsL"
+  });
+});
+
     supabaseUrl: "https://xdtvecuitjnumobmsrhj.supabase.co",
     supabaseKey: "sb_publishable_HqxQ_1RqmVazq4BfkMhNwg_Th6JKCsL"
   });
