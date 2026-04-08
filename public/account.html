@@ -3,99 +3,168 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VITAL — My Account</title>
+<title>VITAL — My Profile</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root { --bg: #05070a; --surface: #0c1018; --surface2: #111827; --border: rgba(255,255,255,0.06); --text: #f0f4ff; --muted: #6b7a99; --accent: #00e5a0; --bad: #ff6b6b; }
-body { background: var(--bg); color: var(--text); font-family: "DM Mono", monospace; min-height: 100vh; overflow-x: hidden; }
+:root { --bg: #05070a; --surface: #0c1018; --surface2: #111827; --border: rgba(255,255,255,0.06); --text: #f0f4ff; --muted: #6b7a99; --accent: #00e5a0; --bad: #ff6b6b; --warn: #ffa94d; }
+body { background: var(--bg); color: var(--text); font-family: "DM Mono", monospace; min-height: 100vh; padding: 0 0 40px; }
 .ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(ellipse 70% 50% at 20% 10%, rgba(0,229,160,0.06) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(123,92,250,0.07) 0%, transparent 60%); }
-.panel { position: fixed; top: 0; right: 0; width: 100%; max-width: 480px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); z-index: 10; overflow-y: auto; transform: translateX(100%); animation: slideIn 0.3s ease forwards; }
-@keyframes slideIn { to { transform: translateX(0); } }
-.panel-header { display: flex; align-items: center; gap: 16px; padding: 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 1; }
+.wrap { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 20px; }
+.header { display: flex; align-items: center; gap: 16px; padding: 24px 20px; position: sticky; top: 0; background: var(--bg); z-index: 10; border-bottom: 1px solid var(--border); }
 .back-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.15s; flex-shrink: 0; }
 .back-btn:hover { border-color: var(--accent); color: var(--accent); }
-.panel-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 18px; }
-.panel-body { padding: 24px; }
-.avatar-section { text-align: center; padding: 24px 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
-.avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: "Syne", sans-serif; font-weight: 800; font-size: 28px; color: #000; margin: 0 auto 12px; }
-.user-name { font-family: "Syne", sans-serif; font-weight: 700; font-size: 18px; margin-bottom: 4px; }
-.user-email { font-size: 11px; color: var(--muted); }
-.section-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
-.stat-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }
-.stat-val { font-family: "Syne", sans-serif; font-weight: 800; font-size: 24px; color: var(--accent); }
+.header-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 18px; }
+.profile-section { text-align: center; padding: 32px 20px 24px; border-bottom: 1px solid var(--border); }
+.avatar-wrap { position: relative; display: inline-block; margin-bottom: 16px; cursor: pointer; }
+.avatar { width: 88px; height: 88px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: "Syne", sans-serif; font-weight: 800; font-size: 34px; color: #000; overflow: hidden; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-edit { position: absolute; bottom: 0; right: 0; width: 26px; height: 26px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; }
+#avatarInput { display: none; }
+.user-name { font-family: "Syne", sans-serif; font-weight: 800; font-size: 20px; margin-bottom: 4px; }
+.user-email { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+.member-since { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+.stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 20px; border-bottom: 1px solid var(--border); }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; }
+.stat-val { font-family: "Syne", sans-serif; font-weight: 800; font-size: 22px; color: var(--accent); }
 .stat-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
-.scan-list { margin-bottom: 24px; }
-.scan-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
-.scan-age { font-family: "Syne", sans-serif; font-weight: 800; font-size: 28px; color: var(--accent); }
-.scan-info { flex: 1; margin-left: 16px; }
-.scan-date { font-size: 11px; color: var(--muted); }
-.scan-diff { font-size: 11px; color: var(--text); margin-top: 2px; }
-.empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 12px; line-height: 1.8; }
-.new-scan-btn { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.15s; margin-bottom: 12px; }
-.new-scan-btn:hover { background: #00ffb3; }
-.signout-btn { width: 100%; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 12px; padding: 14px; font-family: "DM Mono", monospace; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+.nav-section { padding: 20px; border-bottom: 1px solid var(--border); }
+.section-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+.nav-btn { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s; margin-bottom: 10px; text-align: left; }
+.nav-btn:hover { border-color: var(--accent); }
+.nav-btn-left { display: flex; align-items: center; gap: 12px; }
+.nav-icon { font-size: 18px; }
+.nav-label { font-family: "Syne", sans-serif; font-weight: 700; font-size: 13px; color: var(--text); }
+.nav-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.nav-arrow { color: var(--muted); font-size: 14px; }
+.scans-section { padding: 20px; }
+.scan-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 16px; }
+.scan-bio-age { font-family: "Syne", sans-serif; font-weight: 800; font-size: 32px; color: var(--accent); flex-shrink: 0; width: 60px; }
+.scan-details { flex: 1; }
+.scan-date { font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 4px; }
+.scan-diff { font-size: 12px; color: var(--text); }
+.scan-rate { font-size: 10px; color: var(--warn); margin-top: 2px; }
+.empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 12px; line-height: 2; }
+.new-scan-btn { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 15px; cursor: pointer; margin: 20px 0 10px; }
+.signout-btn { width: 100%; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 12px; padding: 14px; font-family: "DM Mono", monospace; font-size: 12px; cursor: pointer; }
 .signout-btn:hover { border-color: var(--bad); color: var(--bad); }
 </style>
 </head>
 <body>
 <div class="ambient"></div>
-<div class="panel">
-  <div class="panel-header">
-    <button class="back-btn" onclick="goBack()">←</button>
-    <div class="panel-title">My Account</div>
+
+<div class="header">
+  <button class="back-btn" onclick="window.location.href='/index.html'">←</button>
+  <div class="header-title">My Profile</div>
+</div>
+
+<div class="wrap">
+  <div class="profile-section">
+    <div class="avatar-wrap" onclick="document.getElementById('avatarInput').click()">
+      <div class="avatar" id="avatarDisplay"><span id="avatarInitial">?</span></div>
+      <div class="avatar-edit">✎</div>
+    </div>
+    <input type="file" id="avatarInput" accept="image/*" onchange="uploadAvatar(this)">
+    <div class="user-name" id="userName">Loading...</div>
+    <div class="user-email" id="userEmail"></div>
+    <div class="member-since" id="memberSince"></div>
   </div>
-  <div class="panel-body">
-    <div class="avatar-section">
-      <div class="avatar" id="avatar">?</div>
-      <div class="user-name" id="userName">Loading...</div>
-      <div class="user-email" id="userEmail"></div>
-    </div>
 
-    <div class="section-label">Health Stats</div>
-    <div class="stat-grid">
-      <div class="stat-card">
-        <div class="stat-val" id="totalScans">0</div>
-        <div class="stat-label">Total Scans</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val" id="latestBioAge">--</div>
-        <div class="stat-label">Latest Bio Age</div>
-      </div>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-val" id="totalScans">0</div>
+      <div class="stat-label">Scans</div>
     </div>
+    <div class="stat-card">
+      <div class="stat-val" id="latestBioAge">--</div>
+      <div class="stat-label">Bio Age</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="streakCount">0</div>
+      <div class="stat-label">Day Streak</div>
+    </div>
+  </div>
 
+  <div class="nav-section">
+    <div class="section-label">Health Tracking</div>
+    <button class="nav-btn" onclick="alert('Metric tracking coming soon!')">
+      <div class="nav-btn-left">
+        <span class="nav-icon">📈</span>
+        <div>
+          <div class="nav-label">Metric Tracking</div>
+          <div class="nav-sub">7 metrics over time — see your progress</div>
+        </div>
+      </div>
+      <span class="nav-arrow">›</span>
+    </button>
+    <button class="nav-btn" onclick="alert('Habit tracker coming soon!')">
+      <div class="nav-btn-left">
+        <span class="nav-icon">✅</span>
+        <div>
+          <div class="nav-label">Habit Tracker</div>
+          <div class="nav-sub">Daily check-ins based on your recommendations</div>
+        </div>
+      </div>
+      <span class="nav-arrow">›</span>
+    </button>
+    <button class="nav-btn" onclick="alert('Wearable sync coming soon!')">
+      <div class="nav-btn-left">
+        <span class="nav-icon">⌚</span>
+        <div>
+          <div class="nav-label">Connect Wearables</div>
+          <div class="nav-sub">Apple Health, Whoop, Oura Ring</div>
+        </div>
+      </div>
+      <span class="nav-arrow">›</span>
+    </button>
+  </div>
+
+  <div class="scans-section">
     <div class="section-label">Scan History</div>
-    <div class="scan-list" id="scanList">
-      <div class="empty-state">No scans yet.<br>Complete your first scan to start tracking your biological age over time.</div>
-    </div>
-
-    <button class="new-scan-btn" onclick="goBack()">+ New Scan</button>
+    <div id="scanList"><div class="empty-state">No scans yet.<br>Complete your first scan to start<br>tracking your biological age over time.</div></div>
+    <button class="new-scan-btn" onclick="window.location.href='/index.html'">+ New Scan</button>
     <button class="signout-btn" onclick="signOut()">Sign Out</button>
   </div>
 </div>
 
 <script>
-function goBack() {
-  window.history.back();
+function uploadAvatar(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    localStorage.setItem("vital_avatar", e.target.result);
+    var avatarEl = document.getElementById("avatarDisplay");
+    avatarEl.innerHTML = '<img src="' + e.target.result + '">';
+  };
+  reader.readAsDataURL(file);
 }
 
 function signOut() {
   localStorage.removeItem("vital_user");
   localStorage.removeItem("vital_session");
-  localStorage.removeItem("vital_scans");
   window.location.href = "/auth.html";
 }
 
-function loadAccount() {
+function loadProfile() {
   var userStr = localStorage.getItem("vital_user");
   if (!userStr) { window.location.href = "/auth.html"; return; }
   var user = JSON.parse(userStr);
   var name = user.user_metadata?.full_name || user.email.split("@")[0];
   var initial = name.charAt(0).toUpperCase();
-  document.getElementById("avatar").textContent = initial;
+
+  var avatar = localStorage.getItem("vital_avatar");
+  if (avatar) {
+    document.getElementById("avatarDisplay").innerHTML = '<img src="' + avatar + '">';
+  } else {
+    document.getElementById("avatarInitial").textContent = initial;
+  }
+
   document.getElementById("userName").textContent = name;
   document.getElementById("userEmail").textContent = user.email;
+
+  var created = new Date(user.created_at);
+  document.getElementById("memberSince").textContent = "Member since " + created.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
   var scans = JSON.parse(localStorage.getItem("vital_scans") || "[]");
   document.getElementById("totalScans").textContent = scans.length;
@@ -103,17 +172,30 @@ function loadAccount() {
   if (scans.length > 0) {
     var latest = scans[scans.length - 1];
     document.getElementById("latestBioAge").textContent = latest.biologicalAge;
+
     var list = document.getElementById("scanList");
     list.innerHTML = "";
-    var reversed = scans.slice().reverse();
-    reversed.forEach(function(scan) {
+    scans.slice().reverse().forEach(function(scan) {
       var date = new Date(scan.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-      list.innerHTML += '<div class="scan-item"><div class="scan-age">' + scan.biologicalAge + '</div><div class="scan-info"><div class="scan-date">' + date + '</div><div class="scan-diff">' + (scan.chronologicalAgeDiff || "") + '</div></div></div>';
+      list.innerHTML += '<div class="scan-item"><div class="scan-bio-age">' + scan.biologicalAge + '</div><div class="scan-details"><div class="scan-date">' + date + '</div><div class="scan-diff">' + (scan.chronologicalAgeDiff || "") + '</div><div class="scan-rate">' + (scan.agingRate || "") + '</div></div></div>';
     });
+  }
+
+  // Calculate streak
+  if (scans.length > 0) {
+    var dates = scans.map(function(s) { return new Date(s.date).toDateString(); });
+    var unique = [...new Set(dates)];
+    var streak = 1;
+    var today = new Date();
+    for (var i = 0; i < unique.length - 1; i++) {
+      var diff = (new Date(unique[i]) - new Date(unique[i+1])) / (1000 * 60 * 60 * 24);
+      if (diff === 1) streak++; else break;
+    }
+    document.getElementById("streakCount").textContent = streak;
   }
 }
 
-loadAccount();
+loadProfile();
 </script>
 </body>
 </html>
