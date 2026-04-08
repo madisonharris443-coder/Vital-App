@@ -121,9 +121,10 @@ canvas { display: none; }
 <div class="ambient"></div>
 <div class="wrap">
   <div class="logo">VIT<span>AL</span></div>
-  <p class="tagline">AI · Health Intelligence Platform</p>
-<div id="userBar" style="display:none;text-align:center;margin-bottom:16px;font-size:10px;color:#6b7a99;letter-spacing:1px;">
-  Signed in as <span id="userEmail" style="color:#00e5a0;"></span> · <a href="/auth.html" onclick="signOut()" style="color:#6b7a99;text-decoration:underline;cursor:pointer;">Sign out</a>
+  <p class="tagline">AI · Health Intelligence Platform</p> 
+  <div id="userBar" style="display:none;position:fixed;top:16px;right:16px;z-index:999;">
+  <div onclick="window.location.href='/account.html'" style="width:36px;height:36px;border-radius:50%;background:#00e5a0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:Syne,sans-serif;font-weight:800;font-size:14px;color:#000;" id="userAvatar">V</div>
+</div>
 </div>  <div class="steps">
     <div class="step active" id="step1"><div class="step-num">1</div><span>Profile</span></div>
     <div class="step-line"></div>
@@ -511,8 +512,10 @@ async function signOut() {
     var user = localStorage.getItem("vital_user");
     if (user) {
       var u = JSON.parse(user);
-      document.getElementById("userEmail").textContent = u.email;
-      document.getElementById("userBar").style.display = "block";
+    var initials = u.email ? u.email[0].toUpperCase() : "V";
+document.getElementById("userAvatar").textContent = initials;
+document.getElementById("userBar").style.display = "block";
+
     }
   } catch(e) {}
 })();
