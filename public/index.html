@@ -571,7 +571,10 @@ function openProfile() {
   document.getElementById("profileOverlay").style.display = "block";
 }
 
-function closeProfile() {
+document.getElementById("userAvatarBtn").addEventListener("touchend", function(e) {
+  e.preventDefault();
+  openProfile();
+});function closeProfile() {
   document.getElementById("profilePanel").classList.remove("open");
   document.getElementById("profileOverlay").style.display = "none";
 }
