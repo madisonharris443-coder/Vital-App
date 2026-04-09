@@ -330,6 +330,7 @@ canvas { display: none; }
         <div class="metric-card"><div class="metric-name">Collagen Score</div><div class="metric-val" id="collagenScore">--</div></div>
         <div class="metric-card"><div class="metric-name">Stress Markers</div><div class="metric-val" id="stressMarkers">--</div></div>
         <div class="metric-card"><div class="metric-name">Oil Balance</div><div class="metric-val" id="oilBalance">--</div></div>
+        <div class="metric-card"><div class="metric-name">Face Symmetry</div><div class="metric-val" id="faceSymmetry">--</div></div>
       </div>
       <div class="risk-section">
         <div class="risk-title">Disease Risk Forecast</div>
@@ -494,6 +495,7 @@ async function analyze() {
       document.getElementById("collagenScore").textContent = d.collagenScore || "--";
       document.getElementById("stressMarkers").textContent = d.stressMarkers || "--";
       document.getElementById("oilBalance").textContent = d.oilBalance || "--";
+      document.getElementById("faceSymmetry").textContent = d.faceSymmetry || "--";
       document.getElementById("shareAge").textContent = d.biologicalAge;
       document.getElementById("shareDiff").textContent = d.chronologicalAgeDiff + " · " + (d.agingRate || d.agingVelocity);
       if (d.diseaseRisk) {
