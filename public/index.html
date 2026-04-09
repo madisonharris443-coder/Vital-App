@@ -165,7 +165,7 @@ canvas { display: none; }
 <div class="ambient"></div>
 
 <!-- USER AVATAR BUTTON -->
-<button class="user-avatar-btn" id="userAvatarBtn" onclick="openProfile()">
+<button class="user-avatar-btn" id="userAvatarBtn" onclick="openProfile()" ontouchend="event.preventDefault();openProfile();" style="cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;">
   <span id="userAvatarInitial">?</span>
 </button>
 
