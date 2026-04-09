@@ -597,8 +597,7 @@ function loadProfileData() {
   var userStr = safeGet("vital_user");
   if (!userStr && _vitalData) userStr = _vitalData.user;
   if (!userStr) return;
-  var user = JSON.parse(userStr);
-  var name = (user.user_metadata && user.user_metadata.full_name) ? user.user_metadata.full_name : user.email.split("@")[0];
+  var user = typeof userStr === "string" ? JSON.parse(userStr) : userStr;  var name = (user.user_metadata && user.user_metadata.full_name) ? user.user_metadata.full_name : user.email.split("@")[0];
   var initial = name.charAt(0).toUpperCase();
   var avatar = safeGet("vital_avatar");
   if (avatar) {
