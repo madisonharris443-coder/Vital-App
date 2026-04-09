@@ -122,8 +122,8 @@ canvas { display: none; }
 
 /* PROFILE PANEL */
 .profile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; display: none; backdrop-filter: blur(4px); }
-.profile-panel { position: fixed; top: 0; right: 0; width: 100%; max-width: 420px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); z-index: 201; overflow-y: auto; transform: translateX(100%); transition: transform 0.3s ease; }
-.profile-panel.open { transform: translateX(0); }
+.profile-panel { position: fixed; top: 0; right: 0; width: 100%; max-width: 420px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); z-index: 201; overflow-y: auto; transform: translateX(100%); -webkit-transform: translateX(100%); transition: transform 0.3s ease; -webkit-transition: -webkit-transform 0.3s ease; -webkit-overflow-scrolling: touch; will-change: transform; }
+.profile-panel.open { transform: translateX(0); -webkit-transform: translateX(0); }  
 .profile-header { display: flex; align-items: center; gap: 16px; padding: 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 1; }
 .profile-back { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
 .profile-back:hover { border-color: var(--accent); color: var(--accent); }
