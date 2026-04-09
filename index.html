@@ -117,7 +117,7 @@ canvas { display: none; }
 .page.active { display: block; }
 
 /* USER AVATAR BUTTON */
-.user-avatar-btn { position: fixed; top: 16px; right: 16px; z-index: 100; width: 36px; height: 36px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; display: none; font-family: "Syne", sans-serif; font-weight: 800; font-size: 14px; color: #000; overflow: hidden; }
+.user-avatar-btn { position: fixed; top: 16px; right: 16px; z-index: 9999; width: 36px; height: 36px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; display: none; font-family: "Syne", sans-serif; font-weight: 800; font-size: 14px; color: #000; overflow: hidden; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .user-avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
 
 /* PROFILE PANEL */
@@ -165,7 +165,7 @@ canvas { display: none; }
 <div class="ambient"></div>
 
 <!-- USER AVATAR BUTTON -->
-<button class="user-avatar-btn" id="userAvatarBtn" onclick="openProfile()">
+<button class="user-avatar-btn" id="userAvatarBtn" onclick="openProfile()" ontouchend="event.preventDefault();openProfile();" style="cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;">
   <span id="userAvatarInitial">?</span>
 </button>
 
@@ -648,7 +648,18 @@ async function doSignOut() {
       btn.style.display = "flex";
       btn.style.alignItems = "center";
       btn.style.justifyContent = "center";
+      btn.style.cursor = "pointer";
+      btn.style.webkitTapHighlightColor = "transparent";
     } catch(e) {}
+  }
+  // Safari touch fix
+  var avatarBtn = document.getElementById("userAvatarBtn");
+  if (avatarBtn) {
+    avatarBtn.addEventListener("touchend", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openProfile();
+    }, { passive: false });
   }
 })();
 </script>
