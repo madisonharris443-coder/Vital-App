@@ -87,7 +87,6 @@ if (req.body.userData) {
 try { userData = JSON.parse(req.body.userData); } catch(e) {}
 }
 
-```
 var profile = "";
 if (userData.age) profile += "Chronological age: " + userData.age + ". ";
 if (userData.sex) profile += "Sex: " + userData.sex + ". ";
@@ -159,7 +158,6 @@ var cleanJson = resultText.replace(/```json|```/g, "").trim();
 var result = JSON.parse(cleanJson);
 fs.unlinkSync(req.file.path);
 res.json({ success: true, data: result });
-```
 
 } catch (error) {
 console.error(“Error:”, error);
