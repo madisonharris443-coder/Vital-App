@@ -86,29 +86,31 @@ var userData = {};
 if (req.body.userData) {
 try { userData = JSON.parse(req.body.userData); } catch(e) {}
 }
-var profile = “”;
-if (userData.age) profile += “Chronological age: “ + userData.age + “. “;
-if (userData.sex) profile += “Sex: “ + userData.sex + “. “;
-if (userData.height) profile += “Height: “ + userData.height + “. “;
-if (userData.weight) profile += “Weight: “ + userData.weight + “. “;
-if (userData.ethnicity) profile += “Ethnicity: “ + userData.ethnicity + “. “;
-if (userData.fitness) profile += “Fitness level: “ + userData.fitness + “. “;
-if (userData.sleep) profile += “Sleep: “ + userData.sleep + “ hours per night. “;
-if (userData.water) profile += “Water intake: “ + userData.water + “L per day. “;
-if (userData.diet) profile += “Diet: “ + userData.diet + “. “;
-if (userData.stress) profile += “Stress level: “ + userData.stress + “. “;
-if (userData.smoker && userData.smoker !== “no”) profile += “Smoking: “ + userData.smoker + “. “;
-if (userData.alcohol && userData.alcohol !== “none”) profile += “Alcohol: “ + userData.alcohol + “. “;
-if (userData.bloodType) profile += “Blood type: “ + userData.bloodType + “. “;
-if (userData.sunExposure) profile += “Sun exposure: “ + userData.sunExposure + “. “;
-if (userData.exerciseDays) profile += “Exercise: “ + userData.exerciseDays + “ days per week. “;
-if (userData.screenTime) profile += “Screen time: “ + userData.screenTime + “ daily. “;
-if (userData.supplements) profile += “Supplements: “ + userData.supplements + “. “;
+
+```
+var profile = "";
+if (userData.age) profile += "Chronological age: " + userData.age + ". ";
+if (userData.sex) profile += "Sex: " + userData.sex + ". ";
+if (userData.height) profile += "Height: " + userData.height + ". ";
+if (userData.weight) profile += "Weight: " + userData.weight + ". ";
+if (userData.ethnicity) profile += "Ethnicity: " + userData.ethnicity + ". ";
+if (userData.fitness) profile += "Fitness level: " + userData.fitness + ". ";
+if (userData.sleep) profile += "Sleep: " + userData.sleep + " hours per night. ";
+if (userData.water) profile += "Water intake: " + userData.water + "L per day. ";
+if (userData.diet) profile += "Diet: " + userData.diet + ". ";
+if (userData.stress) profile += "Stress level: " + userData.stress + ". ";
+if (userData.smoker && userData.smoker !== "no") profile += "Smoking: " + userData.smoker + ". ";
+if (userData.alcohol && userData.alcohol !== "none") profile += "Alcohol: " + userData.alcohol + ". ";
+if (userData.bloodType) profile += "Blood type: " + userData.bloodType + ". ";
+if (userData.sunExposure) profile += "Sun exposure: " + userData.sunExposure + ". ";
+if (userData.exerciseDays) profile += "Exercise: " + userData.exerciseDays + " days per week. ";
+if (userData.screenTime) profile += "Screen time: " + userData.screenTime + " daily. ";
+if (userData.supplements) profile += "Supplements: " + userData.supplements + ". ";
 if (userData.diseases && userData.diseases.length > 0) {
-profile += “Family disease history: “ + userData.diseases.join(”, “) + “. “;
+  profile += "Family disease history: " + userData.diseases.join(", ") + ". ";
 }
 
-var prompt = [
+var promptLines = [
   "You are VITAL, the world's most advanced AI health intelligence system.",
   "Analyze this selfie photo with extreme precision using the health profile below.",
   "",
@@ -117,7 +119,7 @@ var prompt = [
   "",
   "PERFORM A COMPREHENSIVE FACIAL BIOMARKER ANALYSIS:",
   "1. SKIN QUALITY: texture, pore size, hydration, oiliness, redness, pigmentation, sun damage, acne",
-  "2. AGING MARKERS: forehead lines, crow's feet, nasolabial folds, jawline, cheek volume",
+  "2. AGING MARKERS: forehead lines, crows feet, nasolabial folds, jawline, cheek volume",
   "3. COLLAGEN: skin plumpness, elasticity, firmness, sagging",
   "4. INFLAMMATION: puffiness, under-eye bags, redness patterns",
   "5. LIFESTYLE SIGNALS: dark circles, dull complexion, stress lines, dehydration",
@@ -133,10 +135,12 @@ var prompt = [
   "Be honest and precise. Do not over-flatter.",
   "",
   "RESPOND ONLY WITH RAW JSON. NO MARKDOWN. NO BACKTICKS. EXAMPLE FORMAT:",
-  '{"biologicalAge":25,"chronologicalAgeDiff":"older by 3 years","agingVelocity":"faster than average","agingRate":"1.3x faster than baseline","skinHealth":"71/100","hydration":"65%","inflammation":"mild","sleepSignal":"deprived","oilBalance":"combination","collagenScore":"73/100","stressMarkers":"moderate","faceSymmetry":"84/100","diseaseRisk":{"metabolic":"24%","cardiovascular":"11%","inflammation":"38%","hormonal":"19%"},"topInsights":["insight 1","insight 2","insight 3"],"positives":["positive 1","positive 2"],"recommendations":["rec 1","rec 2","rec 3"]}',
+  "{\"biologicalAge\":25,\"chronologicalAgeDiff\":\"older by 3 years\",\"agingVelocity\":\"faster than average\",\"agingRate\":\"1.3x faster than baseline\",\"skinHealth\":\"71/100\",\"hydration\":\"65%\",\"inflammation\":\"mild\",\"sleepSignal\":\"deprived\",\"oilBalance\":\"combination\",\"collagenScore\":\"73/100\",\"stressMarkers\":\"moderate\",\"faceSymmetry\":\"84/100\",\"diseaseRisk\":{\"metabolic\":\"24%\",\"cardiovascular\":\"11%\",\"inflammation\":\"38%\",\"hormonal\":\"19%\"},\"topInsights\":[\"insight 1\",\"insight 2\",\"insight 3\"],\"positives\":[\"positive 1\",\"positive 2\"],\"recommendations\":[\"rec 1\",\"rec 2\",\"rec 3\"]}",
   "",
   "Replace ALL values with real analysis from the photo."
-].join("\n");
+];
+
+var prompt = promptLines.join("\n");
 
 var response = await client.messages.create({
   model: "claude-opus-4-6",
@@ -155,6 +159,7 @@ var cleanJson = resultText.replace(/```json|```/g, "").trim();
 var result = JSON.parse(cleanJson);
 fs.unlinkSync(req.file.path);
 res.json({ success: true, data: result });
+```
 
 } catch (error) {
 console.error(“Error:”, error);
