@@ -23,8 +23,7 @@ function parseCookies(req) {
   return cookies;
 }
 
-app.get("/", function(req, res) { res.redirect("/auth.html"); });
-
+app.get("/", function(req, res) { res.sendFile(__dirname + "/public/auth.html"); });
 app.get("/config", function(req, res) {
   res.json({
     supabaseUrl: "https://xdtvecuitjnumobmsrhj.supabase.co",
