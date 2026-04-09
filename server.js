@@ -7,8 +7,9 @@ const app = express();
 const upload = multer({ dest: "uploads/" });
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-app.use(express.static("public"));
 app.use(express.json());
+app.get("/", function(req, res) { res.sendFile(__dirname + "/public/auth.html"); });
+app.use(express.static("public"));
 
 function parseCookies(req) {
   var cookies = {};
