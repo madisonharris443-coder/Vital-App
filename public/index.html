@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -117,58 +118,66 @@ canvas { display: none; }
 .page.active { display: block; }
 
 /* USER AVATAR BUTTON */
-.user-avatar-btn { position: fixed; top: 16px; right: 16px; z-index: 9999; width: 36px; height: 36px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; display: none; font-family: "Syne", sans-serif; font-weight: 800; font-size: 14px; color: #000; overflow: hidden; }
+.user-avatar-btn { position: fixed; top: 16px; right: 16px; z-index: 9999; width: 36px; height: 36px; border-radius: 50%; background: var(–accent); border: none; cursor: pointer; display: none; font-family: “Syne”, sans-serif; font-weight: 800; font-size: 14px; color: #000; overflow: hidden; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .user-avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
 
 /* PROFILE PANEL */
 .profile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; display: none; backdrop-filter: blur(4px); }
-.profile-panel { position: fixed; top: 0; right: 0; width: 100%; max-width: 420px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); z-index: 201; overflow-y: auto; transform: translateX(100%); transition: transform 0.3s ease; }
+.profile-panel { position: fixed; top: 0; right: 0; width: 100%; max-width: 420px; height: 100vh; background: var(–surface); border-left: 1px solid var(–border); z-index: 201; overflow-y: auto; transform: translateX(100%); transition: transform 0.3s ease; }
 .profile-panel.open { transform: translateX(0); }
-.profile-header { display: flex; align-items: center; gap: 16px; padding: 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 1; }
-.profile-back { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
-.profile-back:hover { border-color: var(--accent); color: var(--accent); }
-.profile-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 18px; }
+.profile-header { display: flex; align-items: center; gap: 16px; padding: 24px; border-bottom: 1px solid var(–border); position: sticky; top: 0; background: var(–surface); z-index: 1; }
+.profile-back { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(–border); background: transparent; color: var(–muted); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.profile-back:hover { border-color: var(–accent); color: var(–accent); }
+.profile-title { font-family: “Syne”, sans-serif; font-weight: 800; font-size: 18px; }
 .profile-body { padding: 24px; }
-.profile-avatar-section { text-align: center; padding: 20px 0 24px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+.profile-avatar-section { text-align: center; padding: 20px 0 24px; border-bottom: 1px solid var(–border); margin-bottom: 24px; }
 .profile-avatar-wrap { position: relative; display: inline-block; margin-bottom: 14px; cursor: pointer; }
-.profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: "Syne", sans-serif; font-weight: 800; font-size: 30px; color: #000; overflow: hidden; margin: 0 auto; }
+.profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(–accent); display: flex; align-items: center; justify-content: center; font-family: “Syne”, sans-serif; font-weight: 800; font-size: 30px; color: #000; overflow: hidden; margin: 0 auto; }
 .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.profile-edit-badge { position: absolute; bottom: 0; right: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--muted); }
-.profile-name { font-family: "Syne", sans-serif; font-weight: 700; font-size: 18px; margin-bottom: 4px; }
-.profile-email { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-.profile-since { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+.profile-edit-badge { position: absolute; bottom: 0; right: 0; width: 24px; height: 24px; border-radius: 50%; background: var(–surface2); border: 1px solid var(–border); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(–muted); }
+.profile-name { font-family: “Syne”, sans-serif; font-weight: 700; font-size: 18px; margin-bottom: 4px; }
+.profile-email { font-size: 11px; color: var(–muted); margin-bottom: 6px; }
+.profile-since { font-size: 10px; color: var(–muted); letter-spacing: 1px; }
 .profile-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 24px; }
-.profile-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
-.profile-stat-val { font-family: "Syne", sans-serif; font-weight: 800; font-size: 20px; color: var(--accent); }
-.profile-stat-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
-.profile-section-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
-.profile-nav-btn { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s; margin-bottom: 8px; text-align: left; }
-.profile-nav-btn:hover { border-color: var(--accent); }
+.profile-stat { background: var(–surface2); border: 1px solid var(–border); border-radius: 10px; padding: 12px; text-align: center; }
+.profile-stat-val { font-family: “Syne”, sans-serif; font-weight: 800; font-size: 20px; color: var(–accent); }
+.profile-stat-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(–muted); margin-top: 3px; }
+.profile-section-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(–accent); margin-bottom: 10px; }
+.profile-nav-btn { width: 100%; background: var(–surface2); border: 1px solid var(–border); border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s; margin-bottom: 8px; text-align: left; }
+.profile-nav-btn:hover { border-color: var(–accent); }
 .profile-nav-left { display: flex; align-items: center; gap: 12px; }
-.profile-nav-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-family: "Syne", sans-serif; flex-shrink: 0; }
-.profile-nav-label { font-family: "Syne", sans-serif; font-weight: 700; font-size: 12px; color: var(--text); }
-.profile-nav-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
-.profile-nav-arrow { color: var(--muted); font-size: 14px; }
-.profile-scan-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 14px; }
-.profile-scan-age { font-family: "Syne", sans-serif; font-weight: 800; font-size: 28px; color: var(--accent); flex-shrink: 0; }
+.profile-nav-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-family: “Syne”, sans-serif; flex-shrink: 0; }
+.profile-nav-label { font-family: “Syne”, sans-serif; font-weight: 700; font-size: 12px; color: var(–text); }
+.profile-nav-sub { font-size: 10px; color: var(–muted); margin-top: 2px; }
+.profile-nav-arrow { color: var(–muted); font-size: 14px; }
+.profile-scan-item { background: var(–surface2); border: 1px solid var(–border); border-radius: 10px; padding: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 14px; }
+.profile-scan-age { font-family: “Syne”, sans-serif; font-weight: 800; font-size: 28px; color: var(–accent); flex-shrink: 0; }
 .profile-scan-info { flex: 1; }
-.profile-scan-date { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
-.profile-scan-diff { font-size: 11px; color: var(--text); margin-top: 2px; }
-.profile-scan-rate { font-size: 10px; color: var(--warn); margin-top: 2px; }
-.profile-empty { text-align: center; padding: 30px 16px; color: var(--muted); font-size: 11px; line-height: 2; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; }
-.new-scan-btn { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 14px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 14px; cursor: pointer; margin-bottom: 8px; }
-.signout-btn { width: 100%; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 12px; padding: 13px; font-family: "DM Mono", monospace; font-size: 11px; cursor: pointer; transition: all 0.15s; }
-.signout-btn:hover { border-color: var(--bad); color: var(--bad); }
+.profile-scan-date { font-size: 10px; color: var(–muted); letter-spacing: 1px; }
+.profile-scan-diff { font-size: 11px; color: var(–text); margin-top: 2px; }
+.profile-scan-rate { font-size: 10px; color: var(–warn); margin-top: 2px; }
+.profile-empty { text-align: center; padding: 30px 16px; color: var(–muted); font-size: 11px; line-height: 2; background: var(–surface2); border: 1px solid var(–border); border-radius: 10px; margin-bottom: 16px; }
+.new-scan-btn { width: 100%; background: var(–accent); color: #000; border: none; border-radius: 12px; padding: 14px; font-family: “Syne”, sans-serif; font-weight: 800; font-size: 14px; cursor: pointer; margin-bottom: 8px; }
+.signout-btn { width: 100%; background: transparent; border: 1px solid var(–border); color: var(–muted); border-radius: 12px; padding: 13px; font-family: “DM Mono”, monospace; font-size: 11px; cursor: pointer; transition: all 0.15s; }
+.signout-btn:hover { border-color: var(–bad); color: var(–bad); }
 </style>
+
 </head>
 <body>
 <div class="ambient"></div>
 
 <!-- USER AVATAR BUTTON -->
-<div class="user-avatar-btn" id="userAvatarBtn" role="button">
-  <!-- PROFILE OVERLAY -->
+
+<button class="user-avatar-btn" id="userAvatarBtn" onclick="openProfile()">
+  <span id="userAvatarInitial">?</span>
+</button>
+
+<!-- PROFILE OVERLAY -->
+
 <div class="profile-overlay" id="profileOverlay" onclick="closeProfile()"></div>
+
 <!-- PROFILE PANEL -->
+
 <div class="profile-panel" id="profilePanel">
   <div class="profile-header">
     <button class="profile-back" onclick="closeProfile()">&#8592;</button>
@@ -186,40 +195,43 @@ canvas { display: none; }
       <div class="profile-since" id="profileSince"></div>
     </div>
 
-    <div class="profile-stats">
-      <div class="profile-stat"><div class="profile-stat-val" id="profileTotalScans">0</div><div class="profile-stat-label">Scans</div></div>
-      <div class="profile-stat"><div class="profile-stat-val" id="profileBioAge">--</div><div class="profile-stat-label">Bio Age</div></div>
-      <div class="profile-stat"><div class="profile-stat-val" id="profileStreak">0</div><div class="profile-stat-label">Streak</div></div>
-    </div>
+```
+<div class="profile-stats">
+  <div class="profile-stat"><div class="profile-stat-val" id="profileTotalScans">0</div><div class="profile-stat-label">Scans</div></div>
+  <div class="profile-stat"><div class="profile-stat-val" id="profileBioAge">--</div><div class="profile-stat-label">Bio Age</div></div>
+  <div class="profile-stat"><div class="profile-stat-val" id="profileStreak">0</div><div class="profile-stat-label">Streak</div></div>
+</div>
 
-    <div class="profile-section-label" style="margin-bottom:10px;">Health Tracking</div>
-    <button class="profile-nav-btn" onclick="alert('Metric tracking — coming soon')">
-      <div class="profile-nav-left">
-        <div class="profile-nav-icon" style="background:rgba(0,229,160,0.1);color:var(--accent);">M</div>
-        <div><div class="profile-nav-label">Metric Tracking</div><div class="profile-nav-sub">7 metrics over time</div></div>
-      </div>
-      <span class="profile-nav-arrow">&#8250;</span>
-    </button>
-    <button class="profile-nav-btn" onclick="alert('Habit tracker — coming soon')">
-      <div class="profile-nav-left">
-        <div class="profile-nav-icon" style="background:rgba(123,92,250,0.1);color:var(--purple);">H</div>
-        <div><div class="profile-nav-label">Habit Tracker</div><div class="profile-nav-sub">Daily check-ins</div></div>
-      </div>
-      <span class="profile-nav-arrow">&#8250;</span>
-    </button>
-    <button class="profile-nav-btn" onclick="alert('Wearable sync — coming soon')" style="margin-bottom:20px;">
-      <div class="profile-nav-left">
-        <div class="profile-nav-icon" style="background:rgba(255,169,77,0.1);color:var(--warn);">W</div>
-        <div><div class="profile-nav-label">Connect Wearables</div><div class="profile-nav-sub">Apple Health, Whoop, Oura</div></div>
-      </div>
-      <span class="profile-nav-arrow">&#8250;</span>
-    </button>
+<div class="profile-section-label" style="margin-bottom:10px;">Health Tracking</div>
+<button class="profile-nav-btn" onclick="alert('Metric tracking — coming soon')">
+  <div class="profile-nav-left">
+    <div class="profile-nav-icon" style="background:rgba(0,229,160,0.1);color:var(--accent);">M</div>
+    <div><div class="profile-nav-label">Metric Tracking</div><div class="profile-nav-sub">7 metrics over time</div></div>
+  </div>
+  <span class="profile-nav-arrow">&#8250;</span>
+</button>
+<button class="profile-nav-btn" onclick="alert('Habit tracker — coming soon')">
+  <div class="profile-nav-left">
+    <div class="profile-nav-icon" style="background:rgba(123,92,250,0.1);color:var(--purple);">H</div>
+    <div><div class="profile-nav-label">Habit Tracker</div><div class="profile-nav-sub">Daily check-ins</div></div>
+  </div>
+  <span class="profile-nav-arrow">&#8250;</span>
+</button>
+<button class="profile-nav-btn" onclick="alert('Wearable sync — coming soon')" style="margin-bottom:20px;">
+  <div class="profile-nav-left">
+    <div class="profile-nav-icon" style="background:rgba(255,169,77,0.1);color:var(--warn);">W</div>
+    <div><div class="profile-nav-label">Connect Wearables</div><div class="profile-nav-sub">Apple Health, Whoop, Oura</div></div>
+  </div>
+  <span class="profile-nav-arrow">&#8250;</span>
+</button>
 
-    <div class="profile-section-label">Scan History</div>
-    <div id="profileScanList"><div class="profile-empty">No scans yet.<br>Complete your first scan to start tracking your biological age over time.</div></div>
+<div class="profile-section-label">Scan History</div>
+<div id="profileScanList"><div class="profile-empty">No scans yet.<br>Complete your first scan to start tracking your biological age over time.</div></div>
 
-    <button class="new-scan-btn" onclick="closeProfile()">+ New Scan</button>
-    <button class="signout-btn" onclick="doSignOut()">Sign Out</button>
+<button class="new-scan-btn" onclick="closeProfile()">+ New Scan</button>
+<button class="signout-btn" onclick="doSignOut()">Sign Out</button>
+```
+
   </div>
 </div>
 
@@ -235,6 +247,7 @@ canvas { display: none; }
   </div>
 
   <!-- PAGE 1 -->
+
   <div class="page active" id="page1">
     <div class="card">
       <div class="form-section">
@@ -282,6 +295,7 @@ canvas { display: none; }
   </div>
 
   <!-- PAGE 2 -->
+
   <div class="page" id="page2">
     <div class="card">
       <img class="preview-img" id="preview" alt="Your photo">
@@ -309,6 +323,7 @@ canvas { display: none; }
   </div>
 
   <!-- PAGE 3 -->
+
   <div class="page" id="page3">
     <div class="card">
       <div class="bio-age-display">
@@ -570,10 +585,7 @@ function openProfile() {
   document.getElementById("profileOverlay").style.display = "block";
 }
 
-document.getElementById("userAvatarBtn").addEventListener("touchend", function(e) {
-  e.preventDefault();
-  openProfile();
-});function closeProfile() {
+function closeProfile() {
   document.getElementById("profilePanel").classList.remove("open");
   document.getElementById("profileOverlay").style.display = "none";
 }
@@ -645,12 +657,23 @@ async function doSignOut() {
         document.getElementById("userAvatarInitial").textContent = initial;
       }
       btn.style.display = "flex";
-      btn.addEventListener("click", openProfile);
-      btn.addEventListener("touchstart", function(e) { e.preventDefault(); openProfile(); });      btn.style.alignItems = "center";
+      btn.style.alignItems = "center";
       btn.style.justifyContent = "center";
+      btn.style.cursor = "pointer";
+      btn.style.webkitTapHighlightColor = "transparent";
     } catch(e) {}
+  }
+  // Safari touch fix
+  var avatarBtn = document.getElementById("userAvatarBtn");
+  if (avatarBtn) {
+    avatarBtn.addEventListener("touchend", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openProfile();
+    }, { passive: false });
   }
 })();
 </script>
+
 </body>
 </html>
