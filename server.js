@@ -108,7 +108,6 @@ if (userData.diseases && userData.diseases.length > 0) {
 profile += “Family disease history: “ + userData.diseases.join(”, “) + “. “;
 }
 
-```
 var prompt = [
   "You are VITAL, the world's most advanced AI health intelligence system.",
   "Analyze this selfie photo with extreme precision using the health profile below.",
@@ -156,7 +155,6 @@ var cleanJson = resultText.replace(/```json|```/g, "").trim();
 var result = JSON.parse(cleanJson);
 fs.unlinkSync(req.file.path);
 res.json({ success: true, data: result });
-```
 
 } catch (error) {
 console.error(“Error:”, error);
