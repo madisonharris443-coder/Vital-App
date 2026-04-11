@@ -504,13 +504,13 @@ async function analyze() {
         document.getElementById("riskInflam").textContent = d.diseaseRisk.inflammation;
         document.getElementById("riskHorm").textContent = d.diseaseRisk.hormonal;
         setTimeout(function() {
-          document.getElementById("riskMetabolicBar").style.width = (parseInt(d.diseaseRisk.metabolic) || 0) + "%";
-          document.getElementById("riskCardioBar").style.width = (parseInt(d.diseaseRisk.cardiovascular) || 0) + "%";
-          document.getElementById("riskInflamBar").style.width = (parseInt(d.diseaseRisk.inflammation) || 0) + "%";
-          document.getElementById("riskHormBar").style.width = (parseInt(d.diseaseRisk.hormonal) || 0) + "%";
-        }, 300);
-      }
-      var insightsList = document.getElementById("insightsList");
+  function extractPct(str) { var m = str ? str.match(/(\d+)%/) : null; return m ? parseInt(m[1]) : 0; }
+  document.getElementById("riskMetabolicBar").style.width = extractPct(d.diseaseRisk.metabolic) + "%";
+  document.getElementById("riskCardioBar").style.width = extractPct(d.diseaseRisk.cardiovascular) + "%";
+  document.getElementById("riskInflamBar").style.width = extractPct(d.diseaseRisk.inflammation) + "%";
+  document.getElementById("riskHormBar").style.width = extractPct(d.diseaseRisk.hormonal) + "%";
+ }, 300);
+        var insightsList = document.getElementById("insightsList");
       insightsList.innerHTML = "";
       if (d.topInsights) d.topInsights.forEach(function(i) { insightsList.innerHTML += '<div class="insight-item">' + i + '</div>'; });
       var positivesList = document.getElementById("positivesList");
