@@ -571,9 +571,10 @@ function reset() {
 
 // PROFILE PANEL
 function openProfile() {
-  loadProfileData();
-  document.getElementById("profilePanel").classList.add("open");
-  document.getElementById("profileOverlay").style.display = "block";
+  loadProfileData().then(function() {
+    document.getElementById("profilePanel").classList.add("open");
+    document.getElementById("profileOverlay").style.display = "block";
+  });
 }
 
 function closeProfile() {
