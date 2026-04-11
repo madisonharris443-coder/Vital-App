@@ -593,7 +593,7 @@ function uploadProfileAvatar(input) {
   reader.readAsDataURL(file);
 }
 
-function loadProfileData() {
+async function loadProfileData() {
   var userStr = safeGet("vital_user");
   if (!userStr && _vitalData) userStr = _vitalData.user;
   if (!userStr) return;
@@ -611,8 +611,8 @@ function loadProfileData() {
     var created = new Date(user.created_at);
     document.getElementById("profileSince").textContent = "Member since " + created.toLocaleDateString("en-US", { month: "long", year: "numeric" });
   }
-  var scansRaw = safeGet("vital_scans"); var scans = scansRaw ? (typeof scansRaw === "string" ? JSON.parse(scansRaw) : scansRaw) : [];
-  document.getElementById("profileTotalScans").textContent = scans.length;
+  var scans = [];
+try { var scanRes = await fetch("/get-scans"); var scanData = await scanRes.json(); scans = scanData.scans || []; } catch(e) { scans = []; }  document.getElementById("profileTotalScans").textContent = scans.length;
   if (scans.length > 0) {
     document.getElementById("profileBioAge").textContent = scans[scans.length - 1].biologicalAge;
     var list = document.getElementById("profileScanList");
