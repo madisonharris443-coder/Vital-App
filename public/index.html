@@ -671,16 +671,15 @@ var _allScans = [];
 var _activeMetric = "skinHealth";
 
 var metricMeta = {
-  skinHealth:    { label: "Skin Health",    extract: function(s) { return parseFloat(s.skinHealth) || 0; }, unit: "/100" },
-  hydration:     { label: "Hydration",      extract: function(s) { return parseFloat(s.hydration) || 0; }, unit: "%" },
-  inflammation:  { label: "Inflammation",   extract: function(s) { var map = { low:10, mild:30, moderate:55, high:80, severe:95 }; return map[(s.inflammation||"").toLowerCase()] || 0; }, unit: "" },
-  sleepSignal:   { label: "Sleep Signal",   extract: function(s) { var map = { optimal:90, good:70, fair:50, deprived:25, severe:10 }; return map[(s.sleepSignal||"").toLowerCase()] || 0; }, unit: "" },
-  collagenScore: { label: "Collagen Score", extract: function(s) { return parseFloat(s.collagenScore) || 0; }, unit: "/100" },
-  stressMarkers: { label: "Stress Markers", extract: function(s) { var map = { low:10, moderate:40, "moderate-high":60, high:80, "very high":95 }; return map[(s.stressMarkers||"").toLowerCase()] || 0; }, unit: "" },
-  oilBalance:    { label: "Oil Balance",    extract: function(s) { return s.oilBalance || "--"; }, unit: "", text: true },
-  faceSymmetry:  { label: "Face Symmetry",  extract: function(s) { return parseFloat(s.faceSymmetry) || 0; }, unit: "/100" }
+ skinHealth:    { label: "Skin Health",    extract: function(s) { var m = s.skinHealth ? s.skinHealth.match(/(\d+)/) : null; return m ? parseInt(m[1]) : 0; }, unit: "/100" },
+hydration:     { label: "Hydration",      extract: function(s) { var m = s.hydration ? s.hydration.match(/(\d+)/) : null; return m ? parseInt(m[1]) : 0; }, unit: "%" },
+inflammation:  { label: "Inflammation",   extract: function(s) { var map = { low:10, mild:30, moderate:55, high:80, severe:95 }; return map[(s.inflammation||"").toLowerCase()] || 0; }, unit: "" },
+sleepSignal:   { label: "Sleep Signal",   extract: function(s) { var map = { optimal:90, good:70, fair:50, deprived:25, severe:10 }; return map[(s.sleepSignal||"").toLowerCase()] || 0; }, unit: "" },
+collagenScore: { label: "Collagen Score", extract: function(s) { var m = s.collagenScore ? s.collagenScore.match(/(\d+)/) : null; return m ? parseInt(m[1]) : 0; }, unit: "/100" },
+stressMarkers: { label: "Stress Markers", extract: function(s) { var map = { low:10, moderate:40, "moderate-high":60, high:80, "very high":95 }; return map[(s.stressMarkers||"").toLowerCase()] || 0; }, unit: "" },
+oilBalance:    { label: "Oil Balance",    extract: function(s) { return s.oilBalance || "--"; }, unit: "", text: true },
+faceSymmetry:  { label: "Face Symmetry",  extract: function(s) { var m = s.faceSymmetry ? s.faceSymmetry.match(/(\d+)/) : null; return m ? parseInt(m[1]) : 0; }, unit: "/100" }
 };
-
 function openMetricPanel() {
   document.getElementById("metricPanel").classList.add("open");
   loadMetricData();
