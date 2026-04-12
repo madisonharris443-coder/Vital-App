@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VITAL — Health Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #05070a; --surface: #0c1018; --surface2: #111827;
+  --border: rgba(255,255,255,0.06); --text: #f0f4ff; --muted: #6b7a99;
+  --accent: #00e5a0; --bad: #ff6b6b; --warn: #ffa94d; --mid: #ffd43b;
+  --purple: #7b5cfa;
+}
+body { background: var(--bg); color: var(--text); font-family: "DM Mono", monospace; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
+.ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(ellipse 70% 50% at 20% 10%, rgba(0,229,160,0.06) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(123,92,250,0.07) 0%, transparent 60%); }
+.wrap { position: relative; z-index: 1; width: 100%; max-width: 600px; }
+.logo { font-family: "Syne", sans-serif; font-weight: 800; font-size: 28px; letter-spacing: -1px; text-align: center; margin-bottom: 8px; }
+.logo span { color: var(--accent); }
+.tagline { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 8px; letter-spacing: 1px; }
+.steps { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 32px; }
+.step { display: flex; align-items: center; gap: 8px; font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.step-num { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; transition: all 0.2s; }
+.step.active .step-num { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 700; }
+.step.done .step-num { background: rgba(0,229,160,0.2); border-color: var(--accent); color: var(--accent); }
+.step-line { width: 40px; height: 1px; background: var(--border); margin: 0 8px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 36px; }
+.form-section { margin-bottom: 24px; }
+.form-section-title { font-family: "Syne", sans-serif; font-weight: 700; font-size: 13px; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: span 2; }
+.form-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.form-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-family: "DM Mono", monospace; font-size: 12px; color: var(--text); outline: none; transition: border-color 0.15s; width: 100%; }
+.form-input:focus { border-color: var(--accent); }
+.form-select { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-family: "DM Mono", monospace; font-size: 12px; color: var(--text); outline: none; width: 100%; cursor: pointer; }
+.form-select:focus { border-color: var(--accent); }
+.checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.checkbox-item { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: all 0.15s; font-size: 11px; color: var(--muted); }
+.checkbox-item:hover { border-color: var(--accent); color: var(--text); }
+.checkbox-item input { display: none; }
+.checkbox-item.checked { border-color: var(--accent); background: rgba(0,229,160,0.06); color: var(--accent); }
+.range-wrap { display: flex; flex-direction: column; gap: 6px; }
+.range-header { display: flex; justify-content: space-between; font-size: 10px; }
+.range-label { color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.range-val { color: var(--accent); font-weight: 600; }
+input[type=range] { width: 100%; height: 4px; -webkit-appearance: none; background: rgba(255,255,255,0.06); border-radius: 4px; outline: none; cursor: pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+.next-btn { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 15px; cursor: pointer; transition: all 0.15s; margin-top: 24px; }
+.next-btn:hover { background: #00ffb3; transform: translateY(-2px); }
+.mode-selector { display: flex; gap: 10px; margin-bottom: 24px; }
+.mode-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: "DM Mono", monospace; font-size: 11px; cursor: pointer; transition: all 0.15s; }
+.mode-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,229,160,0.06); }
+.upload-zone { border: 2px dashed rgba(0,229,160,0.2); border-radius: 14px; padding: 48px 20px; cursor: pointer; transition: all 0.2s; margin-bottom: 24px; position: relative; text-align: center; }
+.upload-zone:hover { border-color: var(--accent); background: rgba(0,229,160,0.03); }
+.upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-icon { font-size: 40px; margin-bottom: 12px; }
+.upload-title { font-family: "Syne", sans-serif; font-weight: 700; font-size: 18px; margin-bottom: 8px; }
+.upload-sub { font-size: 11px; color: var(--muted); }
+.camera-zone { display: none; margin-bottom: 24px; }
+.camera-feed { width: 100%; border-radius: 14px; background: #000; display: block; max-height: 320px; object-fit: cover; }
+.capture-btn { width: 100%; margin-top: 12px; background: var(--surface2); border: 1px solid var(--accent); color: var(--accent); border-radius: 12px; padding: 14px; font-family: "Syne", sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; }
+canvas { display: none; }
+.preview-img { width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px; margin-bottom: 24px; display: none; }
+.analyze-btn { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; transition: all 0.15s; display: none; }
+.analyze-btn:hover { background: #00ffb3; transform: translateY(-2px); }
+.loading { display: none; text-align: center; padding: 40px 0; }
+.loading-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin: 0 4px; animation: bounce 1.2s infinite; }
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.loading-text { font-size: 12px; color: var(--muted); margin-top: 16px; }
+.bio-age-display { background: linear-gradient(135deg, rgba(0,229,160,0.08), rgba(123,92,250,0.05)); border: 1px solid rgba(0,229,160,0.15); border-radius: 16px; padding: 32px; text-align: center; margin-bottom: 16px; }
+.bio-num { font-family: "Syne", sans-serif; font-weight: 800; font-size: 80px; letter-spacing: -4px; color: var(--accent); line-height: 1; }
+.bio-label { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+.bio-diff { font-size: 13px; color: var(--muted); margin-top: 10px; }
+.bio-diff strong { color: var(--text); }
+.bio-rate { display: inline-block; margin-top: 8px; background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.2); border-radius: 6px; padding: 4px 12px; font-size: 11px; color: var(--bad); }
+.section-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; margin-top: 20px; }
+.metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
+.metric-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.metric-name { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.metric-val { font-family: "Syne", sans-serif; font-weight: 700; font-size: 18px; }
+.risk-section { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 16px; }
+.risk-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--bad); margin-bottom: 14px; }
+.risk-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.risk-label { font-size: 11px; color: var(--muted); width: 120px; flex-shrink: 0; }
+.risk-bar-wrap { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; }
+.risk-bar { height: 100%; border-radius: 6px; transition: width 1s ease; }
+.risk-pct { font-family: "Syne", sans-serif; font-weight: 700; font-size: 11px; width: 160px; text-align: right; }
+.insights-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 16px; }
+.insights-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.insight-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; font-size: 11px; color: var(--muted); line-height: 1.6; }
+.insight-item::before { content: "->"; color: var(--accent); flex-shrink: 0; }
+.positives-card { background: rgba(0,229,160,0.05); border: 1px solid rgba(0,229,160,0.12); border-radius: 12px; padding: 20px; margin-top: 16px; }
+.positives-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.positive-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; font-size: 11px; color: var(--muted); line-height: 1.6; }
+.positive-item::before { content: "+"; color: var(--accent); flex-shrink: 0; font-weight: 700; }
+.recs-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 16px; }
+.recs-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--warn); margin-bottom: 14px; }
+.rec-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; font-size: 11px; color: var(--muted); line-height: 1.6; }
+.rec-item::before { content: "!"; color: var(--warn); flex-shrink: 0; font-weight: 700; }
+.share-card { background: linear-gradient(135deg, #0c1018, #111827); border: 1px solid rgba(0,229,160,0.3); border-radius: 16px; padding: 28px; margin-top: 20px; text-align: center; }
+.share-card-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.share-card-age { font-family: "Syne", sans-serif; font-weight: 800; font-size: 72px; letter-spacing: -3px; color: var(--accent); line-height: 1; }
+.share-card-unit { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+.share-card-diff { font-size: 12px; color: var(--text); margin-top: 8px; }
+.share-card-footer { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+.share-btn { width: 100%; background: var(--surface2); border: 1px solid rgba(0,229,160,0.3); color: var(--accent); border-radius: 12px; padding: 12px; font-family: "DM Mono", monospace; font-size: 11px; cursor: pointer; transition: all 0.15s; margin-top: 12px; letter-spacing: 1px; }
+.share-btn:hover { background: rgba(0,229,160,0.08); }
+.retry-btn { width: 100%; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 12px; padding: 14px; font-family: "DM Mono", monospace; font-size: 12px; cursor: pointer; transition: all 0.15s; margin-top: 10px; }
+.retry-btn:hover { border-color: var(--accent); color: var(--accent); }
+.disclaimer { font-size: 10px; color: var(--muted); text-align: center; margin-top: 20px; line-height: 1.6; opacity: 0.6; }
+.page { display: none; }
+.page.active { display: block; }
+.user-avatar-btn { position: fixed; top: 16px; right: 16px; z-index: 9999; width: 36px; height: 36px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; display: none; font-family: "Syne", sans-serif; font-weight: 800; font-size: 14px; color: #000; overflow: hidden; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.user-avatar-btn img { width: 100%; height: 100%; object-fit: cover; }
+.profile-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; display: none; backdrop-filter: blur(4px); }
+.profile-panel { position: fixed; top: 0; right: 0; width: 100%; max-width: 420px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); z-index: 201; overflow-y: auto; transform: translateX(100%); -webkit-transform: translateX(100%); transition: transform 0.3s ease; -webkit-transition: -webkit-transform 0.3s ease; -webkit-overflow-scrolling: touch; will-change: transform; }
+.profile-panel.open { transform: translateX(0); -webkit-transform: translateX(0); }
+.profile-header { display: flex; align-items: center; gap: 16px; padding: 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 1; }
+.profile-back { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.profile-back:hover { border-color: var(--accent); color: var(--accent); }
+.profile-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 18px; }
+.profile-body { padding: 24px; }
+.profile-avatar-section { text-align: center; padding: 20px 0 24px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+.profile-avatar-wrap { position: relative; display: inline-block; margin-bottom: 14px; cursor: pointer; }
+.profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: "Syne", sans-serif; font-weight: 800; font-size: 30px; color: #000; overflow: hidden; margin: 0 auto; }
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-edit-badge { position: absolute; bottom: 0; right: 0; width: 24px; height: 24px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--muted); }
+.profile-name { font-family: "Syne", sans-serif; font-weight: 700; font-size: 18px; margin-bottom: 4px; }
+.profile-email { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+.profile-since { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+.profile-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 24px; }
+.profile-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; }
+.profile-stat-val { font-family: "Syne", sans-serif; font-weight: 800; font-size: 20px; color: var(--accent); }
+.profile-stat-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+.profile-section-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.profile-nav-btn { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s; margin-bottom: 8px; text-align: left; }
+.profile-nav-btn:hover { border-color: var(--accent); }
+.profile-nav-left { display: flex; align-items: center; gap: 12px; }
+.profile-nav-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-family: "Syne", sans-serif; flex-shrink: 0; }
+.profile-nav-label { font-family: "Syne", sans-serif; font-weight: 700; font-size: 12px; color: var(--text); }
+.profile-nav-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.profile-nav-arrow { color: var(--muted); font-size: 14px; }
+.profile-scan-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 14px; }
+.profile-scan-age { font-family: "Syne", sans-serif; font-weight: 800; font-size: 28px; color: var(--accent); flex-shrink: 0; }
+.profile-scan-info { flex: 1; }
+.profile-scan-date { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+.profile-scan-diff { font-size: 11px; color: var(--text); margin-top: 2px; }
+.profile-scan-rate { font-size: 10px; color: var(--warn); margin-top: 2px; }
+.profile-empty { text-align: center; padding: 30px 16px; color: var(--muted); font-size: 11px; line-height: 2; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; }
+.new-scan-btn { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 14px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 14px; cursor: pointer; margin-bottom: 8px; }
+.signout-btn { width: 100%; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 12px; padding: 13px; font-family: "DM Mono", monospace; font-size: 11px; cursor: pointer; transition: all 0.15s; }
+.signout-btn:hover { border-color: var(--bad); color: var(--bad); }
+.metric-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg); z-index: 300; overflow-y: auto; transform: translateX(-100%); -webkit-transform: translateX(-100%); transition: transform 0.3s ease; -webkit-transition: -webkit-transform 0.3s ease; }
+.metric-panel.open { transform: translateX(0); -webkit-transform: translateX(0); }
+.metric-panel-header { display: flex; align-items: center; gap: 16px; padding: 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+.metric-panel-back { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.metric-panel-back:hover { border-color: var(--accent); color: var(--accent); }
+.metric-panel-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 18px; }
+.metric-panel-body { padding: 24px; max-width: 600px; margin: 0 auto; }
+.metric-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.metric-pill { padding: 7px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.metric-pill.active { border-color: var(--accent); color: var(--accent); background: rgba(0,229,160,0.08); }
+.metric-chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+.metric-chart-title { font-family: "Syne", sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.metric-chart-sub { font-size: 10px; color: var(--muted); margin-bottom: 20px; }
+.metric-trend-card { border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 11px; line-height: 1.6; }
+.metric-trend-card.good { background: rgba(0,229,160,0.07); border: 1px solid rgba(0,229,160,0.15); color: var(--accent); }
+.metric-trend-card.bad { background: rgba(255,107,107,0.07); border: 1px solid rgba(255,107,107,0.15); color: var(--bad); }
+.metric-trend-card.neutral { background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+.metric-history-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.metric-history-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+.metric-history-date { font-size: 10px; color: var(--muted); }
+.metric-history-val { font-family: "Syne", sans-serif; font-weight: 700; font-size: 16px; }
+.metric-history-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.metric-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 12px; line-height: 2; }
+</style>
+</head>
+<body>
+<div class="metric-panel" id="metricPanel">
+  <div class="metric-panel-header">
+    <button class="metric-panel-back" onclick="closeMetricPanel()">&#8592;</button>
+    <div class="metric-panel-title">Metric Tracking</div>
+  </div>
+  <div class="metric-panel-body">
+    <div class="metric-pills" id="metricPills">
+      <div class="metric-pill active" onclick="selectMetric(event,'skinHealth')">Skin Health</div>
+      <div class="metric-pill" onclick="selectMetric(event,'hydration')">Hydration</div>
+      <div class="metric-pill" onclick="selectMetric(event,'inflammation')">Inflammation</div>
+      <div class="metric-pill" onclick="selectMetric(event,'sleepSignal')">Sleep Signal</div>
+      <div class="metric-pill" onclick="selectMetric(event,'collagenScore')">Collagen</div>
+      <div class="metric-pill" onclick="selectMetric(event,'stressMarkers')">Stress</div>
+      <div class="metric-pill" onclick="selectMetric(event,'oilBalance')">Oil Balance</div>
+      <div class="metric-pill" onclick="selectMetric(event,'faceSymmetry')">Face Symmetry</div>
+    </div>
+    <div class="metric-chart-wrap">
+      <div class="metric-chart-title" id="metricChartTitle">Skin Health</div>
+      <div class="metric-chart-sub" id="metricChartSub">Tracking across all your scans</div>
+      <div id="metricChartSvg"></div>
+    </div>
+    <div class="metric-trend-card neutral" id="metricTrendCard">Complete more scans to see your trend.</div>
+    <div class="metric-history-label">Scan History</div>
+    <div id="metricHistoryList"></div>
+  </div>
+</div>
+
+<div class="ambient"></div>
+
+<button class="user-avatar-btn" id="userAvatarBtn" onclick="openProfile()" ontouchend="event.preventDefault();openProfile();" style="cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;">
+  <span id="userAvatarInitial">?</span>
+</button>
+
+<div class="profile-overlay" id="profileOverlay" onclick="closeProfile()"></div>
+
+<div class="profile-panel" id="profilePanel">
+  <div class="profile-header">
+    <button class="profile-back" onclick="closeProfile()">&#8592;</button>
+    <div class="profile-title">My Profile</div>
+  </div>
+  <div class="profile-body">
+    <div class="profile-avatar-section">
+      <div class="profile-avatar-wrap" onclick="document.getElementById('avatarFileInput').click()">
+        <div class="profile-avatar" id="profileAvatarDisplay"><span id="profileAvatarInitial">?</span></div>
+        <div class="profile-edit-badge">&#9998;</div>
+      </div>
+      <input type="file" id="avatarFileInput" accept="image/*" style="display:none" onchange="uploadProfileAvatar(this)">
+      <div class="profile-name" id="profileName">Loading...</div>
+      <div class="profile-email" id="profileEmail"></div>
+      <div class="profile-since" id="profileSince"></div>
+    </div>
+    <div class="profile-stats">
+      <div class="profile-stat"><div class="profile-stat-val" id="profileTotalScans">0</div><div class="profile-stat-label">Scans</div></div>
+      <div class="profile-stat"><div class="profile-stat-val" id="profileBioAge">--</div><div class="profile-stat-label">Bio Age</div></div>
+      <div class="profile-stat"><div class="profile-stat-val" id="profileStreak">0</div><div class="profile-stat-label">Streak</div></div>
+    </div>
+    <div class="profile-section-label" style="margin-bottom:10px;">Health Tracking</div>
+    <button class="profile-nav-btn" onclick="openMetricPanel()">
+      <div class="profile-nav-left">
+        <div class="profile-nav-icon" style="background:rgba(0,229,160,0.1);color:var(--accent);">M</div>
+        <div><div class="profile-nav-label">Metric Tracking</div><div class="profile-nav-sub">8 metrics over time</div></div>
+      </div>
+      <span class="profile-nav-arrow">&#8250;</span>
+    </button>
+    <button class="profile-nav-btn" onclick="alert('Habit tracker — coming soon')">
+      <div class="profile-nav-left">
+        <div class="profile-nav-icon" style="background:rgba(123,92,250,0.1);color:var(--purple);">H</div>
+        <div><div class="profile-nav-label">Habit Tracker</div><div class="profile-nav-sub">Daily check-ins</div></div>
+      </div>
+      <span class="profile-nav-arrow">&#8250;</span>
+    </button>
+    <button class="profile-nav-btn" onclick="alert('Wearable sync — coming soon')" style="margin-bottom:20px;">
+      <div class="profile-nav-left">
+        <div class="profile-nav-icon" style="background:rgba(255,169,77,0.1);color:var(--warn);">W</div>
+        <div><div class="profile-nav-label">Connect Wearables</div><div class="profile-nav-sub">Apple Health, Whoop, Oura</div></div>
+      </div>
+      <span class="profile-nav-arrow">&#8250;</span>
+    </button>
+    <div class="profile-section-label">Scan History</div>
+    <div id="profileScanList"><div class="profile-empty">No scans yet.<br>Complete your first scan to start tracking your biological age over time.</div></div>
+    <button class="new-scan-btn" onclick="closeProfile()">+ New Scan</button>
+    <button class="signout-btn" onclick="doSignOut()">Sign Out</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="logo">VIT<span>AL</span></div>
+  <p class="tagline">AI · Health Intelligence Platform</p>
+  <div class="steps">
+    <div class="step active" id="step1"><div class="step-num">1</div><span>Profile</span></div>
+    <div class="step-line"></div>
+    <div class="step" id="step2"><div class="step-num">2</div><span>Scan</span></div>
+    <div class="step-line"></div>
+    <div class="step" id="step3"><div class="step-num">3</div><span>Results</span></div>
+  </div>
+
+  <div class="page active" id="page1">
+    <div class="card">
+      <div class="form-section">
+        <div class="form-section-title">Basic Info</div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Age</label><input class="form-input" type="number" id="age" placeholder="e.g. 25" min="13" max="100"></div>
+          <div class="form-group"><label class="form-label">Sex</label><select class="form-select" id="sex"><option value="">Select</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+          <div class="form-group full"><label class="form-label">Height</label><div style="display:flex;gap:8px;"><input class="form-input" type="text" id="height" placeholder="e.g. 175 or 5ft 9in" style="flex:1"><select class="form-select" id="heightUnit" style="width:80px"><option value="cm">cm</option><option value="ft">ft</option></select></div></div>
+          <div class="form-group full"><label class="form-label">Weight</label><div style="display:flex;gap:8px;"><input class="form-input" type="text" id="weight" placeholder="e.g. 70 kg or 154 lbs" style="flex:1"><select class="form-select" id="weightUnit" style="width:80px"><option value="kg">kg</option><option value="lbs">lbs</option></select></div></div>
+          <div class="form-group"><label class="form-label">Ethnicity</label><select class="form-select" id="ethnicity"><option value="">Select</option><option value="asian">Asian</option><option value="black">Black / African</option><option value="hispanic">Hispanic / Latino</option><option value="white">White / Caucasian</option><option value="mixed">Mixed</option><option value="other">Other</option></select></div>
+          <div class="form-group"><label class="form-label">Fitness Level</label><select class="form-select" id="fitness"><option value="">Select</option><option value="sedentary">Sedentary</option><option value="light">Lightly Active</option><option value="moderate">Moderately Active</option><option value="very active">Very Active</option><option value="athlete">Athlete</option></select></div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Daily Habits</div>
+        <div class="form-grid">
+          <div class="form-group full"><div class="range-wrap"><div class="range-header"><span class="range-label">Sleep Duration</span><span class="range-val" id="sleepLabel">7 hrs</span></div><input type="range" min="3" max="12" step="0.5" value="7" oninput="document.getElementById('sleepLabel').textContent=this.value+' hrs'; userData.sleep=this.value;"></div></div>
+          <div class="form-group full"><div class="range-wrap"><div class="range-header"><span class="range-label">Water Intake</span><span class="range-val" id="waterLabel">2L</span></div><input type="range" min="0.5" max="5" step="0.5" value="2" oninput="document.getElementById('waterLabel').textContent=this.value+'L'; userData.water=this.value;"></div></div>
+          <div class="form-group"><label class="form-label">Diet Type</label><select class="form-select" id="diet"><option value="">Select</option><option value="balanced">Balanced</option><option value="vegan">Vegan</option><option value="vegetarian">Vegetarian</option><option value="keto">Keto</option><option value="carnivore">Carnivore</option><option value="mediterranean">Mediterranean</option><option value="fast food heavy">Fast Food Heavy</option></select></div>
+          <div class="form-group"><label class="form-label">Stress Level</label><select class="form-select" id="stress"><option value="">Select</option><option value="low">Low</option><option value="moderate">Moderate</option><option value="high">High</option><option value="very high">Very High</option></select></div>
+          <div class="form-group"><label class="form-label">Smoker?</label><select class="form-select" id="smoker"><option value="no">No</option><option value="occasionally">Occasionally</option><option value="yes">Yes</option><option value="ex-smoker">Ex-smoker</option></select></div>
+          <div class="form-group"><label class="form-label">Alcohol?</label><select class="form-select" id="alcohol"><option value="none">None</option><option value="occasionally">Occasionally</option><option value="moderate">Moderate</option><option value="heavy">Heavy</option></select></div>
+          <div class="form-group"><label class="form-label">Blood Type</label><select class="form-select" id="bloodType"><option value="">Unknown</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="O+">O+</option><option value="O-">O-</option></select></div>
+          <div class="form-group"><label class="form-label">Sun Exposure</label><select class="form-select" id="sunExposure"><option value="minimal">Minimal</option><option value="moderate">Moderate</option><option value="high">High</option><option value="always protected">Always Protected</option></select></div>
+          <div class="form-group"><label class="form-label">Exercise (days/wk)</label><select class="form-select" id="exerciseDays"><option value="0">0 days</option><option value="1-2">1-2 days</option><option value="3-4">3-4 days</option><option value="5-6">5-6 days</option><option value="7">Every day</option></select></div>
+          <div class="form-group"><label class="form-label">Screen Time</label><select class="form-select" id="screenTime"><option value="under 2hrs">Under 2 hrs</option><option value="2-4hrs">2-4 hrs</option><option value="4-6hrs">4-6 hrs</option><option value="6-8hrs">6-8 hrs</option><option value="8hrs+">8+ hrs</option></select></div>
+          <div class="form-group full"><label class="form-label">Supplements (optional)</label><input class="form-input" type="text" id="supplements" placeholder="e.g. Vitamin D, Omega-3"></div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Family Disease History</div>
+        <div class="checkbox-grid">
+          <label class="checkbox-item" onclick="toggleDisease(this,'diabetes')"><input type="checkbox"> Diabetes</label>
+          <label class="checkbox-item" onclick="toggleDisease(this,'heart disease')"><input type="checkbox"> Heart Disease</label>
+          <label class="checkbox-item" onclick="toggleDisease(this,'cancer')"><input type="checkbox"> Cancer</label>
+          <label class="checkbox-item" onclick="toggleDisease(this,'hypertension')"><input type="checkbox"> Hypertension</label>
+          <label class="checkbox-item" onclick="toggleDisease(this,'alzheimers')"><input type="checkbox"> Alzheimers</label>
+          <label class="checkbox-item" onclick="toggleDisease(this,'obesity')"><input type="checkbox"> Obesity</label>
+          <label class="checkbox-item" onclick="toggleDisease(this,'autoimmune')"><input type="checkbox"> Autoimmune</label>
+          <label class="checkbox-item" onclick="toggleDisease(this,'none')"><input type="checkbox"> None Known</label>
+        </div>
+      </div>
+      <button class="next-btn" onclick="goToScan()">Continue to Scan</button>
+    </div>
+  </div>
+
+  <div class="page" id="page2">
+    <div class="card">
+      <img class="preview-img" id="preview" alt="Your photo">
+      <div class="mode-selector" id="modeSelector">
+        <button class="mode-btn active" id="btnUpload" onclick="setMode('upload')">Upload Photo</button>
+        <button class="mode-btn" id="btnCamera" onclick="setMode('camera')">Use Camera</button>
+      </div>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this)">
+        <div class="upload-icon">&#9711;</div>
+        <div class="upload-title">Upload your selfie</div>
+        <div class="upload-sub">Clear, well-lit photo facing forward</div>
+      </div>
+      <div class="camera-zone" id="cameraZone">
+        <video id="cameraFeed" class="camera-feed" autoplay playsinline></video>
+        <canvas id="cameraCanvas"></canvas>
+        <button class="capture-btn" onclick="capturePhoto()">&#9711; Take Photo</button>
+      </div>
+      <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">Analyze My Health</button>
+      <div class="loading" id="loading">
+        <div><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
+        <div class="loading-text">VITAL is performing deep facial analysis...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" id="page3">
+    <div class="card">
+      <div class="bio-age-display">
+        <div class="bio-num" id="bioAge">--</div>
+        <div class="bio-label">Estimated Biological Age</div>
+        <div class="bio-diff" id="bioDiff"></div>
+        <div class="bio-rate" id="agingRate"></div>
+      </div>
+      <div class="section-title">Facial Health Metrics</div>
+      <div class="metrics-grid">
+        <div class="metric-card"><div class="metric-name">Skin Health</div><div class="metric-val" id="skinHealth">--</div></div>
+        <div class="metric-card"><div class="metric-name">Hydration</div><div class="metric-val" id="hydration">--</div></div>
+        <div class="metric-card"><div class="metric-name">Inflammation</div><div class="metric-val" id="inflammation">--</div></div>
+        <div class="metric-card"><div class="metric-name">Sleep Signal</div><div class="metric-val" id="sleepSignal">--</div></div>
+        <div class="metric-card"><div class="metric-name">Collagen Score</div><div class="metric-val" id="collagenScore">--</div></div>
+        <div class="metric-card"><div class="metric-name">Stress Markers</div><div class="metric-val" id="stressMarkers">--</div></div>
+        <div class="metric-card"><div class="metric-name">Oil Balance</div><div class="metric-val" id="oilBalance">--</div></div>
+        <div class="metric-card"><div class="metric-name">Face Symmetry</div><div class="metric-val" id="faceSymmetry">--</div></div>
+      </div>
+      <div class="risk-section">
+        <div class="risk-title">Disease Risk Forecast</div>
+        <div class="risk-row"><span class="risk-label">Metabolic</span><div class="risk-bar-wrap"><div class="risk-bar" id="riskMetabolicBar" style="background:var(--warn);width:0%"></div></div><span class="risk-pct" id="riskMetabolic" style="color:var(--warn)">--</span></div>
+        <div class="risk-row"><span class="risk-label">Cardiovascular</span><div class="risk-bar-wrap"><div class="risk-bar" id="riskCardioBar" style="background:var(--bad);width:0%"></div></div><span class="risk-pct" id="riskCardio" style="color:var(--bad)">--</span></div>
+        <div class="risk-row"><span class="risk-label">Inflammation</span><div class="risk-bar-wrap"><div class="risk-bar" id="riskInflamBar" style="background:var(--mid);width:0%"></div></div><span class="risk-pct" id="riskInflam" style="color:var(--mid)">--</span></div>
+        <div class="risk-row"><span class="risk-label">Hormonal</span><div class="risk-bar-wrap"><div class="risk-bar" id="riskHormBar" style="background:var(--accent);width:0%"></div></div><span class="risk-pct" id="riskHorm" style="color:var(--accent)">--</span></div>
+      </div>
+      <div class="insights-card"><div class="insights-title">AI Health Insights</div><div id="insightsList"></div></div>
+      <div class="positives-card"><div class="positives-title">Positive Health Markers</div><div id="positivesList"></div></div>
+      <div class="recs-card"><div class="recs-title">Recommended Actions</div><div id="recsList"></div></div>
+      <div class="share-card">
+        <div class="share-card-label">My VITAL Result</div>
+        <div class="share-card-age" id="shareAge">--</div>
+        <div class="share-card-unit">Biological Age</div>
+        <div class="share-card-diff" id="shareDiff"></div>
+        <div class="share-card-footer">tryvital.netlify.app &middot; Get your biological age free</div>
+      </div>
+      <button class="share-btn" onclick="shareResult()">Share My Result</button>
+      <button class="retry-btn" onclick="reset()">Start New Scan</button>
+    </div>
+  </div>
+
+  <p class="disclaimer">VITAL is a wellness tool. Results are AI estimates, not medical diagnoses. Always consult a healthcare professional.</p>
+</div>
+
+<script>
+var selectedFile = null;
+var stream = null;
+var userData = { sleep: 7, water: 2, diseases: [] };
+var _vitalData = null;
+
+async function loadVitalData() {
+  if (_vitalData) return _vitalData;
+  try { _vitalData = await fetch("/get-data").then(function(r) { return r.json(); }); } catch(e) { _vitalData = { user: null, scans: "[]" }; }
+  return _vitalData;
+}
+
+function safeGet(key) {
+  if (key === "vital_user") return _vitalData ? _vitalData.user : null;
+  if (key === "vital_scans") return _vitalData ? _vitalData.scans : "[]";
+  if (key === "vital_avatar") return _vitalData ? _vitalData.avatar : null;
+  try { return localStorage.getItem(key); } catch(e) { return null; }
+}
+
+async function safeSet(key, val) {
+  if (key === "vital_scans") {
+    try { await fetch("/save-scans", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scans: JSON.parse(val) }) }); } catch(e) {}
+    if (_vitalData) _vitalData.scans = val;
+  } else if (key === "vital_avatar") {
+    try { await fetch("/save-avatar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ avatar: val }) }); } catch(e) {}
+    if (_vitalData) _vitalData.avatar = val;
+  }
+}
+
+function toggleDisease(el, disease) {
+  el.classList.toggle("checked");
+  if (el.classList.contains("checked")) {
+    if (!userData.diseases.includes(disease)) userData.diseases.push(disease);
+  } else {
+    userData.diseases = userData.diseases.filter(function(d) { return d !== disease; });
+  }
+}
+
+function goToScan() {
+  userData.age = document.getElementById("age").value;
+  userData.sex = document.getElementById("sex").value;
+  var hVal = document.getElementById("height").value;
+  var hUnit = document.getElementById("heightUnit").value;
+  userData.height = hVal ? hVal + " " + hUnit : "";
+  var wVal = document.getElementById("weight").value;
+  var wUnit = document.getElementById("weightUnit").value;
+  userData.weight = wVal ? wVal + " " + wUnit : "";
+  userData.ethnicity = document.getElementById("ethnicity").value;
+  userData.fitness = document.getElementById("fitness").value;
+  userData.diet = document.getElementById("diet").value;
+  userData.stress = document.getElementById("stress").value;
+  userData.smoker = document.getElementById("smoker").value;
+  userData.alcohol = document.getElementById("alcohol").value;
+  userData.bloodType = document.getElementById("bloodType").value;
+  userData.sunExposure = document.getElementById("sunExposure").value;
+  userData.exerciseDays = document.getElementById("exerciseDays").value;
+  userData.screenTime = document.getElementById("screenTime").value;
+  userData.supplements = document.getElementById("supplements").value;
+  document.getElementById("page1").classList.remove("active");
+  document.getElementById("page2").classList.add("active");
+  document.getElementById("step1").classList.remove("active");
+  document.getElementById("step1").classList.add("done");
+  document.getElementById("step2").classList.add("active");
+}
+
+function setMode(mode) {
+  document.getElementById("btnUpload").classList.toggle("active", mode === "upload");
+  document.getElementById("btnCamera").classList.toggle("active", mode === "camera");
+  document.getElementById("uploadZone").style.display = mode === "upload" ? "block" : "none";
+  document.getElementById("cameraZone").style.display = mode === "camera" ? "block" : "none";
+  if (mode === "camera") { startCamera(); } else { stopCamera(); }
+}
+
+function startCamera() {
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
+    .then(function(s) { stream = s; document.getElementById("cameraFeed").srcObject = s; })
+    .catch(function() { alert("Camera access denied."); setMode("upload"); });
+}
+
+function stopCamera() {
+  if (stream) { stream.getTracks().forEach(function(t) { t.stop(); }); stream = null; }
+}
+
+function capturePhoto() {
+  var video = document.getElementById("cameraFeed");
+  var canvas = document.getElementById("cameraCanvas");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video, 0, 0);
+  canvas.toBlob(function(blob) {
+    selectedFile = new File([blob], "selfie.jpg", { type: "image/jpeg" });
+    var preview = document.getElementById("preview");
+    preview.src = canvas.toDataURL("image/jpeg");
+    preview.style.display = "block";
+    document.getElementById("modeSelector").style.display = "none";
+    document.getElementById("cameraZone").style.display = "none";
+    document.getElementById("analyzeBtn").style.display = "block";
+    stopCamera();
+  }, "image/jpeg", 0.9);
+}
+
+function handleFile(input) {
+  var file = input.files[0];
+  if (!file) return;
+  selectedFile = file;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var preview = document.getElementById("preview");
+    preview.src = e.target.result;
+    preview.style.display = "block";
+    document.getElementById("uploadZone").style.display = "none";
+    document.getElementById("modeSelector").style.display = "none";
+    document.getElementById("analyzeBtn").style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+
+async function analyze() {
+  if (!selectedFile) return;
+  document.getElementById("analyzeBtn").style.display = "none";
+  document.getElementById("loading").style.display = "block";
+  var formData = new FormData();
+  formData.append("photo", selectedFile);
+  formData.append("userData", JSON.stringify(userData));
+  try {
+    var response = await fetch("/analyze", { method: "POST", body: formData });
+    var result = await response.json();
+    if (result.success) {
+      var d = result.data;
+      document.getElementById("bioAge").textContent = d.biologicalAge;
+      document.getElementById("bioDiff").innerHTML = "<strong>" + d.chronologicalAgeDiff + "</strong>";
+      document.getElementById("agingRate").textContent = d.agingRate || d.agingVelocity;
+      document.getElementById("skinHealth").textContent = d.skinHealth;
+      document.getElementById("hydration").textContent = d.hydration;
+      document.getElementById("inflammation").textContent = d.inflammation;
+      document.getElementById("sleepSignal").textContent = d.sleepSignal;
+      document.getElementById("collagenScore").textContent = d.collagenScore || "--";
+      document.getElementById("stressMarkers").textContent = d.stressMarkers || "--";
+      document.getElementById("oilBalance").textContent = d.oilBalance || "--";
+      document.getElementById("faceSymmetry").textContent = d.faceSymmetry || "--";
+      document.getElementById("shareAge").textContent = d.biologicalAge;
+      document.getElementById("shareDiff").textContent = d.chronologicalAgeDiff + " · " + (d.agingRate || d.agingVelocity);
+      if (d.diseaseRisk) {
+        document.getElementById("riskMetabolic").textContent = d.diseaseRisk.metabolic;
+        document.getElementById("riskCardio").textContent = d.diseaseRisk.cardiovascular;
+        document.getElementById("riskInflam").textContent = d.diseaseRisk.inflammation;
+        document.getElementById("riskHorm").textContent = d.diseaseRisk.hormonal;
+        setTimeout(function() {
+          function extractPct(str) { var m = str ? str.match(/(\d+)%/) : null; return m ? parseInt(m[1]) : 0; }
+          document.getElementById("riskMetabolicBar").style.width = extractPct(d.diseaseRisk.metabolic) + "%";
+          document.getElementById("riskCardioBar").style.width = extractPct(d.diseaseRisk.cardiovascular) + "%";
+          document.getElementById("riskInflamBar").style.width = extractPct(d.diseaseRisk.inflammation) + "%";
+          document.getElementById("riskHormBar").style.width = extractPct(d.diseaseRisk.hormonal) + "%";
+        }, 300);
+      }
+      var insightsList = document.getElementById("insightsList");
+      insightsList.innerHTML = "";
+      if (d.topInsights) d.topInsights.forEach(function(i) { insightsList.innerHTML += '<div class="insight-item">' + i + '</div>'; });
+      var positivesList = document.getElementById("positivesList");
+      positivesList.innerHTML = "";
+      if (d.positives) d.positives.forEach(function(p) { positivesList.innerHTML += '<div class="positive-item">' + p + '</div>'; });
+      var recsList = document.getElementById("recsList");
+      recsList.innerHTML = "";
+      if (d.recommendations) d.recommendations.forEach(function(r) { recsList.innerHTML += '<div class="rec-item">' + r + '</div>'; });
+      var scansRaw = safeGet("vital_scans");
+      var scans = scansRaw ? (typeof scansRaw === "string" ? JSON.parse(scansRaw) : scansRaw) : [];
+      scans.push({ date: new Date().toISOString(), biologicalAge: d.biologicalAge, chronologicalAgeDiff: d.chronologicalAgeDiff, agingRate: d.agingRate || d.agingVelocity, skinHealth: d.skinHealth, hydration: d.hydration, inflammation: d.inflammation, sleepSignal: d.sleepSignal, collagenScore: d.collagenScore, stressMarkers: d.stressMarkers, oilBalance: d.oilBalance, faceSymmetry: d.faceSymmetry, diseaseRisk: d.diseaseRisk });
+      await safeSet("vital_scans", JSON.stringify(scans));
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("page2").classList.remove("active");
+      document.getElementById("page3").classList.add("active");
+      document.getElementById("step2").classList.remove("active");
+      document.getElementById("step2").classList.add("done");
+      document.getElementById("step3").classList.add("active");
+    }
+  } catch (error) {
+    alert("Something went wrong. Please try again.");
+    reset();
+  }
+}
+
+function shareResult() {
+  var age = document.getElementById("shareAge").textContent;
+  var diff = document.getElementById("shareDiff").textContent;
+  var text = "My biological age is " + age + " (" + diff + "). Get yours free at tryvital.netlify.app";
+  if (navigator.share) {
+    navigator.share({ title: "My VITAL Health Result", text: text, url: "https://tryvital.netlify.app" });
+  } else {
+    navigator.clipboard.writeText(text).then(function() { alert("Result copied! Paste anywhere to share."); });
+  }
+}
+
+function reset() {
+  selectedFile = null;
+  userData = { sleep: 7, water: 2, diseases: [] };
+  stopCamera();
+  document.getElementById("page3").classList.remove("active");
+  document.getElementById("page2").classList.remove("active");
+  document.getElementById("page1").classList.add("active");
+  document.getElementById("step1").classList.add("active");
+  document.getElementById("step1").classList.remove("done");
+  document.getElementById("step2").classList.remove("active");
+  document.getElementById("step2").classList.remove("done");
+  document.getElementById("step3").classList.remove("active");
+  document.getElementById("preview").style.display = "none";
+  document.getElementById("uploadZone").style.display = "block";
+  document.getElementById("modeSelector").style.display = "flex";
+  document.getElementById("analyzeBtn").style.display = "none";
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("fileInput").value = "";
+}
+
+function openProfile() {
+  loadProfileData().then(function() {
+    document.getElementById("profilePanel").classList.add("open");
+    document.getElementById("profileOverlay").style.display = "block";
+  });
+}
+
+function closeProfile() {
+  document.getElementById("profilePanel").classList.remove("open");
+  document.getElementById("profileOverlay").style.display = "none";
+}
+
+function uploadProfileAvatar(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    safeSet("vital_avatar", e.target.result);
+    document.getElementById("profileAvatarDisplay").innerHTML = '<img src="' + e.target.result + '">';
+    document.getElementById("userAvatarBtn").innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function loadProfileData() {
+  var userStr = safeGet("vital_user");
+  if (!userStr && _vitalData) userStr = _vitalData.user;
+  if (!userStr) return;
+  var user = typeof userStr === "string" ? JSON.parse(userStr) : userStr;
+  var name = (user.user_metadata && user.user_metadata.full_name) ? user.user_metadata.full_name : user.email.split("@")[0];
+  var initial = name.charAt(0).toUpperCase();
+  var avatar = safeGet("vital_avatar");
+  if (avatar) {
+    document.getElementById("profileAvatarDisplay").innerHTML = '<img src="' + avatar + '">';
+  } else {
+    document.getElementById("profileAvatarInitial").textContent = initial;
+  }
+  document.getElementById("profileName").textContent = name;
+  document.getElementById("profileEmail").textContent = user.email;
+  if (user.created_at) {
+    var created = new Date(user.created_at);
+    document.getElementById("profileSince").textContent = "Member since " + created.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  }
+  var scans = [];
+  try {
+    var scanRes = await fetch("/get-scans");
+    var scanData = await scanRes.json();
+    scans = scanData.scans || [];
+  } catch(e) { scans = []; }
+  document.getElementById("profileTotalScans").textContent = scans.length;
+  if (scans.length > 0) {
+    document.getElementById("profileBioAge").textContent = scans[scans.length - 1].biologicalAge;
+    var list = document.getElementById("profileScanList");
+    list.innerHTML = "";
+    scans.slice().reverse().forEach(function(scan) {
+      var date = new Date(scan.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      list.innerHTML += '<div class="profile-scan-item"><div class="profile-scan-age">' + scan.biologicalAge + '</div><div class="profile-scan-info"><div class="profile-scan-date">' + date + '</div><div class="profile-scan-diff">' + (scan.chronologicalAgeDiff || "") + '</div><div class="profile-scan-rate">' + (scan.agingRate || "") + '</div></div></div>';
+    });
+  }
+  document.getElementById("profileStreak").textContent = scans.length > 0 ? 1 : 0;
+}
+
+var _allScans = [];
+var _activeMetric = "skinHealth";
+
+var metricMeta = {
+  skinHealth:    { label: "Skin Health",    extract: function(s) { var m = s.skinHealth ? String(s.skinHealth).match(/(\d+)/) : null; return m ? parseInt(m[1]) : null; }, unit: "/100" },
+  hydration:     { label: "Hydration",      extract: function(s) { var m = s.hydration ? String(s.hydration).match(/(\d+)/) : null; return m ? parseInt(m[1]) : null; }, unit: "%" },
+  inflammation:  { label: "Inflammation",   extract: function(s) { var map = { low:10, mild:30, moderate:55, high:80, severe:95 }; var v = map[(s.inflammation||"").toLowerCase()]; return v !== undefined ? v : null; }, unit: "", label2: true },
+  sleepSignal:   { label: "Sleep Signal",   extract: function(s) { var map = { optimal:90, good:70, fair:50, deprived:25, severe:10 }; var v = map[(s.sleepSignal||"").toLowerCase()]; return v !== undefined ? v : null; }, unit: "", label2: true },
+  collagenScore: { label: "Collagen Score", extract: function(s) { var m = s.collagenScore ? String(s.collagenScore).match(/(\d+)/) : null; return m ? parseInt(m[1]) : null; }, unit: "/100" },
+  stressMarkers: { label: "Stress Markers", extract: function(s) { var map = { low:10, moderate:40, "moderate-high":60, high:80, "very high":95 }; var v = map[(s.stressMarkers||"").toLowerCase()]; return v !== undefined ? v : null; }, unit: "", label2: true },
+  oilBalance:    { label: "Oil Balance",    extract: function(s) { return s.oilBalance || null; }, unit: "", text: true },
+  faceSymmetry:  { label: "Face Symmetry",  extract: function(s) { var m = s.faceSymmetry ? String(s.faceSymmetry).match(/(\d+)/) : null; return m ? parseInt(m[1]) : null; }, unit: "/100" }
+};
+
+function openMetricPanel() {
+  document.getElementById("metricPanel").classList.add("open");
+  loadMetricData();
+}
+
+function closeMetricPanel() {
+  document.getElementById("metricPanel").classList.remove("open");
+}
+
+async function loadMetricData() {
+  try {
+    var res = await fetch("/get-scans");
+    var data = await res.json();
+    _allScans = data.scans || [];
+  } catch(e) { _allScans = []; }
+  renderMetric(_activeMetric);
+}
+
+function selectMetric(e, key) {
+  _activeMetric = key;
+  document.querySelectorAll(".metric-pill").forEach(function(p) { p.classList.remove("active"); });
+  e.target.classList.add("active");
+  renderMetric(key);
+}
+
+function renderMetric(key) {
+  var meta = metricMeta[key];
+  document.getElementById("metricChartTitle").textContent = meta.label;
+
+  if (_allScans.length === 0) {
+    document.getElementById("metricChartSvg").innerHTML = '<div class="metric-empty">No scans yet. Complete your first scan to start tracking.</div>';
+    document.getElementById("metricTrendCard").textContent = "Complete more scans to see your trend.";
+    document.getElementById("metricTrendCard").className = "metric-trend-card neutral";
+    document.getElementById("metricHistoryList").innerHTML = "";
+    return;
+  }
+
+  var scans = _allScans.filter(function(s) { return s.date; });
+
+  if (meta.text) {
+    document.getElementById("metricChartSvg").innerHTML = '<div class="metric-empty" style="padding:20px 0;">This metric shows categories. See history below.</div>';
+    document.getElementById("metricTrendCard").textContent = "Tracking " + meta.label + " across " + scans.length + " scan" + (scans.length !== 1 ? "s" : "") + ".";
+    document.getElementById("metricTrendCard").className = "metric-trend-card neutral";
+  } else {
+    var allVals = scans.map(function(s) { return meta.extract(s); });
+    var validPairs = scans.map(function(s, i) { return { s: s, v: allVals[i] }; }).filter(function(x) { return x.v !== null; });
+    var chartScans = validPairs.map(function(x) { return x.s; });
+    var chartVals = validPairs.map(function(x) { return x.v; });
+
+    if (chartVals.length === 0) {
+      document.getElementById("metricChartSvg").innerHTML = '<div class="metric-empty">No data yet for this metric. Do a new scan to start tracking.</div>';
+    } else {
+      document.getElementById("metricChartSvg").innerHTML = buildLineChart(chartScans, chartVals, meta);
+    }
+    document.getElementById("metricChartSub").textContent = chartVals.length + " scan" + (chartVals.length !== 1 ? "s" : "") + " tracked";
+
+    if (chartVals.length >= 2) {
+      var first = chartVals[0];
+      var last = chartVals[chartVals.length - 1];
+      var diff = last - first;
+      var pct = first > 0 ? Math.round(Math.abs(diff / first) * 100) : 0;
+      var trendEl = document.getElementById("metricTrendCard");
+      var higherIsBetter = ["skinHealth","hydration","collagenScore","faceSymmetry","sleepSignal"].indexOf(key) > -1;
+      var improving = (diff > 0 && higherIsBetter) || (diff < 0 && !higherIsBetter);
+      var declining = (diff < 0 && higherIsBetter) || (diff > 0 && !higherIsBetter);
+      if (pct < 3) {
+        trendEl.className = "metric-trend-card neutral";
+        trendEl.textContent = meta.label + " has not changed meaningfully. No improvement detected yet.";
+      } else if (improving) {
+        trendEl.className = "metric-trend-card good";
+        trendEl.textContent = meta.label + " improved " + pct + "% since your first scan.";
+      } else if (declining) {
+        trendEl.className = "metric-trend-card bad";
+        trendEl.textContent = meta.label + " has declined " + pct + "% since your first scan. This needs attention.";
+      }
+    } else {
+      document.getElementById("metricTrendCard").className = "metric-trend-card neutral";
+      document.getElementById("metricTrendCard").textContent = "Do more scans to see your " + meta.label + " trend over time.";
+    }
+  }
+
+  var listHtml = "";
+  scans.slice().reverse().forEach(function(scan) {
+    var date = new Date(scan.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    var rawVal = meta.extract(scan);
+    var displayVal;
+    if (meta.text) {
+      displayVal = rawVal || "--";
+    } else if (rawVal === null || rawVal === undefined) {
+      displayVal = "--";
+    } else {
+      displayVal = meta.label2 ? (scan[key] || "--") : (rawVal + meta.unit);
+    }
+    var dotColor = "var(--muted)";
+    if (rawVal !== null && rawVal !== undefined && !meta.text) {
+      var higherIsBetter = ["skinHealth","hydration","collagenScore","faceSymmetry","sleepSignal"].indexOf(key) > -1;
+      if ((rawVal > 60 && higherIsBetter) || (rawVal < 40 && !higherIsBetter)) dotColor = "var(--accent)";
+      else if (rawVal > 40 && rawVal <= 60) dotColor = "var(--warn)";
+      else dotColor = "var(--bad)";
+    }
+    listHtml += '<div class="metric-history-item"><div class="metric-history-date">' + date + '</div><div class="metric-history-val">' + displayVal + '</div><div class="metric-history-dot" style="background:' + dotColor + '"></div></div>';
+  });
+  document.getElementById("metricHistoryList").innerHTML = listHtml || '<div class="metric-empty">No data yet.</div>';
+}
+
+function buildLineChart(scans, vals, meta) {
+  var w = 340; var h = 120; var pad = 20;
+  var minV = Math.min.apply(null, vals);
+  var maxV = Math.max.apply(null, vals);
+  var range = maxV - minV || 1;
+  var pts = vals.map(function(v, i) {
+    var x = pad + (i / Math.max(scans.length - 1, 1)) * (w - pad * 2);
+    var y = h - pad - ((v - minV) / range) * (h - pad * 2);
+    return { x: x, y: y, v: v };
+  });
+  var higherIsBetter = ["skinHealth","hydration","collagenScore","faceSymmetry","sleepSignal"].indexOf(meta.label) > -1;
+  var first = vals[0]; var last = vals[vals.length - 1];
+  var lineColor = ((last >= first && higherIsBetter) || (last <= first && !higherIsBetter)) ? "#00e5a0" : "#ff6b6b";
+  var pathD = pts.map(function(p, i) { return (i === 0 ? "M" : "L") + p.x.toFixed(1) + "," + p.y.toFixed(1); }).join(" ");
+  var dots = pts.map(function(p) {
+    return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="4" fill="' + lineColor + '" stroke="var(--bg)" stroke-width="2"/>' +
+      '<text x="' + p.x.toFixed(1) + '" y="' + (p.y - 10).toFixed(1) + '" fill="var(--muted)" font-size="9" text-anchor="middle">' + p.v + meta.unit + '</text>';
+  }).join("");
+  var dates = scans.map(function(s, i) {
+    var x = pad + (i / Math.max(scans.length - 1, 1)) * (w - pad * 2);
+    var dd = new Date(s.date);
+    return '<text x="' + x.toFixed(1) + '" y="' + (h - 4) + '" fill="var(--muted)" font-size="8" text-anchor="middle">' + (dd.getMonth()+1) + "/" + dd.getDate() + '</text>';
+  }).join("");
+  return '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" style="overflow:visible"><path d="' + pathD + '" stroke="' + lineColor + '" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' + dots + dates + '</svg>';
+}
+
+async function doSignOut() {
+  try { await fetch("/signout", { method: "POST" }); } catch(e) {}
+  window.location.href = "/auth.html";
+}
+
+(async function() {
+  await loadVitalData();
+  var userStr = safeGet("vital_user");
+  if (userStr && (typeof userStr === "object" || (typeof userStr === "string" && userStr.length > 2))) {
+    try {
+      var user = typeof userStr === "string" ? JSON.parse(userStr) : userStr;
+      var name = (user.user_metadata && user.user_metadata.full_name) ? user.user_metadata.full_name : user.email.split("@")[0];
+      var initial = name.charAt(0).toUpperCase();
+      var btn = document.getElementById("userAvatarBtn");
+      var avatar = safeGet("vital_avatar");
+      if (avatar) {
+        btn.innerHTML = '<img src="' + avatar + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+      } else {
+        document.getElementById("userAvatarInitial").textContent = initial;
+      }
+      btn.style.display = "flex";
+      btn.style.alignItems = "center";
+      btn.style.justifyContent = "center";
+      btn.style.cursor = "pointer";
+      btn.style.webkitTapHighlightColor = "transparent";
+    } catch(e) {}
+  }
+  var avatarBtn = document.getElementById("userAvatarBtn");
+  if (avatarBtn) {
+    avatarBtn.addEventListener("touchend", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openProfile();
+    }, { passive: false });
+  }
+})();
+</script>
+</body>
+</html>
