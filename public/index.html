@@ -758,8 +758,7 @@ function renderMetric(key) {
   scans.slice().reverse().forEach(function(scan) {
     var date = new Date(scan.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     var rawVal = meta.text ? (meta.extract(scan) || "--") : meta.extract(scan);
-    var displayVal = meta.text ? rawVal : (rawVal + meta.unit);
-    var dotColor = "var(--accent)";
+    var displayVal = meta.text ? rawVal : (rawVal === 0 ? "--" : rawVal + meta.unit);    var dotColor = "var(--accent)";
     if (!meta.text) {
       var higherIsBetter = ["skinHealth","hydration","collagenScore","faceSymmetry","sleepSignal"].indexOf(key) > -1;
       if (rawVal > 60 && higherIsBetter || rawVal < 40 && !higherIsBetter) dotColor = "var(--accent)";
