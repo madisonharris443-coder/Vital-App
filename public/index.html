@@ -773,12 +773,10 @@ function renderMetric(key) {
 
 function buildLineChart(scans, vals, meta) {
   var w = 340; var h = 120; var pad = 20;
-  var filtered = scans.map(function(s, i) { return { s: s, v: vals[i] }; }).filter(function(x) { return x.v > 0; });
-  scans = filtered.map(function(x) { return x.s; });
-  vals = filtered.map(function(x) { return x.v; });
-  if (vals.length === 0) return '<div class="metric-empty">No data yet for this metric.</div>';
   var minV = Math.min.apply(null, vals); var maxV = Math.max.apply(null, vals);
-  var range = maxV - minV || 1;var pts = vals.map(function(v, i) {    var x = pad + (i / Math.max(scans.length - 1, 1)) * (w - pad * 2);
+  var range = maxV - minV || 1;
+  var pts = vals.map(function(v, i) {
+    var x = pad + (i / Math.max(scans.length - 1, 1)) * (w - pad * 2);
     var y = h - pad - ((v - minV) / range) * (h - pad * 2);
     return { x: x, y: y, v: v };
   });
