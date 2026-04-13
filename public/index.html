@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -557,11 +557,8 @@ async function analyze() {
       var recsList = document.getElementById("recsList");
       recsList.innerHTML = "";
       if (d.recommendations) d.recommendations.forEach(function(r) { recsList.innerHTML += '<div class="rec-item">' + r + '</div>'; });
-      var scansRaw = safeGet("vital_scans");
-      var scans = scansRaw ? (typeof scansRaw === "string" ? JSON.parse(scansRaw) : scansRaw) : [];
-      scans.push({ date: new Date().toISOString(), biologicalAge: d.biologicalAge, chronologicalAgeDiff: d.chronologicalAgeDiff, agingRate: d.agingRate || d.agingVelocity, skinHealth: d.skinHealth, hydration: d.hydration, inflammation: d.inflammation, sleepSignal: d.sleepSignal, collagenScore: d.collagenScore, stressMarkers: d.stressMarkers, oilBalance: d.oilBalance, faceSymmetry: d.faceSymmetry, diseaseRisk: d.diseaseRisk });
-      await safeSet("vital_scans", JSON.stringify(scans));
-      document.getElementById("loading").style.display = "none";
+      var newScan = { date: new Date().toISOString(), biologicalAge: d.biologicalAge, chronologicalAgeDiff: d.chronologicalAgeDiff, agingRate: d.agingRate || d.agingVelocity, skinHealth: d.skinHealth, hydration: d.hydration, inflammation: d.inflammation, sleepSignal: d.sleepSignal, collagenScore: d.collagenScore, stressMarkers: d.stressMarkers, oilBalance: d.oilBalance, faceSymmetry: d.faceSymmetry, diseaseRisk: d.diseaseRisk };
+      await fetch("/save-scans", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scans: [newScan] }) });      document.getElementById("loading").style.display = "none";
       document.getElementById("page2").classList.remove("active");
       document.getElementById("page3").classList.add("active");
       document.getElementById("step2").classList.remove("active");
