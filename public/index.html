@@ -997,7 +997,7 @@ function openAttentionPanel(key, meta, pct, isImproving) {
       if (existingEmoji) existingEmoji.style.display = "none";
       var oldImg = zoomImg.querySelector("img.scan-photo");
       if (oldImg) { oldImg.src = lastScan.photoUrl; oldImg.style.display = "block"; }
-      else { var img = document.createElement("img"); img.src = lastScan.photoUrl; img.className = "scan-photo"; img.style.cssText = "width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;"; zoomImg.insertBefore(img, zoomImg.firstChild); }
+      else { var img = document.createElement("img"); img.src = lastScan.photoUrl; img.className = "scan-photo"; img.style.cssText = "width:100%;height:100%;object-fit:object-fit:contain;object-position:center center;position:absolute;top:0;left:0;background:#111827;" zoomImg.insertBefore(img, zoomImg.firstChild); }
     } else {
       if (existingEmoji) existingEmoji.style.display = "";
     }
@@ -1031,7 +1031,7 @@ function selectAttentionScan(el, index) {
     if (scans[index].photoUrl) {
       if (existingEmoji) existingEmoji.style.display = "none";
       if (existingImg) { existingImg.src = scans[index].photoUrl; existingImg.style.display = "block"; }
-      else { var img = document.createElement("img"); img.src = scans[index].photoUrl; img.className = "scan-photo"; img.style.cssText = "width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;"; zoomImg.insertBefore(img, zoomImg.firstChild); }
+      else { var img = document.createElement("img"); img.src = scans[index].photoUrl; img.className = "scan-photo"; img.style.cssText ="object-fit:contain;object-position:center center;position:absolute;top:0;left:0;background:#111827;" zoomImg.insertBefore(img, zoomImg.firstChild); }
     } else {
       if (existingImg) existingImg.style.display = "none";
       if (existingEmoji) existingEmoji.style.display = "";
