@@ -225,5 +225,96 @@ app.post("/analyze", upload.single("photo"), async function(req, res) {
     res.status(500).json({ success: false, error: error.message });
   }
 });
+app.post("/analyze-attention", async function(req, res) {
+  try {
+    var cookies = parseCookies(req);
+    var body = req.body;
+    var metricKey = body.metricKey;
+    var metricLabel = body.metricLabel;
+    var isImproving = body.isImproving;
+    var pct = body.pct;
+    var scans = body.scans || [];
+    var profile = body.profile || "";
 
+    var scanHistory = scans.map(function(s, i) {
+      return "Scan " + (i+1) + " (" + new Date(s.date).toLocaleDateString() + "): " +
+        metricLabel + "=" + (s[metricKey] || "--") +
+        ", skinHealth=" + (s.skinHealth || "--") +
+        ", hydration=" + (s.hydration || "--") +
+        ", inflammation=" + (s.inflammation || "--") +
+        ", sleepSignal=" + (s.sleepSignal || "--") +
+        ", collagenScore=" + (s.collagenScore || "--") +
+        ", stressMarkers=" + (s.stressMarkers || "--") +
+        ", oilBalance=" + (s.oilBalance || "--") +
+        ", faceSymmetry=" + (s.faceSymmetry || "--") +
+        ", biologicalAge=" + (s.biologicalAge || "--");
+    }).join("\n");
+
+    var prompt = "You are VITAL — the world's most advanced AI longevity and facial biomarker intelligence system. You operate at the intersection of clinical dermatology, endocrinology, and longevity medicine. Your analysis is indistinguishable from a $2,000 consultation with a top-tier longevity physician who has reviewed every scan this person has ever taken.\n\n" +
+      "You are generating the deep-dive attention panel for a specific metric. This is not a generic health summary. Every single sentence you write must be traceable back to this person's actual numbers, actual trajectory, and actual lifestyle data. If you write something that could apply to anyone, rewrite it until it only applies to this person.\n\n" +
+      "HEALTH PROFILE:\n" + profile + "\n\n" +
+      "METRIC UNDER ANALYSIS:\n" +
+      "Metric: " + metricLabel + "\n" +
+      "Direction: " + (isImproving ? "IMPROVING" : "DECLINING") + "\n" +
+      "Magnitude: " + pct + "% change across " + scans.length + " scans\n\n" +
+      "COMPLETE SCAN HISTORY (chronological):\n" + scanHistory + "\n\n" +
+      "ANALYSIS REQUIREMENTS:\n\n" +
+      "1. WHAT IS HAPPENING\n" +
+      "Write 3-4 sentences of brutal clinical precision. Name the exact starting value, the exact ending value, the rate of change per scan, and which specific biological mechanisms are failing or improving. Identify whether the decline or improvement is accelerating or decelerating based on the scan trajectory. Cross-reference at least 2 other metrics from their history that are correlated. This paragraph must read like a physician who has memorized every one of their scans.\n\n" +
+      "2. WHY THIS MATTERS FOR THIS PERSON SPECIFICALLY\n" +
+      "Write 3-4 sentences that explain the downstream consequences of this trajectory for THIS person's exact profile. Reference their specific sleep hours, stress level, diet type, exercise frequency, and screen time as compounding or mitigating factors. Explain which organ systems are under pressure as a result of this specific combination of factors. Do not write anything that could apply to a different person with a different profile. End with one hard-hitting research citation that is directly relevant to their most prominent risk factor written as a plain English sentence.\n\n" +
+      "3. HOW TO FIX IT — RANKED BY BIOLOGICAL IMPACT\n" +
+      "Give exactly 3 fixes ranked by how much biological impact they will have for THIS person based on their profile weaknesses. Each fix must have a sharp specific title that is not generic, must reference a specific number habit or data point from their profile in the detail, must explain the mechanism not just what to do but exactly why it works for this specific metric, and must be 2 sentences of dense clinical detail.\n\n" +
+      "4. FACIAL ZONES\n" +
+      "Identify 2-3 specific anatomical zones on the face where this metric manifests visibly. For each zone use precise anatomical language such as periorbital, glabellar, nasolabial, malar, mandibular, temporal, zygomatic. Write one sentence describing exactly what is visible there as a result of this metric specifically. Assign color bad for primary concern zones and warn for secondary zones.\n\n" +
+      "5. WHAT IS ACTUALLY IMPROVING\n" +
+      "Scan their full history and identify 1-2 metrics that are genuinely improving or holding strong. For each name the exact improvement with values, identify the most likely driver from their lifestyle data, and make this feel like a real win not a consolation prize.\n\n" +
+      "6. FOOD INTELLIGENCE — PRECISION NUTRITION\n" +
+      "Give exactly 2 food groups. Each must be chosen because of the intersection of their declining metric AND at least one other finding in their scan history. Generic lists are not acceptable. Every food must have a direct mechanism linking it to this person's specific findings. Include a label that names the specific reason, 4-5 specific foods, and one sentence explaining the exact biochemical mechanism relevant to their data.\n\n" +
+      "7. 30-DAY TRAJECTORY PREDICTION\n" +
+      "Calculate the exact projected value at 30 days based on the rate of change across their scans. Use the actual numbers. Give 2 specific consequences of continuing on this trajectory calibrated to their profile. If they have family history of relevant conditions reference it. If their other metrics compound the risk say so explicitly.\n\n" +
+      "RESPOND ONLY WITH RAW JSON. NO MARKDOWN. NO BACKTICKS. NO PREAMBLE:\n" +
+      "{" +
+        "\"what\":\"3-4 sentences of brutal clinical precision referencing exact values and trajectory\"," +
+        "\"why\":\"3-4 sentences cross-referencing their specific profile factors and organ systems\"," +
+        "\"citation\":\"One research citation directly relevant to their primary risk factor\"," +
+        "\"fixes\":[" +
+          "{\"title\":\"Specific fix title referencing their data\",\"detail\":\"2 dense clinical sentences with mechanism\"}," +
+          "{\"title\":\"Specific fix title\",\"detail\":\"2 dense clinical sentences\"}," +
+          "{\"title\":\"Specific fix title\",\"detail\":\"2 dense clinical sentences\"}" +
+        "]," +
+        "\"zones\":[" +
+          "{\"label\":\"Anatomical zone name\",\"detail\":\"One sentence on what is visible here for this metric\",\"color\":\"bad\"}," +
+          "{\"label\":\"Anatomical zone name\",\"detail\":\"One sentence\",\"color\":\"warn\"}" +
+        "]," +
+        "\"positives\":[" +
+          "{\"metric\":\"Metric name\",\"trend\":\"e.g. improved from 55% to 71% across 8 scans\",\"detail\":\"One sentence on the likely driver from their lifestyle data\"}" +
+        "]," +
+        "\"diet\":[" +
+          "{\"label\":\"Specific label tied to their exact findings\",\"chips\":[\"Food1\",\"Food2\",\"Food3\",\"Food4\"],\"reason\":\"One sentence with exact biochemical mechanism relevant to their data\"}," +
+          "{\"label\":\"Specific label\",\"chips\":[\"Food1\",\"Food2\",\"Food3\",\"Food4\"],\"reason\":\"One sentence\"}" +
+        "]," +
+        "\"prediction\":{" +
+          "\"currentValue\":\"exact current value from their last scan\"," +
+          "\"projectedValue\":\"exact calculated projected value at 30 days\"," +
+          "\"days\":30," +
+          "\"consequences\":[\"Specific consequence calibrated to their profile\",\"Second specific consequence referencing their other metrics or family history\"]" +
+        "}" +
+      "}";
+
+    var response = await client.messages.create({
+      model: "claude-opus-4-6",
+      max_tokens: 2000,
+      messages: [{ role: "user", content: prompt }]
+    });
+
+    var resultText = response.content[0].text;
+    var cleanJson = resultText.replace(/```json|```/g, "").trim();
+    var result = JSON.parse(cleanJson);
+    res.json({ success: true, data: result });
+  } catch(error) {
+    console.error("analyze-attention error:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 app.listen(3000, function() { console.log("VITAL running on port 3000"); });
