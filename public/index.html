@@ -1030,76 +1030,136 @@ function buildLineChart(scans, vals, meta) {
   return '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" style="overflow:visible"><path d="' + pathD + '" stroke="' + lineColor + '" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' + dots + dates + '</svg>';
 }
 
+var faceZoneDefs = {
+  skinHealth: { diagramZones: '<ellipse cx="31" cy="51" rx="9" ry="3.5" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="55" cy="51" rx="9" ry="3.5" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></ellipse><rect x="38" y="57" width="10" height="13" rx="3" fill="rgba(255,169,77,0.18)" stroke="#ffa94d" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.6s" repeatCount="indefinite"/></rect>', legend:[{color:"#ff6b6b",label:"Barrier breakdown",detail:"Dehydration lines and surface congestion worsening each scan"},{color:"#ffa94d",label:"T-zone oxidative stress",detail:"Sebaceous overactivity accelerating surface degradation"}], overlayHtml:'<ellipse cx="34" cy="40" rx="11" ry="5" fill="rgba(255,107,107,0.22)" stroke="#ff6b6b" stroke-width="0.6"><animate attributeName="opacity" values="1;0.35;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="66" cy="40" rx="11" ry="5" fill="rgba(255,107,107,0.22)" stroke="#ff6b6b" stroke-width="0.6"><animate attributeName="opacity" values="1;0.35;1" dur="2s" repeatCount="indefinite"/></ellipse><rect x="44" y="47" width="13" height="17" rx="4" fill="rgba(255,169,77,0.2)" stroke="#ffa94d" stroke-width="0.6"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.6s" repeatCount="indefinite"/></rect>' },
+  hydration: { diagramZones: '<ellipse cx="29" cy="49" rx="8.5" ry="3.5" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="51" cy="49" rx="8.5" ry="3.5" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></ellipse><rect x="35" y="54" width="10" height="13" rx="3" fill="rgba(255,169,77,0.18)" stroke="#ffa94d" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.6s" repeatCount="indefinite"/></rect>', legend:[{color:"#ff6b6b",label:"Periorbital dehydration",detail:"Fine dehydration lines deepening across recent scans"},{color:"#ffa94d",label:"T-zone surface dullness",detail:"Barrier water retention declining scan over scan"}], overlayHtml:'<ellipse cx="34" cy="40" rx="11" ry="5" fill="rgba(255,107,107,0.22)" stroke="#ff6b6b" stroke-width="0.6"><animate attributeName="opacity" values="1;0.35;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="66" cy="40" rx="11" ry="5" fill="rgba(255,107,107,0.22)" stroke="#ff6b6b" stroke-width="0.6"><animate attributeName="opacity" values="1;0.35;1" dur="2s" repeatCount="indefinite"/></ellipse><rect x="44" y="48" width="13" height="17" rx="4" fill="rgba(255,169,77,0.2)" stroke="#ffa94d" stroke-width="0.6"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.6s" repeatCount="indefinite"/></rect>' },
+  inflammation: { diagramZones: '<ellipse cx="29" cy="47" rx="9" ry="4" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="51" cy="47" rx="9" ry="4" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></ellipse><rect x="36" y="53" width="11" height="14" rx="3" fill="rgba(255,169,77,0.18)" stroke="#ffa94d" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.6s" repeatCount="indefinite"/></rect>', legend:[{color:"#ff6b6b",label:"Periorbital inflammation",detail:"Vascular darkening and edema worsening each scan"},{color:"#ffa94d",label:"T-zone congestion",detail:"Sebaceous overactivity driving localized inflammatory response"}], overlayHtml:'<ellipse cx="34" cy="38" rx="12" ry="6" fill="rgba(255,107,107,0.22)" stroke="#ff6b6b" stroke-width="0.6"><animate attributeName="opacity" values="1;0.35;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="66" cy="38" rx="12" ry="6" fill="rgba(255,107,107,0.22)" stroke="#ff6b6b" stroke-width="0.6"><animate attributeName="opacity" values="1;0.35;1" dur="2s" repeatCount="indefinite"/></ellipse><rect x="43" y="47" width="14" height="19" rx="4" fill="rgba(255,169,77,0.2)" stroke="#ffa94d" stroke-width="0.6"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.6s" repeatCount="indefinite"/></rect>' },
+  sleepSignal: { diagramZones: '<ellipse cx="29" cy="48" rx="8.5" ry="3.5" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="51" cy="48" rx="8.5" ry="3.5" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="40" cy="55" rx="16" ry="6" fill="rgba(255,169,77,0.15)" stroke="#ffa94d" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.5s" repeatCount="indefinite"/></ellipse>', legend:[{color:"#ff6b6b",label:"Periorbital vascular darkening",detail:"Sleep deprivation accumulating visibly across recent scans"},{color:"#ffa94d",label:"Facial edema",detail:"Lymphatic drainage impaired, puffiness increasing scan over scan"}], overlayHtml:'<ellipse cx="34" cy="40" rx="12" ry="5" fill="rgba(255,107,107,0.22)" stroke="#ff6b6b" stroke-width="0.6"><animate attributeName="opacity" values="1;0.35;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="66" cy="40" rx="12" ry="5" fill="rgba(255,107,107,0.22)" stroke="#ff6b6b" stroke-width="0.6"><animate attributeName="opacity" values="1;0.35;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="50" cy="44" rx="18" ry="7" fill="rgba(255,169,77,0.15)" stroke="#ffa94d" stroke-width="0.6"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.5s" repeatCount="indefinite"/></ellipse>' },
+  collagenScore: { diagramZones: '<ellipse cx="28" cy="63" rx="9" ry="4" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="54" cy="63" rx="9" ry="4" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="28" cy="46" rx="9" ry="6" fill="rgba(255,169,77,0.15)" stroke="#ffa94d" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.5s" repeatCount="indefinite"/></ellipse><ellipse cx="54" cy="46" rx="9" ry="6" fill="rgba(255,169,77,0.15)" stroke="#ffa94d" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.5s" repeatCount="indefinite"/></ellipse>', legend:[{color:"#ff6b6b",label:"Nasolabial deepening",detail:"Structural collagen loss increasing fold depth each scan"},{color:"#ffa94d",label:"Malar volume loss",detail:"Volume loss consistent with collagen and elastin degradation"}], overlayHtml:'<ellipse cx="34" cy="60" rx="10" ry="6" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="0.6"><animate attributeName="opacity" values="1;0.35;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="66" cy="60" rx="10" ry="6" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="0.6"><animate attributeName="opacity" values="1;0.35;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="35" cy="40" rx="10" ry="7" fill="rgba(255,169,77,0.15)" stroke="#ffa94d" stroke-width="0.6"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.5s" repeatCount="indefinite"/></ellipse><ellipse cx="65" cy="40" rx="10" ry="7" fill="rgba(255,169,77,0.15)" stroke="#ffa94d" stroke-width="0.6"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.5s" repeatCount="indefinite"/></ellipse>' },
+  stressMarkers: { diagramZones: '<ellipse cx="40" cy="35" rx="18" ry="6" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="40" cy="68" rx="20" ry="7" fill="rgba(255,169,77,0.15)" stroke="#ffa94d" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.5s" repeatCount="indefinite"/></ellipse>', legend:[{color:"#ff6b6b",label:"Glabellar tension lines",detail:"Cortisol-driven muscle tension deepening across recent scans"},{color:"#ffa94d",label:"Adrenal stress pattern",detail:"Skin texture and tone changes consistent with chronic stress elevation"}], overlayHtml:'<ellipse cx="50" cy="30" rx="20" ry="8" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="0.6"><animate attributeName="opacity" values="1;0.35;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="50" cy="72" rx="22" ry="9" fill="rgba(255,169,77,0.18)" stroke="#ffa94d" stroke-width="0.6"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.5s" repeatCount="indefinite"/></ellipse>' },
+  faceSymmetry: { diagramZones: '<ellipse cx="40" cy="40" rx="18" ry="4" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="40" cy="72" rx="20" ry="5" fill="rgba(255,169,77,0.15)" stroke="#ffa94d" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.5s" repeatCount="indefinite"/></ellipse>', legend:[{color:"#ff6b6b",label:"Eye level asymmetry",detail:"Left-right deviation increasing across recent scans"},{color:"#ffa94d",label:"Jawline angle difference",detail:"Unilateral muscle tension contributing to structural asymmetry"}], overlayHtml:'<ellipse cx="40" cy="38" rx="20" ry="5" fill="rgba(255,107,107,0.18)" stroke="#ff6b6b" stroke-width="0.6"><animate attributeName="opacity" values="1;0.35;1" dur="2s" repeatCount="indefinite"/></ellipse><ellipse cx="50" cy="78" rx="24" ry="8" fill="rgba(255,169,77,0.15)" stroke="#ffa94d" stroke-width="0.6"><animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.5s" repeatCount="indefinite"/></ellipse>' },
+  oilBalance: { diagramZones: '<rect x="35" y="30" width="11" height="42" rx="4" fill="rgba(255,169,77,0.18)" stroke="#ffa94d" stroke-width="1.5" stroke-dasharray="2,1.5"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></rect>', legend:[{color:"#ffa94d",label:"T-zone sebaceous activity",detail:"Oiliness pattern detected in forehead, nose, and chin zone"}], overlayHtml:'<rect x="43" y="20" width="14" height="55" rx="5" fill="rgba(255,169,77,0.18)" stroke="#ffa94d" stroke-width="0.6"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></rect>' }
+};
+
+var dietData = {
+  skinHealth:{groups:[{label:"For skin barrier repair",chips:["Avocado","Olive oil","Walnuts","Sweet potato","Eggs"],reason:"Healthy fats and Vitamin E in avocado and olive oil repair <span>barrier integrity</span> directly visible in skin health scores."},{label:"To reduce oxidative stress",chips:["Blueberries","Green tea","Dark chocolate","Pomegranate"],reason:"Polyphenols and antioxidants combat <span>surface oxidative damage</span>, the primary driver of declining skin texture scores."}]},
+  hydration:{groups:[{label:"For cellular hydration",chips:["Cucumber","Watermelon","Celery","Coconut water","Strawberries"],reason:"High water-content foods boost <span>cellular hydration</span> beyond plain water alone and deliver natural electrolytes."},{label:"For electrolyte balance",chips:["Bananas","Spinach","Avocado","Sea salt"],reason:"Electrolytes are essential for <span>cellular water absorption</span>. Without them, plain water passes through without hydrating at the dermal level."}]},
+  inflammation:{groups:[{label:"Anti-inflammatory priority",chips:["Fatty fish","Turmeric","Ginger","Leafy greens","Blueberries"],reason:"EPA+DHA in fatty fish reduces <span>IL-6 and CRP</span> — the exact inflammatory markers elevated in your scan by up to 30% within 8 weeks."},{label:"Avoid or reduce",chips:["Refined sugar","Processed oils","White bread","Alcohol"],reason:"These directly elevate <span>systemic inflammation</span> and counteract any progress visible in your scan scores."}]},
+  sleepSignal:{groups:[{label:"For sleep quality",chips:["Tart cherries","Kiwi","Almonds","Chamomile","Pumpkin seeds"],reason:"Tart cherries are one of the few <span>natural melatonin sources</span>. Magnesium from almonds activates GABA receptors that reduce cortisol before sleep."},{label:"Avoid near bedtime",chips:["Caffeine","Alcohol","High-sugar foods","Heavy meals"],reason:"These suppress <span>deep sleep stages</span> where facial repair and lymphatic drainage occur, directly worsening periorbital darkening."}]},
+  collagenScore:{groups:[{label:"For collagen synthesis",chips:["Citrus","Bell peppers","Egg whites","Bone broth","Pumpkin seeds"],reason:"Vitamin C in citrus is essential for <span>collagen synthesis</span>. Glycine in bone broth directly rebuilds dermal collagen. Zinc activates collagen-producing enzymes."},{label:"Protect existing collagen",chips:["Green tea","Berries","Dark leafy greens","Sunflower seeds"],reason:"Antioxidants protect collagen from <span>oxidative degradation</span>, slowing the structural decline visible in your collagen score."}]},
+  stressMarkers:{groups:[{label:"For cortisol regulation",chips:["Ashwagandha","Dark chocolate","Blueberries","Magnesium foods","Green tea"],reason:"Adaptogens like ashwagandha measurably reduce <span>cortisol baseline</span> — the primary driver of stress markers visible in facial tension lines."},{label:"Stabilize blood sugar",chips:["Oats","Quinoa","Lentils","Eggs","Nuts"],reason:"Blood sugar spikes trigger <span>cortisol release</span> that compounds adrenal stress patterns visible in your scan data."}]},
+  faceSymmetry:{groups:[{label:"For inflammation reduction",chips:["Fatty fish","Turmeric","Ginger","Leafy greens"],reason:"Reducing systemic inflammation decreases <span>asymmetric facial edema</span>, one of the primary drivers of symmetry score decline across scans."}]},
+  oilBalance:{groups:[{label:"For sebum regulation",chips:["Zinc-rich foods","Pumpkin seeds","Chickpeas","Green tea","Leafy greens"],reason:"Zinc directly regulates <span>sebaceous gland activity</span> and is the most clinically supported nutrient for oiliness and barrier balance."}]}
+};
+
+var improveContent = {
+  inflammation:{title:"Jawline + cheek zones clearing",what:["Jawline and cheek redness visibly reduced — consistent with lower cortisol and improved lymphatic drainage","Sleep signal improving in parallel — sleep is the primary driver of facial inflammation resolution","Current hydration increase reducing inflammatory load on skin barrier"],maintain:"Maintain your current sleep schedule. At this rate, inflammation reaches low within 3 weeks. Adding 2g omega-3 daily will accelerate it further."},
+  skinHealth:{title:"Barrier function improving",what:["Surface texture smoothing as barrier integrity rebuilds across the full facial zone","Oxidative stress markers reducing — consistent with dietary changes or improved antioxidant intake","Sebaceous activity stabilizing, reducing clogging patterns visible in earlier scans"],maintain:"Keep your current skincare routine consistent. Avoid introducing new products during improvement phases — stability accelerates barrier recovery."},
+  hydration:{title:"Periorbital zone rehydrating",what:["Under-eye dehydration lines visibly softening across recent scans","Surface moisture levels rising — consistent with increased water intake or reduced caffeine","Barrier water retention improving scan over scan"],maintain:"Maintain your current water intake and keep electrolytes consistent. Adding hyaluronic acid serum on damp skin will lock in the gains faster."},
+  collagenScore:{title:"Structural density recovering",what:["Malar fat pad position stabilizing — consistent with reduced glycation and improved collagen support","Nasolabial depth progression has slowed measurably since earlier scans","Skin rebound signal improving — elasticity recovering"],maintain:"Keep Vitamin C supplementation consistent. Daily SPF is essential to protect the collagen you are actively rebuilding."},
+  sleepSignal:{title:"Periorbital recovery visible",what:["Dark circles visibly lightening as vascular drainage improves with better sleep consistency","Facial puffiness reducing — lymphatic drainage recovering with more consistent sleep timing","Cortisol markers reducing in parallel with sleep improvement"],maintain:"Protect your current sleep schedule aggressively. Consistency of sleep timing matters as much as duration for maintaining these gains."},
+  stressMarkers:{title:"Forehead tension lines softening",what:["Glabellar tension lines visibly softening as cortisol baseline reduces","Skin texture improving in stress-sensitive zones — adrenal load decreasing","Overall facial tone improving as systemic cortisol levels drop"],maintain:"Keep your recovery practices daily. Even one high-stress week can reverse 2-3 weeks of improvement — cortisol spikes are cumulative."},
+  faceSymmetry:{title:"Landmark alignment improving",what:["Eye level deviation reducing across recent scans","Jaw angle difference decreasing — muscle tension asymmetry resolving","Overall facial balance improving as inflammation-driven edema reduces"],maintain:"Continue varying sleep position and bilateral facial massage. Consistency is the only driver of symmetry improvement over time."}
+};
+
+function setPhotoInPanel(scan, wrapId, emojiId) {
+  var wrap = document.getElementById(wrapId);
+  var emoji = document.getElementById(emojiId);
+  var existingImg = wrap ? wrap.querySelector("img.scan-photo") : null;
+  if (!wrap) return;
+  if (scan && scan.photoUrl) {
+    if (emoji) emoji.style.display = "none";
+    if (existingImg) { existingImg.src = scan.photoUrl; existingImg.style.display = "block"; }
+    else { var img = document.createElement("img"); img.src = scan.photoUrl; img.className = "scan-photo"; img.style.cssText = "width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;top:0;left:0;"; wrap.insertBefore(img, wrap.firstChild); }
+  } else {
+    if (existingImg) existingImg.style.display = "none";
+    if (emoji) emoji.style.display = "";
+  }
+}
+
 function openAttentionPanel(key, meta, pct, isImproving) {
-  var content = attentionContent[key];
-  if (!content) return;
+  var content = attentionContent[key]; if (!content) return;
+  var zoneDef = faceZoneDefs[key];
   document.getElementById("attentionTitle").textContent = meta.label + (isImproving ? " — Improving" : " — Needs Attention");
   document.getElementById("attentionBadgeName").textContent = meta.label;
-  document.getElementById("attentionBadgeName").style.color = isImproving ? "var(--accent)" : "var(--bad)";
+  document.getElementById("attentionBadgeName").style.color = isImproving ? "var(--accent)" : "#ff6b6b";
   document.getElementById("attentionBadgePct").textContent = (isImproving ? "improved " : "declined ") + pct + "% across " + _allScans.length + " scans";
   var scans = _allScans.filter(function(s) { return s.date; });
-  var scrollHtml = "";
   var dotColors = { low:"#00e5a0", mild:"#ffd43b", moderate:"#ffa94d", high:"#ff6b6b", severe:"#ff3b3b", optimal:"#00e5a0", good:"#4ade80", fair:"#ffd43b", deprived:"#ffa94d" };
+  var scrollHtml = "";
   scans.forEach(function(scan, i) {
     var date = new Date(scan.date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
     var rawVal = meta.extract(scan);
     var displayVal = rawVal !== null ? (meta.label2 ? (scan[key] || "--") : (meta.text ? (scan[key] || "--") : rawVal + meta.unit)) : "--";
     var dotColor = "var(--muted)";
-    if (rawVal !== null && !meta.text) {
-      var hib = ["skinHealth","hydration","collagenScore","faceSymmetry","sleepSignal"].indexOf(key) > -1;
-      if ((rawVal > 60 && hib) || (rawVal < 40 && !hib)) dotColor = "var(--accent)";
-      else if (rawVal > 40 && rawVal <= 60) dotColor = "var(--warn)";
-      else dotColor = "var(--bad)";
-    }
+    if (rawVal !== null && !meta.text) { var hib = ["skinHealth","hydration","collagenScore","faceSymmetry","sleepSignal"].indexOf(key) > -1; if ((rawVal > 60 && hib) || (rawVal < 40 && !hib)) dotColor = "var(--accent)"; else if (rawVal > 40 && rawVal <= 60) dotColor = "var(--warn)"; else dotColor = "var(--bad)"; }
     if (meta.label2 && scan[key]) dotColor = dotColors[(scan[key]||"").toLowerCase()] || "var(--muted)";
     var isActive = (i === scans.length - 1) ? "active" : "";
-    var thumbContent = scan.photoUrl
-      ? '<img src="' + scan.photoUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">'
-      : '<span style="font-size:28px;">&#128100;</span>';
-    scrollHtml += '<div class="attention-scan-thumb ' + isActive + '" onclick="selectAttentionScan(this,' + i + ')">' +
-      '<div class="attention-thumb-img">' + thumbContent + '<div class="attention-thumb-dot" style="background:' + dotColor + '"></div></div>' +
-      '<div class="attention-thumb-date">' + date + '</div>' +
-      '<div class="attention-thumb-val" style="color:' + dotColor + '">' + displayVal + '</div></div>';
+    var thumbContent = scan.photoUrl ? '<img src="' + scan.photoUrl + '" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;">' : '<span style="font-size:28px;">&#128100;</span>';
+    scrollHtml += '<div class="attention-scan-thumb ' + isActive + '" onclick="selectAttentionScan(this,' + i + ')"><div class="attention-thumb-img">' + thumbContent + '<div class="attention-thumb-dot" style="background:' + dotColor + '"></div></div><div class="attention-thumb-date">' + date + '</div><div class="attention-thumb-val" style="color:' + dotColor + '">' + displayVal + '</div></div>';
   });
   document.getElementById("attentionScanScroll").innerHTML = scrollHtml;
-  var zones = content.zones;
-  document.getElementById("attentionZone1").style.cssText = zones[0].style + "border-color:" + zones[0].color.replace("var(--bad)","#ff6b6b").replace("var(--warn)","#ffa94d") + ";position:absolute;border-radius:50%;border:2px solid;animation:zpulse 2s infinite;";
-  document.getElementById("attentionTag1").textContent = zones[0].label;
-  document.getElementById("attentionTag1").style.cssText = "position:absolute;top:8px;right:4px;background:" + zones[0].color.replace("var(--bad)","rgba(255,107,107,0.85)").replace("var(--warn)","rgba(255,169,77,0.85)") + ";border-radius:4px;padding:2px 7px;font-size:9px;color:#fff;white-space:nowrap;font-weight:700;";
-  if (zones[1]) {
-    document.getElementById("attentionZone2").style.cssText = zones[1].style + "border-color:" + zones[1].color.replace("var(--bad)","#ff6b6b").replace("var(--warn)","#ffa94d") + ";position:absolute;border:2px solid;animation:zpulse 2s infinite;";
-    document.getElementById("attentionTag2").textContent = zones[1].label;
-    document.getElementById("attentionTag2").style.cssText = "position:absolute;bottom:18px;left:4px;background:" + zones[1].color.replace("var(--bad)","rgba(255,107,107,0.85)").replace("var(--warn)","rgba(255,169,77,0.85)") + ";border-radius:4px;padding:2px 7px;font-size:9px;color:#fff;white-space:nowrap;font-weight:700;";
+  var lastScan = scans.length > 0 ? scans[scans.length - 1] : null;
+  if (lastScan) { document.getElementById("attentionScanDate").textContent = new Date(lastScan.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " scan"; }
+  setPhotoInPanel(lastScan, "attentionPhotoWrap", "attentionPhotoEmoji");
+  if (zoneDef) {
+    document.getElementById("attentionSvgOverlay").innerHTML = isImproving ? "" : zoneDef.overlayHtml;
+    document.getElementById("attentionFaceZones").innerHTML = zoneDef.diagramZones;
+    var legendHtml = "";
+    zoneDef.legend.forEach(function(l) { legendHtml += '<div class="attention-face-legend-item"><div class="attention-face-legend-dot" style="background:' + l.color + '"></div><div class="attention-face-legend-text"><strong>' + l.label + '</strong>' + l.detail + '</div></div>'; });
+    document.getElementById("attentionFaceLegend").innerHTML = legendHtml;
   }
-  if (scans.length > 0) {
-    var lastScan = scans[scans.length - 1];
-    document.getElementById("attentionScanDate").textContent = new Date(lastScan.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " scan";
-    var zoomImg = document.getElementById("attentionZoomImg");
-    var existingEmoji = zoomImg.querySelector("span.scan-emoji");
-    if (lastScan.photoUrl) {
-      if (existingEmoji) existingEmoji.style.display = "none";
-      var oldImg = zoomImg.querySelector("img.scan-photo");
-      if (oldImg) { oldImg.src = lastScan.photoUrl; oldImg.style.display = "block"; }
-      else { var img = document.createElement("img"); img.src = lastScan.photoUrl; img.className = "scan-photo"; img.style.cssText = "width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;top:0;left:0;background:#111827;"; zoomImg.insertBefore(img, zoomImg.firstChild); }
-    } else {
-
-      if (existingEmoji) existingEmoji.style.display = "";
-    }
-  }  var flagsHtml = "";
-  content.flags.forEach(function(f) {
-    flagsHtml += '<div class="attention-flag"><div class="attention-flag-dot" style="background:' + f.color + '"></div><div class="attention-flag-text"><strong>' + f.title + '</strong>' + f.detail + '</div></div>';
-  });
-  document.getElementById("attentionZoomFlags").innerHTML = flagsHtml;
   document.getElementById("attentionWhatText").textContent = content.what;
   var whyHtml = content.why;
   content.citations.forEach(function(c) { whyHtml += '<span class="attention-citation">' + c + '</span>'; });
   document.getElementById("attentionWhyText").innerHTML = whyHtml;
-  var fixHtml = "";
+  var fixHtml = "";​​​​​​​​​​​​​​​​
   content.fixes.forEach(function(f, i) {
     fixHtml += '<div class="attention-fix"><div class="attention-fix-num">' + (i+1) + '</div><div><div class="attention-fix-title">' + f.title + '</div><div class="attention-fix-detail">' + f.detail + '</div></div></div>';
     if (i < content.fixes.length - 1) fixHtml += '<div class="attention-hdiv"></div>';
   });
   document.getElementById("attentionFixList").innerHTML = fixHtml;
+  var bottomHtml = "";
+  var validVals = scans.map(function(s) { return meta.extract(s); }).filter(function(v) { return v !== null; });
+  if (validVals.length >= 3 && !meta.text) {
+    var first = validVals[0]; var last = validVals[validVals.length - 1]; var perScan = (last - first) / (validVals.length - 1);
+    var projected = Math.round(last + perScan * 5);
+    var higherIsBetter = ["skinHealth","hydration","collagenScore","faceSymmetry","sleepSignal"].indexOf(key) > -1;
+    var nowColor = (last > 60 && higherIsBetter) || (last < 40 && !higherIsBetter) ? "#00e5a0" : (last > 40 && last <= 60 ? "#ffa94d" : "#ff6b6b");
+    var projColor = ((projected > last && higherIsBetter) || (projected < last && !higherIsBetter)) ? "#00e5a0" : "#ff6b6b";
+    bottomHtml += '<div class="predict-card"><div class="predict-title">30-Day Prediction</div><div class="predict-sub">Based on your scan trajectory</div><div class="predict-timeline"><div class="predict-val"><div class="pnum" style="color:' + nowColor + '">' + last + meta.unit + '</div><div class="plbl">Today</div></div><div class="predict-arrow"><div class="predict-line"></div></div><div class="predict-val"><div class="pnum" style="color:' + projColor + '">' + projected + meta.unit + '</div><div class="plbl">~30 days</div></div></div><div class="predict-days">AT CURRENT RATE</div>';
+    if (!isImproving) {
+      bottomHtml += '<div class="predict-text">Your ' + meta.label.toLowerCase() + ' is declining at ' + Math.abs(perScan).toFixed(1) + meta.unit + ' per scan. If nothing changes you are on track to reach a critical level within 30 days.</div><div class="predict-steps-lbl">Prevent this now</div>';
+      content.fixes.slice(0,3).forEach(function(f,i){ bottomHtml += '<div class="predict-step"><div class="pstep-num">' + (i+1) + '</div>' + f.title + '</div>'; });
+    } else {
+      bottomHtml += '<div class="predict-text">Your ' + meta.label.toLowerCase() + ' is improving at ' + Math.abs(perScan).toFixed(1) + meta.unit + ' per scan. Keep current habits to maintain trajectory.</div>';
+    }
+    bottomHtml += '</div>';
+  }
+  var dd = dietData[key];
+  if (dd) {
+    bottomHtml += '<div class="diet-card"><div class="diet-title">Food Intelligence</div>';
+    dd.groups.forEach(function(g) {
+      bottomHtml += '<div class="diet-group"><div class="diet-group-label">' + g.label + '</div><div class="diet-chips">';
+      g.chips.forEach(function(c) { bottomHtml += '<div class="diet-chip">' + c + '</div>'; });
+      bottomHtml += '</div><div class="diet-reason">' + g.reason + '</div></div>';
+    });
+    bottomHtml += '</div>';
+  }
+  if (isImproving && improveContent[key]) {
+    var ic = improveContent[key];
+    bottomHtml += '<div class="improve-card"><div class="improve-photo-wrap" id="improvePhotoWrap">';
+    if (lastScan && lastScan.photoUrl) { bottomHtml += '<img class="scan-photo" src="' + lastScan.photoUrl + '" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;top:0;left:0;">'; }
+    else { bottomHtml += '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px;">&#128100;</div>'; }
+    bottomHtml += '<svg class="improve-svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"><ellipse cx="50" cy="75" rx="26" ry="9" fill="rgba(0,229,160,0.18)" stroke="#00e5a0" stroke-width="0.5"><animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.5s" repeatCount="indefinite"/></ellipse><ellipse cx="24" cy="60" rx="9" ry="7" fill="rgba(0,229,160,0.14)" stroke="#00e5a0" stroke-width="0.5"><animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.5s" begin="0.4s" repeatCount="indefinite"/></ellipse><ellipse cx="76" cy="60" rx="9" ry="7" fill="rgba(0,229,160,0.14)" stroke="#00e5a0" stroke-width="0.5"><animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.5s" begin="0.4s" repeatCount="indefinite"/></ellipse></svg>';
+    bottomHtml += '<div class="improve-badge">Improving</div></div>';
+    bottomHtml += '<div class="improve-body"><div class="improve-title">' + meta.label + ' — Improving</div><div class="improve-sub">' + ic.title + '</div>';
+    bottomHtml += '<div class="improve-stat"><div class="improve-stat-val">+' + pct + '%</div><div><div class="improve-stat-lbl">Since first scan</div><div class="improve-stat-trend">Keep the momentum</div></div></div>';
+    bottomHtml += '<div class="improve-working-lbl">What\'s driving this</div>';
+    ic.what.forEach(function(w) { bottomHtml += '<div class="improve-item">' + w + '</div>'; });
+    bottomHtml += '<div class="improve-maintain"><div class="improve-maintain-lbl">How to maintain it</div><div class="improve-maintain-text">' + ic.maintain + '</div></div></div></div>';
+  }
+  document.getElementById("attentionBottomGrid").innerHTML = bottomHtml;
   document.getElementById("attentionPanel").classList.add("open");
 }
 
@@ -1109,17 +1169,7 @@ function selectAttentionScan(el, index) {
   var scans = _allScans.filter(function(s) { return s.date; });
   if (scans[index]) {
     document.getElementById("attentionScanDate").textContent = new Date(scans[index].date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " scan";
-    var zoomImg = document.getElementById("attentionZoomImg");
-    var existingImg = zoomImg.querySelector("img.scan-photo");
-    var existingEmoji = zoomImg.querySelector("span.scan-emoji");
-    if (scans[index].photoUrl) {
-      if (existingEmoji) existingEmoji.style.display = "none";
-      if (existingImg) { existingImg.src = scans[index].photoUrl; existingImg.style.display = "block"; }
-      else { var img = document.createElement("img"); img.src = scans[index].photoUrl; img.className = "scan-photo"; img.style.cssText = "width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;top:0;left:0;background:#111827;"; zoomImg.insertBefore(img, zoomImg.firstChild); }
-    } else {
-      if (existingImg) existingImg.style.display = "none";
-      if (existingEmoji) existingEmoji.style.display = "";
-    }
+    setPhotoInPanel(scans[index], "attentionPhotoWrap", "attentionPhotoEmoji");
   }
 }
 
