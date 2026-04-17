@@ -340,34 +340,51 @@ canvas { display: none; }
       <div class="attention-scroll-label">Your scans — tap to inspect</div>
       <div class="attention-scan-scroll" id="attentionScanScroll"></div>
     </div>
-    <div class="attention-zoom" id="attentionZoom">
-      <div class="attention-zoom-img" id="attentionZoomImg">
-        <span class="scan-emoji" style="font-size:80px;">&#128100;</span>
-        <div class="attention-zone" id="attentionZone1" style="width:44px;height:44px;top:18px;right:48px;border-color:var(--bad);"></div>
-        <div class="attention-zone" id="attentionZone2" style="width:32px;height:18px;bottom:32px;left:56px;border-color:var(--warn);border-radius:50%;"></div>
-        <div class="attention-zone-tag" id="attentionTag1" style="top:8px;right:4px;background:rgba(255,107,107,0.85);">Periorbital</div>
-        <div class="attention-zone-tag" id="attentionTag2" style="bottom:18px;left:4px;background:rgba(255,169,77,0.85);">T-zone</div>
-        <div id="attentionScanDate" style="position:absolute;bottom:6px;right:8px;background:rgba(0,0,0,0.6);border-radius:5px;padding:2px 8px;font-size:9px;color:#aaa;"></div>
+    <div class="attention-main-grid">
+      <div class="attention-left-col">
+        <div class="attention-photo-card">
+          <div class="attention-photo-wrap" id="attentionPhotoWrap">
+            <div id="attentionPhotoEmoji" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:80px;">&#128100;</div>
+            <svg class="attention-svg-overlay" id="attentionSvgOverlay" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+            <div class="attention-scan-date-badge" id="attentionScanDate"></div>
+          </div>
+          <div class="attention-face-diagram">
+            <div class="attention-face-diagram-label">Zones detected in this scan</div>
+            <div class="attention-face-diagram-row">
+              <svg id="attentionFaceSvg" width="86" height="106" viewBox="0 0 86 106">
+                <ellipse cx="43" cy="52" rx="30" ry="36" fill="#111827" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>
+                <ellipse cx="43" cy="22" rx="30" ry="11" fill="#0c1018"/>
+                <ellipse cx="31" cy="46" rx="7" ry="3.5" fill="#1e2535" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <ellipse cx="55" cy="46" rx="7" ry="3.5" fill="#1e2535" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <path d="M43 54 L41 62 Q43 65 45 62 Z" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+                <path d="M35 72 Q43 77 51 72" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="1.5" stroke-linecap="round"/>
+                <g id="attentionFaceZones"></g>
+              </svg>
+              <div class="attention-face-legend" id="attentionFaceLegend"></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="attention-zoom-flags" id="attentionZoomFlags"></div>
+      <div class="attention-right-col">
+        <div class="attention-card red">
+          <div class="attention-card-label lbl-red">What's happening</div>
+          <div class="attention-card-text" id="attentionWhatText"></div>
+        </div>
+        <div class="attention-card warn">
+          <div class="attention-card-label lbl-warn">Why this matters</div>
+          <div class="attention-card-text" id="attentionWhyText"></div>
+        </div>
+        <div class="attention-card neutral">
+          <div class="attention-card-label lbl-green">How to fix it</div>
+          <div id="attentionFixList"></div>
+        </div>
+        <button class="attention-habit-btn" onclick="addToHabitTracker()">+ Add to Habit Tracker</button>
+        <div class="attention-disclaimer">VITAL is a wellness tool. Scan analysis and insights are AI estimates, not medical diagnoses. Citations reference published research and are provided for educational context only. Always consult a qualified healthcare professional before making health decisions.</div>
+      </div>
     </div>
-    <div class="attention-card red">
-      <div class="attention-card-label lbl-red">What's happening</div>
-      <div class="attention-card-text" id="attentionWhatText"></div>
-    </div>
-    <div class="attention-card warn">
-      <div class="attention-card-label lbl-warn">Why this matters</div>
-      <div class="attention-card-text" id="attentionWhyText"></div>
-    </div>
-    <div class="attention-card neutral">
-      <div class="attention-card-label lbl-green">How to fix it</div>
-      <div id="attentionFixList"></div>
-    </div>
-    <button class="attention-habit-btn" onclick="addToHabitTracker()">+ Add to Habit Tracker</button>
-    <div class="attention-disclaimer">VITAL is a wellness tool. Scan analysis and insights are AI estimates, not medical diagnoses. Citations reference published research and are provided for educational context only. Always consult a qualified healthcare professional before making health decisions.</div>
+    <div class="attention-bottom-grid" id="attentionBottomGrid"></div>
   </div>
 </div>
-
 <div class="ambient"></div>
 
 <button class="user-avatar-btn" id="userAvatarBtn" onclick="openProfile()" ontouchend="event.preventDefault();openProfile();" style="cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;">
