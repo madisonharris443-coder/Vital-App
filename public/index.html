@@ -1113,7 +1113,7 @@ function openAttentionPanel(key, meta, pct, isImproving) {
   var whyHtml = content.why;
   content.citations.forEach(function(c) { whyHtml += '<span class="attention-citation">' + c + '</span>'; });
   document.getElementById("attentionWhyText").innerHTML = whyHtml;
-  var fixHtml = "";​​​​​​​​​​​​​​​​
+    var fixHtml = "";
   content.fixes.forEach(function(f, i) {
     fixHtml += '<div class="attention-fix"><div class="attention-fix-num">' + (i+1) + '</div><div><div class="attention-fix-title">' + f.title + '</div><div class="attention-fix-detail">' + f.detail + '</div></div></div>';
     if (i < content.fixes.length - 1) fixHtml += '<div class="attention-hdiv"></div>';
