@@ -304,7 +304,7 @@ app.post("/analyze-attention", async function(req, res) {
 
     var response = await client.messages.create({
       model: "claude-opus-4-6",
-      max_tokens: 3000,
+      max_tokens: 4000incredible but alot ,
       messages: [{ role: "user", content: prompt }]
     });
 
