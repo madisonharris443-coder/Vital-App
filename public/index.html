@@ -915,6 +915,8 @@ function closeMetricPanel() {
   document.getElementById("metricPanel").classList.remove("open");
 }
 
+var _attentionCache = {};
+
 async function loadMetricData() {
   try {
     var res = await fetch("/get-scans");
@@ -922,8 +924,62 @@ async function loadMetricData() {
     _allScans = data.scans || [];
   } catch(e) { _allScans = []; }
   renderMetric(_activeMetric);
+  prefetchAttentionData();
 }
 
+function prefetchAttentionData() {
+  var scans = _allScans.filter(function(s) { return s.date; });
+  if (scans.length < 2) return;
+  Object.keys(metricMeta).forEach(function(key) {
+    var meta = metricMeta[key];
+    if (meta.text) return;
+    var vals = scans.map(function(s) { return meta.extract(s); }).filter(function(v) { return v !== null; });
+    if (vals.length < 2) return;
+    var first = vals[0]; var last = vals[vals.length - 1];
+    var diff = last - first;
+    var pct = first > 0 ? Math.round(Math.abs(diff / first) * 100) : 0;
+    if (pct < 3) return;
+    var higherIsBetter = ["skinHealth","hydration","collagenScore","faceSymmetry","sleepSignal"].indexOf(key) > -1;
+    var isImproving = (diff > 0 && higherIsBetter) || (diff < 0 && !higherIsBetter);
+    var cacheKey = key + "_" + isImproving;
+    if (_attentionCache[cacheKey]) return;
+    var profileStr = buildProfileStr();
+    fetch("/analyze-attention", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ metricKey: key, metricLabel: meta.label, isImproving: isImproving, pct: pct, scans: scans, profile: profileStr })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) { if (res.success) _attentionCache[cacheKey] = res.data; })
+    .catch(function() {});
+  });
+}
+
+function buildProfileStr() {
+  var profileStr = "";
+  var userStr = _vitalData ? _vitalData.user : null;
+  if (userStr) {
+    try {
+      var user = typeof userStr === "string" ? JSON.parse(userStr) : userStr;
+      profileStr = "User: " + (user.email || "") + ". ";
+    } catch(e) {}
+  }
+  if (userData) {
+    if (userData.age) profileStr += "Age: " + userData.age + ". ";
+    if (userData.sex) profileStr += "Sex: " + userData.sex + ". ";
+    if (userData.sleep) profileStr += "Sleep: " + userData.sleep + " hours/night. ";
+    if (userData.water) profileStr += "Water: " + userData.water + "L/day. ";
+    if (userData.stress) profileStr += "Stress: " + userData.stress + ". ";
+    if (userData.diet) profileStr += "Diet: " + userData.diet + ". ";
+    if (userData.fitness) profileStr += "Fitness: " + userData.fitness + ". ";
+    if (userData.exerciseDays) profileStr += "Exercise: " + userData.exerciseDays + " days/week. ";
+    if (userData.screenTime) profileStr += "Screen time: " + userData.screenTime + ". ";
+    if (userData.smoker && userData.smoker !== "no") profileStr += "Smoker: " + userData.smoker + ". ";
+    if (userData.alcohol && userData.alcohol !== "none") profileStr += "Alcohol: " + userData.alcohol + ". ";
+    if (userData.supplements) profileStr += "Supplements: " + userData.supplements + ". ";
+    if (userData.diseases && userData.diseases.length > 0) profileStr += "Family history: " + userData.diseases.join(", ") + ". ";
+  }
+  return profileStr;
 function selectMetric(e, key) {
   _activeMetric = key;
   document.querySelectorAll(".metric-pill").forEach(function(p) { p.classList.remove("active"); });
@@ -1108,91 +1164,76 @@ function openAttentionPanel(key, meta, pct, isImproving) {
   document.getElementById("attentionFixList").innerHTML = "";
   document.getElementById("attentionBottomGrid").innerHTML = "";
   document.getElementById("attentionPanel").classList.add("open");
-  var profileStr = "";
-  var userStr = _vitalData ? _vitalData.user : null;
-  if (userStr) {
-    try {
-      var user = typeof userStr === "string" ? JSON.parse(userStr) : userStr;
-      profileStr = "User: " + (user.email || "") + ". ";
-    } catch(e) {}
-  }
-  fetch("/analyze-attention", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      metricKey: key,
-      metricLabel: meta.label,
-      isImproving: isImproving,
-      pct: pct,
-      scans: scans,
-      profile: profileStr
+var cacheKey = key + "_" + isImproving;
+  var profileStr = buildProfileStr();
+  var doFetch = function() {
+    fetch("/analyze-attention", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ metricKey: key, metricLabel: meta.label, isImproving: isImproving, pct: pct, scans: scans, profile: profileStr })
     })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(res) {
-    if (!res.success) throw new Error("failed");
-    var d = res.data;
-    document.getElementById("attentionWhatText").textContent = d.what || "";
-    var whyHtml = d.why || "";
-    if (d.citation) whyHtml += '<span class="attention-citation">' + d.citation + '</span>';
-    document.getElementById("attentionWhyText").innerHTML = whyHtml;
-    var fixHtml = "";
-    if (d.fixes) d.fixes.forEach(function(f, i) {
-      fixHtml += '<div class="attention-fix"><div class="attention-fix-num">' + (i+1) + '</div><div><div class="attention-fix-title">' + f.title + '</div><div class="attention-fix-detail">' + f.detail + '</div></div></div>';
-      if (i < d.fixes.length - 1) fixHtml += '<div class="attention-hdiv"></div>';
+    .then(function(r) { return r.json(); })
+    .then(renderAttentionData)
+    .catch(function(err) {
+      console.error("attention error:", err);
+      document.getElementById("attentionWhatText").textContent = "Unable to load analysis. Please try again.";
     });
-    document.getElementById("attentionFixList").innerHTML = fixHtml;
-    if (d.zones && d.zones.length > 0) {
-      var zonesDiagram = "";
-      var legendHtml = "";
-      d.zones.forEach(function(z) {
-        var color = z.color === "bad" ? "#ff6b6b" : "#ffa94d";
-        legendHtml += '<div class="attention-face-legend-item"><div class="attention-face-legend-dot" style="background:' + color + '"></div><div class="attention-face-legend-text"><strong>' + z.label + '</strong>' + z.detail + '</div></div>';
-      });
-      document.getElementById("attentionFaceLegend").innerHTML = legendHtml;
-    }
-    var bottomHtml = "";
-    if (d.prediction && d.prediction.currentValue) {
-      var nowColor = isImproving ? "#00e5a0" : "#ff6b6b";
-      var projColor = isImproving ? "#00e5a0" : "#ff6b6b";
-      bottomHtml += '<div class="predict-card"><div class="predict-title">30-Day Prediction</div><div class="predict-sub">Based on your scan trajectory</div><div class="predict-timeline"><div class="predict-val"><div class="pnum" style="color:' + nowColor + '">' + d.prediction.currentValue + '</div><div class="plbl">Today</div></div><div class="predict-arrow"><div class="predict-line"></div></div><div class="predict-val"><div class="pnum" style="color:' + projColor + '">' + d.prediction.projectedValue + '</div><div class="plbl">~30 days</div></div></div><div class="predict-days">AT CURRENT RATE</div>';
-      if (d.prediction.consequences) d.prediction.consequences.forEach(function(c) { bottomHtml += '<div class="predict-concern">' + c + '</div>'; });
-      if (!isImproving && d.fixes) {
-        bottomHtml += '<div class="predict-steps-lbl">Prevent this now</div>';
-        d.fixes.slice(0,3).forEach(function(f,i){ bottomHtml += '<div class="predict-step"><div class="pstep-num">' + (i+1) + '</div>' + f.title + '</div>'; });
-      }
-      bottomHtml += '</div>';
-    }
-    if (d.diet && d.diet.length > 0) {
-      bottomHtml += '<div class="diet-card"><div class="diet-title">Food Intelligence</div>';
-      d.diet.forEach(function(g) {
-        bottomHtml += '<div class="diet-group"><div class="diet-group-label">' + g.label + '</div><div class="diet-chips">';
-        g.chips.forEach(function(c) { bottomHtml += '<div class="diet-chip">' + c + '</div>'; });
-        bottomHtml += '</div><div class="diet-reason">' + g.reason + '</div></div>';
-      });
-      bottomHtml += '</div>';
-    }
-    if (d.positives && d.positives.length > 0) {
-      var pos = d.positives[0];
-      bottomHtml += '<div class="improve-card"><div class="improve-photo-wrap" id="improvePhotoWrap">';
-      if (lastScan && lastScan.photoUrl) { bottomHtml += '<img class="scan-photo" src="' + lastScan.photoUrl + '" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;top:0;left:0;">'; }
-      else { bottomHtml += '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px;">&#128100;</div>'; }
-      bottomHtml += '<svg class="improve-svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"><ellipse cx="50" cy="75" rx="26" ry="9" fill="rgba(0,229,160,0.18)" stroke="#00e5a0" stroke-width="0.5"><animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.5s" repeatCount="indefinite"/></ellipse><ellipse cx="24" cy="60" rx="9" ry="7" fill="rgba(0,229,160,0.14)" stroke="#00e5a0" stroke-width="0.5"><animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.5s" begin="0.4s" repeatCount="indefinite"/></ellipse><ellipse cx="76" cy="60" rx="9" ry="7" fill="rgba(0,229,160,0.14)" stroke="#00e5a0" stroke-width="0.5"><animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.5s" begin="0.4s" repeatCount="indefinite"/></ellipse></svg>';
-      bottomHtml += '<div class="improve-badge">Improving</div></div>';
-      bottomHtml += '<div class="improve-body"><div class="improve-title">' + pos.metric + ' — Improving</div><div class="improve-sub">' + pos.trend + '</div>';
-      bottomHtml += '<div class="improve-stat"><div class="improve-stat-val">✓</div><div><div class="improve-stat-lbl">Positive trend detected</div><div class="improve-stat-trend">Keep the momentum</div></div></div>';
-      bottomHtml += '<div class="improve-working-lbl">What\'s driving this</div>';
-      bottomHtml += '<div class="improve-item">' + pos.detail + '</div>';
-      bottomHtml += '</div></div>';
-    }
-    document.getElementById("attentionBottomGrid").innerHTML = bottomHtml;
-  })
-  .catch(function(err) {
-    console.error("attention error:", err);
-    document.getElementById("attentionWhatText").textContent = "Unable to load analysis. Please try again.";
+  };
+  if (_attentionCache[cacheKey]) {
+    renderAttentionData({ success: true, data: _attentionCache[cacheKey] });
+  } else {
+    doFetch();
+  }
+  function renderAttentionData(res) {
+  if (!res.success) { document.getElementById("attentionWhatText").textContent = "Unable to load analysis. Please try again."; return; }
+  var d = res.data;
+  var scans = _allScans.filter(function(s) { return s.date; });
+  var lastScan = scans.length > 0 ? scans[scans.length - 1] : null;
+  document.getElementById("attentionWhatText").textContent = d.what || "";
+  var whyHtml = d.why || "";
+  if (d.citation) whyHtml += '<span class="attention-citation">' + d.citation + '</span>';
+  document.getElementById("attentionWhyText").innerHTML = whyHtml;
+  var fixHtml = "";
+  if (d.fixes) d.fixes.forEach(function(f, i) {
+    fixHtml += '<div class="attention-fix"><div class="attention-fix-num">' + (i+1) + '</div><div><div class="attention-fix-title">' + f.title + '</div><div class="attention-fix-detail">' + f.detail + '</div></div></div>';
+    if (i < d.fixes.length - 1) fixHtml += '<div class="attention-hdiv"></div>';
   });
-}
-function selectAttentionScan(el, index) {
+  document.getElementById("attentionFixList").innerHTML = fixHtml;
+  if (d.zones && d.zones.length > 0) {
+    var legendHtml = "";
+    d.zones.forEach(function(z) {
+      var color = z.color === "bad" ? "#ff6b6b" : "#ffa94d";
+      legendHtml += '<div class="attention-face-legend-item"><div class="attention-face-legend-dot" style="background:' + color + '"></div><div class="attention-face-legend-text"><strong>' + z.label + '</strong>' + z.detail + '</div></div>';
+    });
+    document.getElementById("attentionFaceLegend").innerHTML = legendHtml;
+  }
+  var bottomHtml = "";
+  if (d.prediction && d.prediction.currentValue) {
+    var nowColor = "#ff6b6b";
+    var projColor = "#ff6b6b";
+    bottomHtml += '<div class="predict-card"><div class="predict-title">30-Day Prediction</div><div class="predict-sub">Based on your scan trajectory</div><div class="predict-timeline"><div class="predict-val"><div class="pnum" style="color:' + nowColor + '">' + d.prediction.currentValue + '</div><div class="plbl">Today</div></div><div class="predict-arrow"><div class="predict-line"></div></div><div class="predict-val"><div class="pnum" style="color:' + projColor + '">' + d.prediction.projectedValue + '</div><div class="plbl">~30 days</div></div></div><div class="predict-days">AT CURRENT RATE</div>';
+    if (d.prediction.consequences) d.prediction.consequences.forEach(function(c) { bottomHtml += '<div class="predict-concern">' + c + '</div>'; });
+    if (d.fixes) { bottomHtml += '<div class="predict-steps-lbl">Prevent this now</div>'; d.fixes.slice(0,3).forEach(function(f,i){ bottomHtml += '<div class="predict-step"><div class="pstep-num">' + (i+1) + '</div>' + f.title + '</div>'; }); }
+    bottomHtml += '</div>';
+  }
+  if (d.diet && d.diet.length > 0) {
+    bottomHtml += '<div class="diet-card"><div class="diet-title">Food Intelligence</div>';
+    d.diet.forEach(function(g) {
+      bottomHtml += '<div class="diet-group"><div class="diet-group-label">' + g.label + '</div><div class="diet-chips">';
+      g.chips.forEach(function(c) { bottomHtml += '<div class="diet-chip">' + c + '</div>'; });
+      bottomHtml += '</div><div class="diet-reason">' + g.reason + '</div></div>';
+    });
+    bottomHtml += '</div>';
+  }
+  if (d.positives && d.positives.length > 0) {
+    var pos = d.positives[0];
+    bottomHtml += '<div class="improve-card"><div class="improve-photo-wrap">';
+    if (lastScan && lastScan.photoUrl) { bottomHtml += '<img class="scan-photo" src="' + lastScan.photoUrl + '" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;top:0;left:0;">'; }
+    else { bottomHtml += '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px;">&#128100;</div>'; }
+    bottomHtml += '<svg class="improve-svg-overlay" viewBox="0 0 100 100" preserveAspectRatio="none"><ellipse cx="50" cy="75" rx="26" ry="9" fill="rgba(0,229,160,0.18)" stroke="#00e5a0" stroke-width="0.5"><animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.5s" repeatCount="indefinite"/></ellipse><ellipse cx="24" cy="60" rx="9" ry="7" fill="rgba(0,229,160,0.14)" stroke="#00e5a0" stroke-width="0.5"><animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.5s" begin="0.4s" repeatCount="indefinite"/></ellipse><ellipse cx="76" cy="60" rx="9" ry="7" fill="rgba(0,229,160,0.14)" stroke="#00e5a0" stroke-width="0.5"><animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.5s" begin="0.4s" repeatCount="indefinite"/></ellipse></svg>';
+    bottomHtml += '<div class="improve-badge">Improving</div></div>';
+    bottomHtml +
+    function selectAttentionScan(el, index) {
   document.querySelectorAll(".attention-scan-thumb").forEach(function(t) { t.classList.remove("active"); });
   el.classList.add("active");
   var scans = _allScans.filter(function(s) { return s.date; });
