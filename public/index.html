@@ -218,16 +218,14 @@ canvas { display: none; }
 .attention-habit-btn { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 12px; padding: 16px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 14px; cursor: pointer; transition: all 0.15s; }
 .attention-habit-btn:hover { background: #00ffb3; transform: translateY(-2px); }
 .attention-disclaimer { font-size: 9px; color: #4a5568; text-align: center; line-height: 1.7; padding: 4px 0 8px; }
-.attention-main-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
-@media (min-width: 800px) { .attention-main-grid { grid-template-columns: 1fr 1fr; align-items: start; } }
-.attention-left-col { display: flex; flex-direction: column; gap: 14px; order: 2; }
-.attention-right-col { display: flex; flex-direction: column; gap: 14px; order: 1; }
-@media (min-width: 800px) { .attention-left-col { order: 1; } .attention-right-col { order: 2; } }
+.attention-main-grid { display: flex; flex-direction: column; gap: 14px; }
+@media (min-width: 800px) { .attention-main-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: start; } }
+.attention-left-col { display: flex; flex-direction: column; gap: 14px; }
+.attention-right-col { display: flex; flex-direction: column; gap: 14px; }
 .attention-bottom-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
 @media (min-width: 800px) { .attention-bottom-grid { grid-template-columns: 1fr 1fr 1fr; align-items: start; } }
 .attention-photo-card { background: var(--surface); border: 1px solid rgba(0,229,160,0.12); border-radius: 14px; overflow: hidden; }
-.attention-photo-wrap { width: 100%; height: 200px; position: relative; overflow: hidden; background: #111827; }
-.attention-svg-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.attention-photo-wrap { width: 100%; height: 200px; position: relative; overflow: hidden; background: #111827; }.attention-svg-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
 .attention-scan-date-badge { position: absolute; bottom: 6px; right: 8px; background: rgba(0,0,0,0.7); border-radius: 5px; padding: 2px 8px; font-size: 9px; color: #aaa; z-index: 3; }
 .attention-face-diagram { padding: 14px 16px; border-top: 1px solid var(--border); }
 .attention-face-diagram-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
@@ -285,33 +283,6 @@ canvas { display: none; }
 </head>
 <body>
 
-<div class="metric-panel" id="metricPanel">
-  <div class="metric-panel-header">
-    <button class="metric-panel-back" onclick="closeMetricPanel()">&#8592;</button>
-    <div class="metric-panel-title">Metric Tracking</div>
-  </div>
-  <div class="metric-panel-body">
-    <div class="metric-pills" id="metricPills">
-      <div class="metric-pill active" onclick="selectMetric(event,'skinHealth')">Skin Health</div>
-      <div class="metric-pill" onclick="selectMetric(event,'hydration')">Hydration</div>
-      <div class="metric-pill" onclick="selectMetric(event,'inflammation')">Inflammation</div>
-      <div class="metric-pill" onclick="selectMetric(event,'sleepSignal')">Sleep Signal</div>
-      <div class="metric-pill" onclick="selectMetric(event,'collagenScore')">Collagen</div>
-      <div class="metric-pill" onclick="selectMetric(event,'stressMarkers')">Stress</div>
-      <div class="metric-pill" onclick="selectMetric(event,'oilBalance')">Oil Balance</div>
-      <div class="metric-pill" onclick="selectMetric(event,'faceSymmetry')">Face Symmetry</div>
-    </div>
-    <div class="metric-chart-wrap">
-      <div class="metric-chart-title" id="metricChartTitle">Skin Health</div>
-      <div class="metric-chart-sub" id="metricChartSub">Tracking across all your scans</div>
-      <div id="metricChartSvg"></div>
-    </div>
-    <div class="metric-trend-card neutral" id="metricTrendCard">Complete more scans to see your trend.</div>
-    <div class="metric-history-label">Scan History</div>
-    <div id="metricHistoryList"></div>
-  </div>
-</div>
-
 <div class="attention-panel" id="attentionPanel">
   <div class="attention-header">
     <button class="attention-back" onclick="closeAttentionPanel()">&#8592;</button>
@@ -323,6 +294,22 @@ canvas { display: none; }
       <span class="attention-badge-pct" id="attentionBadgePct">declined 47% across 4 scans</span>
     </div>
     <div class="attention-main-grid">
+      <div class="attention-right-col">
+        <div class="attention-card red">
+          <div class="attention-card-label lbl-red">What's happening</div>
+          <div class="attention-card-text" id="attentionWhatText"></div>
+        </div>
+        <div class="attention-card warn">
+          <div class="attention-card-label lbl-warn">Why this matters</div>
+          <div class="attention-card-text" id="attentionWhyText"></div>
+        </div>
+        <div class="attention-card neutral">
+          <div class="attention-card-label lbl-green">How to fix it</div>
+          <div id="attentionFixList"></div>
+        </div>
+        <button class="attention-habit-btn" onclick="addToHabitTracker()">+ Add to Habit Tracker</button>
+        <div class="attention-disclaimer">VITAL is a wellness tool. Scan analysis and insights are AI estimates, not medical diagnoses. Citations reference published research and are provided for educational context only. Always consult a qualified healthcare professional before making health decisions.</div>
+      </div>
       <div class="attention-left-col">
         <div>
           <div class="attention-scroll-label">Your scans — tap to inspect</div>
@@ -352,24 +339,30 @@ canvas { display: none; }
         </div>
         <div id="attentionInlineCards"></div>
       </div>
-      <div class="attention-right-col">
-        <div class="attention-card red">
-          <div class="attention-card-label lbl-red">What's happening</div>
-          <div class="attention-card-text" id="attentionWhatText"></div>
-        </div>
-        <div class="attention-card warn">
-          <div class="attention-card-label lbl-warn">Why this matters</div>
-          <div class="attention-card-text" id="attentionWhyText"></div>
-        </div>
-        <div class="attention-card neutral">
-          <div class="attention-card-label lbl-green">How to fix it</div>
-          <div id="attentionFixList"></div>
-        </div>
-        <button class="attention-habit-btn" onclick="addToHabitTracker()">+ Add to Habit Tracker</button>
-        <div class="attention-disclaimer">VITAL is a wellness tool. Scan analysis and insights are AI estimates, not medical diagnoses. Citations reference published research and are provided for educational context only. Always consult a qualified healthcare professional before making health decisions.</div>
-      </div>
     </div>
-    <div id="attentionBottomGrid"></div>
+            <div id="attentionPhotoEmoji" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:80px;">&#128100;</div>
+            <svg class="attention-svg-overlay" id="attentionSvgOverlay" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+            <div class="attention-scan-date-badge" id="attentionScanDate"></div>
+          </div>
+          <div class="attention-face-diagram">
+            <div class="attention-face-diagram-label">Zones detected in this scan</div>
+            <div class="attention-face-diagram-row">
+              <svg id="attentionFaceSvg" width="86" height="106" viewBox="0 0 86 106">
+                <ellipse cx="43" cy="52" rx="30" ry="36" fill="#111827" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>
+                <ellipse cx="43" cy="22" rx="30" ry="11" fill="#0c1018"/>
+                <ellipse cx="31" cy="46" rx="7" ry="3.5" fill="#1e2535" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <ellipse cx="55" cy="46" rx="7" ry="3.5" fill="#1e2535" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <path d="M43 54 L41 62 Q43 65 45 62 Z" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+                <path d="M35 72 Q43 77 51 72" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="1.5" stroke-linecap="round"/>
+                <g id="attentionFaceZones"></g>
+              </svg>
+              <div class="attention-face-legend" id="attentionFaceLegend"></div>
+            </div>
+          </div>
+        </div>
+        <div id="attentionInlineCards"></div>
+      </div>
+      <div id="attentionBottomGrid"></div>
   </div>
 </div>
 
