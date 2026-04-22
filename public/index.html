@@ -320,24 +320,7 @@ canvas { display: none; }
     <div class="attention-badge">
       <span class="attention-badge-name" id="attentionBadgeName">Inflammation</span>
       <span class="attention-badge-pct" id="attentionBadgePct">declined 47% across 4 scans</span>
-    </div>
-    <div class="attention-main-grid">
-      <div class="attention-right-col">
-        <div class="attention-card red">
-          <div class="attention-card-label lbl-red">What's happening</div>
-          <div class="attention-card-text" id="attentionWhatText"></div>
-        </div>
-        <div class="attention-card warn">
-          <div class="attention-card-label lbl-warn">Why this matters</div>
-          <div class="attention-card-text" id="attentionWhyText"></div>
-        </div>
-        <div class="attention-card neutral">
-          <div class="attention-card-label lbl-green">How to fix it</div>
-          <div id="attentionFixList"></div>
-        </div>
-        <button class="attention-habit-btn" onclick="addToHabitTracker()">+ Add to Habit Tracker</button>
-        <div class="attention-disclaimer">VITAL is a wellness tool. Scan analysis and insights are AI estimates, not medical diagnoses. Citations reference published research and are provided for educational context only. Always consult a qualified healthcare professional before making health decisions.</div>
-      </div>
+        <div class="attention-main-grid">
       <div class="attention-left-col">
         <div>
           <div class="attention-scroll-label">Your scans — tap to inspect</div>
@@ -367,12 +350,26 @@ canvas { display: none; }
         </div>
         <div id="attentionInlineCards"></div>
       </div>
+      <div class="attention-right-col">
+        <div class="attention-card red">
+          <div class="attention-card-label lbl-red">What's happening</div>
+          <div class="attention-card-text" id="attentionWhatText"></div>
+        </div>
+        <div class="attention-card warn">
+          <div class="attention-card-label lbl-warn">Why this matters</div>
+          <div class="attention-card-text" id="attentionWhyText"></div>
+        </div>
+        <div class="attention-card neutral">
+          <div class="attention-card-label lbl-green">How to fix it</div>
+          <div id="attentionFixList"></div>
+        </div>
+        <button class="attention-habit-btn" onclick="addToHabitTracker()">+ Add to Habit Tracker</button>
+        <div class="attention-disclaimer">VITAL is a wellness tool. Scan analysis and insights are AI estimates, not medical diagnoses. Citations reference published research and are provided for educational context only. Always consult a qualified healthcare professional before making health decisions.</div>
+      </div>
     </div>
     <div id="attentionBottomGrid"></div>
   </div>
 </div>
-
-<div class="ambient"></div>
 
 <button class="user-avatar-btn" id="userAvatarBtn" onclick="openProfile()" ontouchend="event.preventDefault();openProfile();" style="cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;">
   <span id="userAvatarInitial">?</span>
