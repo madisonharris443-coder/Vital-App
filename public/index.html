@@ -225,7 +225,7 @@ canvas { display: none; }
 .attention-bottom-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
 @media (min-width: 800px) { .attention-bottom-grid { grid-template-columns: 1fr 1fr 1fr; align-items: start; } }
 .attention-photo-card { background: var(--surface); border: 1px solid rgba(0,229,160,0.12); border-radius: 14px; overflow: hidden; }
-.attention-photo-wrap { width: 100%; height: 280px; position: relative; overflow: hidden; background: #111827; }
+.attention-photo-wrap { width: 100%; height: 160px; position: relative; overflow: hidden; background: #111827; }
 .attention-svg-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
 .attention-scan-date-badge { position: absolute; bottom: 6px; right: 8px; background: rgba(0,0,0,0.7); border-radius: 5px; padding: 2px 8px; font-size: 9px; color: #aaa; z-index: 3; }
 .attention-face-diagram { padding: 14px 16px; border-top: 1px solid var(--border); }
@@ -1112,7 +1112,7 @@ function openAttentionPanel(key, meta, pct, isImproving) {
     if (isImproving && d.positives && d.positives.length > 0) {
       var pos = d.positives[0];
       bottomHtml += '<div class="improve-card"><div class="improve-photo-wrap">';
-      if (lastScan && lastScan.photoUrl) { bottomHtml += '<img class="scan-photo" src="' + lastScan.photoUrl + '" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;top:0;left:0;">'; }
+      if (lastScan && lastScan.photoUrl) { bottomHtml += '<img class="scan-photo" src="' + lastScan.photoUrl + '" style="width:100%;height:100%;object-fit:cover;object-position:center top;position:absolute;top:0;left:0;">'; }
       else { bottomHtml += '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:60px;">&#128100;</div>'; }
       bottomHtml += '<div class="improve-badge">Improving</div></div>';
       bottomHtml += '<div class="improve-body"><div class="improve-title">' + meta.label + ' — Improving</div><div class="improve-sub">' + (pos.trend || "") + '</div>';
