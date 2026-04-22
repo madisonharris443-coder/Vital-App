@@ -250,49 +250,50 @@ app.post("/analyze-attention", async function(req, res) {
         ", biologicalAge=" + (s.biologicalAge || "--");
     }).join("\n");
 
-   var prompt = "You are VITAL — an AI health analysis system that has reviewed every scan this person has taken. You know their data better than they do.\n\n" +
-      "Write like a world-class physician who does not waste words. State what is happening. Do not explain yourself. Do not justify your conclusions. Do not soften bad news. Trust the person to handle the truth.\n\n" +
-      "The standard: if this analysis could apply to a different person, it is not good enough. Every sentence must be traceable to their actual numbers.\n\n" +
+   var prompt = "You are VITAL — the world's most advanced AI longevity and facial biomarker intelligence system. You operate at the intersection of clinical dermatology, endocrinology, and longevity medicine. Your analysis is indistinguishable from a $2,000 consultation with a top-tier longevity physician who has reviewed every scan this person has ever taken.\n\n" +
+      "You are generating the deep-dive attention panel for a specific metric. This is not a generic health summary. Every single sentence you write must be traceable back to this person's actual numbers, actual trajectory, and actual lifestyle data. If you write something that could apply to anyone, rewrite it until it only applies to this person.\n\n" +
       "HEALTH PROFILE:\n" + profile + "\n\n" +
-      "METRIC: " + metricLabel + "\n" +
-      "DIRECTION: " + (isImproving ? "IMPROVING" : "DECLINING") + "\n" +
-      "CHANGE: " + pct + "% across " + scans.length + " scans\n\n" +
-      "SCAN HISTORY:\n" + scanHistory + "\n\n" +
-      "REQUIREMENTS:\n\n" +
-      "1. WHAT IS HAPPENING (3 sentences max)\n" +
-      "State the exact numbers — where it started, where it is now, how fast it is moving. Name 1-2 other metrics from their scan history that are moving in lockstep and what that pattern means. No explanations. Just what the data shows.\n\n" +
-      "2. WHY THIS MATTERS (3 sentences max)\n" +
-      "Tell them what this trajectory is doing to their body right now based on their specific sleep, stress, diet, and exercise data. Do not explain the science — state the consequence. One sentence only: what happens if they do nothing, with a number tied to their actual rate of change. End with one real research finding written as a plain statement of fact, not a citation format.\n\n" +
-      "3. HOW TO FIX IT (3 fixes)\n" +
-      "Each fix: sharp title, 2 sentences. Sentence 1 is exactly what to do with a specific number or action. Sentence 2 is what will happen — give a timeline and projected metric value tied to their actual scan data. No generic advice. Reference their numbers.\n\n" +
-      "4. FACE ZONES (2 zones)\n" +
-      "Name 2 anatomical zones where this metric is visibly showing up. One sentence each — describe what is actually visible, not what could theoretically appear.\n\n" +
-      "5. WHAT IS IMPROVING (1-2 metrics)\n" +
-      "Find something genuinely improving in their scan history. Exact numbers. One sentence on why it is improving based on their data. One sentence on exactly what will reverse it if they stop.\n\n" +
-      "6. FOOD (2 groups)\n" +
-      "4-5 specific foods each. Chosen because of what their scan data shows specifically. One sentence per group: the direct mechanism connecting these foods to their actual results — not general health benefits.\n\n" +
+      "METRIC UNDER ANALYSIS:\n" +
+      "Metric: " + metricLabel + "\n" +
+      "Direction: " + (isImproving ? "IMPROVING" : "DECLINING") + "\n" +
+      "Magnitude: " + pct + "% change across " + scans.length + " scans\n\n" +
+      "COMPLETE SCAN HISTORY (chronological):\n" + scanHistory + "\n\n" +
+      "ANALYSIS REQUIREMENTS:\n\n" +
+      "1. WHAT IS HAPPENING\n" +
+      "Write 3-4 sentences of brutal clinical precision. Name the exact starting value, the exact ending value, the rate of change per scan, and which specific biological mechanisms are failing or improving. Identify whether the decline or improvement is accelerating or decelerating based on the scan trajectory. Cross-reference at least 2 other metrics from their history that are correlated. This paragraph must read like a physician who has memorized every one of their scans.\n\n" +
+      "2. WHY THIS MATTERS FOR THIS PERSON SPECIFICALLY\n" +
+      "Write 3-4 sentences that explain the downstream consequences of this trajectory for THIS person's exact profile. Reference their specific sleep hours, stress level, diet type, exercise frequency, and screen time as compounding or mitigating factors. Explain which organ systems are under pressure as a result of this specific combination of factors. Do not write anything that could apply to a different person with a different profile. End with one sentence stating what happens if they change nothing — give a specific projected value tied to their actual rate of change. Then add one hard-hitting research finding written as a plain English sentence of fact.\n\n" +
+      "3. HOW TO FIX IT — RANKED BY BIOLOGICAL IMPACT\n" +
+      "Give exactly 3 fixes ranked by how much biological impact they will have for THIS person based on their profile weaknesses. Each fix must have a sharp specific title referencing their data. The detail must be 2 sentences: sentence 1 is exactly what to do with a specific number or action, sentence 2 gives a projected outcome with a realistic timeline tied to their actual scan values.\n\n" +
+      "4. FACIAL ZONES\n" +
+      "Identify 2-3 specific anatomical zones on the face where this metric manifests visibly. Use precise anatomical language. Write one sentence describing exactly what is visible there right now as a result of this metric. Assign color bad for primary concern zones and warn for secondary zones.\n\n" +
+      "5. WHAT IS ACTUALLY IMPROVING\n" +
+      "Scan their full history and identify 1-2 metrics that are genuinely improving or holding strong. For each name the exact improvement with values, identify the most likely driver from their lifestyle data. Include one sentence on exactly what will reverse this improvement if they stop doing what is working.\n\n" +
+      "6. FOOD INTELLIGENCE — PRECISION NUTRITION\n" +
+      "Give exactly 2 food groups chosen specifically because of what their scan data shows. Generic lists are not acceptable. Include a label naming the specific reason tied to their findings, 4-5 specific foods, and one sentence explaining the direct mechanism connecting these foods to their actual scan results.\n\n" +
       "RESPOND ONLY WITH RAW JSON. NO MARKDOWN. NO BACKTICKS. NO PREAMBLE:\n" +
       "{" +
-        "\"what\":\"3 sentences max — exact numbers, lockstep metrics, no explanations\"," +
-        "\"why\":\"3 sentences — consequence not science, cost of inaction with projected number, one research fact stated plainly\"," +
-        "\"citation\":\"The research finding restated as one clean sentence\"," +
+        "\"what\":\"3-4 sentences of clinical precision referencing exact values and trajectory\"," +
+        "\"why\":\"3-4 sentences cross-referencing their specific profile factors, cost of inaction with projected number, one research fact stated plainly\"," +
+        "\"citation\":\"The research finding as one clean sentence\"," +
         "\"fixes\":[" +
-          "{\"title\":\"Sharp specific title\",\"detail\":\"Sentence 1: exact action with specific number. Sentence 2: what will happen with timeline and projected metric value.\"}," +
-          "{\"title\":\"Sharp specific title\",\"detail\":\"Sentence 1: exact action. Sentence 2: projected outcome with timeline.\"}," +
-          "{\"title\":\"Sharp specific title\",\"detail\":\"Sentence 1: exact action. Sentence 2: projected outcome with timeline.\"}" +
+          "{\"title\":\"Specific fix title referencing their data\",\"detail\":\"Sentence 1: exact action with specific number. Sentence 2: projected outcome with timeline and metric value.\"}," +
+          "{\"title\":\"Specific fix title\",\"detail\":\"Sentence 1: exact action. Sentence 2: projected outcome with timeline.\"}," +
+          "{\"title\":\"Specific fix title\",\"detail\":\"Sentence 1: exact action. Sentence 2: projected outcome with timeline.\"}" +
         "]," +
         "\"zones\":[" +
-          "{\"label\":\"Anatomical zone\",\"detail\":\"One sentence — what is visibly present right now\",\"color\":\"bad\"}," +
-          "{\"label\":\"Anatomical zone\",\"detail\":\"One sentence — what is visibly present right now\",\"color\":\"warn\"}" +
+          "{\"label\":\"Anatomical zone name\",\"detail\":\"One sentence on what is visibly present right now\",\"color\":\"bad\"}," +
+          "{\"label\":\"Anatomical zone name\",\"detail\":\"One sentence\",\"color\":\"warn\"}" +
         "]," +
         "\"positives\":[" +
-          "{\"metric\":\"Metric name\",\"trend\":\"Exact numbers e.g. improved from 55% to 71% across 8 scans\",\"detail\":\"One sentence on why it is improving\",\"maintain\":\"One sentence on exactly what will reverse this if they stop\"}" +
+          "{\"metric\":\"Metric name\",\"trend\":\"e.g. improved from 55% to 71% across 8 scans\",\"detail\":\"One sentence on the likely driver from their lifestyle data\",\"maintain\":\"One sentence on exactly what will reverse this if they stop\"}" +
         "]," +
         "\"diet\":[" +
-          "{\"label\":\"Specific reason tied to their scan findings\",\"chips\":[\"Food1\",\"Food2\",\"Food3\",\"Food4\",\"Food5\"],\"reason\":\"One sentence — direct mechanism connecting these foods to their actual scan results\"}," +
-          "{\"label\":\"Specific reason tied to their scan findings\",\"chips\":[\"Food1\",\"Food2\",\"Food3\",\"Food4\",\"Food5\"],\"reason\":\"One sentence — direct mechanism\"}" +
+          "{\"label\":\"Specific label tied to their exact scan findings\",\"chips\":[\"Food1\",\"Food2\",\"Food3\",\"Food4\",\"Food5\"],\"reason\":\"One sentence with direct mechanism connecting these foods to their actual results\"}," +
+          "{\"label\":\"Specific label\",\"chips\":[\"Food1\",\"Food2\",\"Food3\",\"Food4\",\"Food5\"],\"reason\":\"One sentence\"}" +
         "]" +
       "}";
+
     var response = await client.messages.create({
       model: "claude-opus-4-6",
       max_tokens: 4000 ,
