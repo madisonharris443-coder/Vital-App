@@ -250,46 +250,47 @@ app.post("/analyze-attention", async function(req, res) {
         ", biologicalAge=" + (s.biologicalAge || "--");
     }).join("\n");
 
-   var prompt = "You are VITAL — an AI health analysis system. You have reviewed every scan this person has taken and you know their data cold.\n\n" +
-      "Your job is to give a direct, honest, specific analysis of what is happening with this metric. No fluff. No impressive-sounding language. Write like you are texting a close friend who happens to be a doctor — clear, real, direct. If something is bad, say it is bad. If something is working, say exactly what is working.\n\n" +
+   var prompt = "You are VITAL — an AI health analysis system that has reviewed every scan this person has taken. You know their data better than they do.\n\n" +
+      "Write like a world-class physician who does not waste words. State what is happening. Do not explain yourself. Do not justify your conclusions. Do not soften bad news. Trust the person to handle the truth.\n\n" +
+      "The standard: if this analysis could apply to a different person, it is not good enough. Every sentence must be traceable to their actual numbers.\n\n" +
       "HEALTH PROFILE:\n" + profile + "\n\n" +
       "METRIC: " + metricLabel + "\n" +
       "DIRECTION: " + (isImproving ? "IMPROVING" : "DECLINING") + "\n" +
       "CHANGE: " + pct + "% across " + scans.length + " scans\n\n" +
       "SCAN HISTORY:\n" + scanHistory + "\n\n" +
-      "WRITE THE FOLLOWING — be specific to their actual numbers, not generic:\n\n" +
+      "REQUIREMENTS:\n\n" +
       "1. WHAT IS HAPPENING (3 sentences max)\n" +
-      "Say exactly what the numbers show. Where it started, where it is now, how fast it is moving. Call out 1-2 other metrics from their scan history that are moving in the same direction and why that matters. No jargon unless it has a plain English explanation right after it.\n\n" +
+      "State the exact numbers — where it started, where it is now, how fast it is moving. Name 1-2 other metrics from their scan history that are moving in lockstep and what that pattern means. No explanations. Just what the data shows.\n\n" +
       "2. WHY THIS MATTERS (3 sentences max)\n" +
-      "Explain what this trajectory actually means for this person based on their specific lifestyle — their sleep, stress, diet, and exercise. What is it doing to their body right now. End with one real research finding that directly applies to what you see in their data, written in plain English.\n\n" +
+      "Tell them what this trajectory is doing to their body right now based on their specific sleep, stress, diet, and exercise data. Do not explain the science — state the consequence. One sentence only: what happens if they do nothing, with a number tied to their actual rate of change. End with one real research finding written as a plain statement of fact, not a citation format.\n\n" +
       "3. HOW TO FIX IT (3 fixes)\n" +
-      "Give 3 specific actions ranked by impact. Each fix needs a sharp title and 2 sentences explaining exactly what to do and why it works for this metric specifically. Reference their actual numbers or habits. No generic advice.\n\n" +
+      "Each fix: sharp title, 2 sentences. Sentence 1 is exactly what to do with a specific number or action. Sentence 2 is what will happen — give a timeline and projected metric value tied to their actual scan data. No generic advice. Reference their numbers.\n\n" +
       "4. FACE ZONES (2 zones)\n" +
-      "Name 2 specific areas of the face where this metric shows up visibly. Use anatomical names. One sentence each describing what is actually visible there.\n\n" +
+      "Name 2 anatomical zones where this metric is visibly showing up. One sentence each — describe what is actually visible, not what could theoretically appear.\n\n" +
       "5. WHAT IS IMPROVING (1-2 metrics)\n" +
-      "Find something in their scan history that is genuinely getting better. Name the exact numbers. Say why it is probably improving based on their data.\n\n" +
+      "Find something genuinely improving in their scan history. Exact numbers. One sentence on why it is improving based on their data. One sentence on exactly what will reverse it if they stop.\n\n" +
       "6. FOOD (2 groups)\n" +
-      "Give 2 food groups with 4-5 specific foods each. Choose them because of what you see in their scan data specifically, not generic health advice. One sentence explaining the direct connection to their results.\n\n" +
+      "4-5 specific foods each. Chosen because of what their scan data shows specifically. One sentence per group: the direct mechanism connecting these foods to their actual results — not general health benefits.\n\n" +
       "RESPOND ONLY WITH RAW JSON. NO MARKDOWN. NO BACKTICKS. NO PREAMBLE:\n" +
       "{" +
-        "\"what\":\"What is happening in plain direct language\"," +
-        "\"why\":\"Why this matters for this specific person\"," +
-        "\"citation\":\"One real research finding in plain English\"," +
+        "\"what\":\"3 sentences max — exact numbers, lockstep metrics, no explanations\"," +
+        "\"why\":\"3 sentences — consequence not science, cost of inaction with projected number, one research fact stated plainly\"," +
+        "\"citation\":\"The research finding restated as one clean sentence\"," +
         "\"fixes\":[" +
-          "{\"title\":\"Sharp specific title\",\"detail\":\"2 sentences — what to do and exactly why it works for this metric\"}," +
-          "{\"title\":\"Sharp specific title\",\"detail\":\"2 sentences\"}," +
-          "{\"title\":\"Sharp specific title\",\"detail\":\"2 sentences\"}" +
+          "{\"title\":\"Sharp specific title\",\"detail\":\"Sentence 1: exact action with specific number. Sentence 2: what will happen with timeline and projected metric value.\"}," +
+          "{\"title\":\"Sharp specific title\",\"detail\":\"Sentence 1: exact action. Sentence 2: projected outcome with timeline.\"}," +
+          "{\"title\":\"Sharp specific title\",\"detail\":\"Sentence 1: exact action. Sentence 2: projected outcome with timeline.\"}" +
         "]," +
         "\"zones\":[" +
-          "{\"label\":\"Anatomical zone\",\"detail\":\"One sentence on what is visible here\",\"color\":\"bad\"}," +
-          "{\"label\":\"Anatomical zone\",\"detail\":\"One sentence\",\"color\":\"warn\"}" +
+          "{\"label\":\"Anatomical zone\",\"detail\":\"One sentence — what is visibly present right now\",\"color\":\"bad\"}," +
+          "{\"label\":\"Anatomical zone\",\"detail\":\"One sentence — what is visibly present right now\",\"color\":\"warn\"}" +
         "]," +
         "\"positives\":[" +
-          "{\"metric\":\"Metric name\",\"trend\":\"Exact numbers e.g. improved from 55% to 71%\",\"detail\":\"One sentence on why it is improving\",\"maintain\":\"One sentence on how to keep this going\"}" +
+          "{\"metric\":\"Metric name\",\"trend\":\"Exact numbers e.g. improved from 55% to 71% across 8 scans\",\"detail\":\"One sentence on why it is improving\",\"maintain\":\"One sentence on exactly what will reverse this if they stop\"}" +
         "]," +
         "\"diet\":[" +
-          "{\"label\":\"Specific reason tied to their scan data\",\"chips\":[\"Food1\",\"Food2\",\"Food3\",\"Food4\"],\"reason\":\"One sentence direct connection to their results\"}," +
-          "{\"label\":\"Specific reason\",\"chips\":[\"Food1\",\"Food2\",\"Food3\",\"Food4\"],\"reason\":\"One sentence\"}" +
+          "{\"label\":\"Specific reason tied to their scan findings\",\"chips\":[\"Food1\",\"Food2\",\"Food3\",\"Food4\",\"Food5\"],\"reason\":\"One sentence — direct mechanism connecting these foods to their actual scan results\"}," +
+          "{\"label\":\"Specific reason tied to their scan findings\",\"chips\":[\"Food1\",\"Food2\",\"Food3\",\"Food4\",\"Food5\"],\"reason\":\"One sentence — direct mechanism\"}" +
         "]" +
       "}";
     var response = await client.messages.create({
