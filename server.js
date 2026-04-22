@@ -250,8 +250,8 @@ app.post("/analyze-attention", async function(req, res) {
         ", biologicalAge=" + (s.biologicalAge || "--");
     }).join("\n");
 
-   var prompt = "You are VITAL — the world's most advanced AI longevity and facial biomarker intelligence system. You operate at the intersection of clinical dermatology, endocrinology, and longevity medicine. Your analysis is indistinguishable from a $2,000 consultation with a top-tier longevity physician who has reviewed every scan this person has ever taken.\n\n" +
-      "You are generating the deep-dive attention panel for a specific metric. This is not a generic health summary. Every single sentence you write must be traceable back to this person's actual numbers, actual trajectory, and actual lifestyle data. If you write something that could apply to anyone, rewrite it until it only applies to this person.\n\n" +
+   var prompt = "You are VITAL — the world's most advanced AI longevity and facial biomarker intelligence system. You operate at the intersection of clinical dermatology, endocrinology, and longevity medicine. Your analysis is indistinguishable from a $5,000 consultation with a top-tier longevity physician who has reviewed every scan this person has ever taken.\n\n" +
+      "You are generating the deep-dive attention panel for a specific metric. This is not a generic health summary. Every single sentence you write must be traceable back to this person's actual numbers, actual trajectory, and actual lifestyle data. "If you write something that could apply to anyone, rewrite it until it only applies to this person. Use scientific terminology when it adds real precision — but always state the plain English meaning first and let the science term follow as the explanation, never the other way around. The science should feel like proof of what you just said, not the headline.\n\n" +
       "HEALTH PROFILE:\n" + profile + "\n\n" +
       "METRIC UNDER ANALYSIS:\n" +
       "Metric: " + metricLabel + "\n" +
