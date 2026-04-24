@@ -278,6 +278,29 @@ canvas { display: none; }
 .improve-maintain-lbl { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin-bottom: 7px; }
 .improve-maintain-text { font-size: 10px; color: var(--muted); line-height: 1.7; }
 @keyframes zpulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+  .improving-panel { position: fixed; top: 0; right: 0; width: 100%; height: 100vh; background: var(--bg); z-index: 400; overflow-y: auto; transform: translateX(100%); -webkit-transform: translateX(100%); transition: transform 0.3s ease; -webkit-transition: -webkit-transform 0.3s ease; -webkit-overflow-scrolling: touch; }
+.improving-panel.open { transform: translateX(0); -webkit-transform: translateX(0); }
+.improving-header { display: flex; align-items: center; gap: 16px; padding: 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+.improving-back { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.improving-back:hover { border-color: var(--accent); color: var(--accent); }
+.improving-header-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 16px; line-height: 1.3; }
+.improving-body { padding: 24px; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+.improving-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.2); border-radius: 8px; padding: 8px 14px; }
+.improving-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.improving-badge-name { font-family: "Syne", sans-serif; font-weight: 700; font-size: 13px; color: var(--accent); }
+.improving-badge-pct { font-size: 10px; color: var(--muted); }
+.improving-panel-badge { position: absolute; top: 8px; left: 8px; background: rgba(0,229,160,0.9); border-radius: 6px; padding: 2px 8px; font-size: 9px; font-weight: 700; color: #000; font-family: "Syne", sans-serif; z-index: 3; }
+.improving-card { background: var(--surface); border: 1px solid rgba(0,229,160,0.15); border-radius: 14px; padding: 18px; }
+.improving-card-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.improving-predict-card { background: rgba(0,229,160,0.04); border: 1px solid rgba(0,229,160,0.15); border-radius: 14px; padding: 18px; }
+.improving-predict-title { font-family: "Syne", sans-serif; font-weight: 700; font-size: 12px; color: var(--accent); margin-bottom: 2px; }
+.improving-predict-sub { font-size: 9px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+.improving-predict-line { height: 2px; background: linear-gradient(90deg,rgba(0,229,160,0.3),rgba(0,229,160,0.9)); border-radius: 2px; position: relative; }
+.improving-predict-line::after { content:"▶"; position:absolute; right:-6px; top:-7px; font-size:10px; color:var(--accent); }
+.improving-predict-days { font-size: 9px; color: var(--accent); text-align: center; margin-bottom: 10px; letter-spacing: 1px; }
+.improving-predict-text { font-size: 11px; color: var(--muted); line-height: 1.7; }
+.improving-steps-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+.improving-steps-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
 </style>
 </head>
 <body>
