@@ -1005,7 +1005,7 @@ function renderMetric(key) {
       } else if (improving) {
         trendEl.className = "metric-trend-card good";
         trendEl.textContent = meta.label + " improved " + pct + "% since your first scan. Tap to see what is working.";
-        trendEl.onclick = (function(k, m, p) { return function() { openAttentionPanel(k, m, p, true); }; })(key, meta, pct);
+        trendEl.onclick = (function(k, m, p) { return function() { openImprovingPanel(k, m, p); }; })(key, meta, pct);
       } else if (declining) {
         trendEl.className = "metric-trend-card bad";
         trendEl.textContent = meta.label + " has declined " + pct + "% since your first scan. Tap to see what to do.";
