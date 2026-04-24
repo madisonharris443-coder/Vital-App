@@ -888,7 +888,6 @@ async function loadProfileData() {
       list.innerHTML += '<div class="profile-scan-item"><div class="profile-scan-age">' + scan.biologicalAge + '</div><div class="profile-scan-info"><div class="profile-scan-date">' + date + '</div><div class="profile-scan-diff">' + (scan.chronologicalAgeDiff || "") + '</div><div class="profile-scan-rate">' + (scan.agingRate || "") + '</div></div></div>';
     });
   }
-  document.getElementById("profileStreak").textContent = scans.length > 0 ? 1 : 0;
 }
 
 var _allScans = [];
