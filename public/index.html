@@ -1227,9 +1227,114 @@ function selectAttentionScan(el, index) {
 function closeAttentionPanel() {
   document.getElementById("attentionPanel").classList.remove("open");
 }
+var _improvingCache = {};
 
-function addToHabitTracker() {
-  alert("Habit Tracker coming soon. This will create a daily check-in tied to this metric.");
+function openImprovingPanel(key, meta, pct) {
+  var scans = _allScans.filter(function(s) { return s.date; });
+  var rawVals = scans.map(function(s) { return meta.extract(s); }).filter(function(v) { return v !== null; });
+  var currentVal = rawVals.length > 0 ? rawVals[rawVals.length - 1] : 0;
+  var firstVal = rawVals.length > 0 ? rawVals[0] : 0;
+  var lastScan = scans.length > 0 ? scans[scans.length - 1] : null;
+  var firstDate = scans.length > 0 ? new Date(scans[0].date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
+  var lastDate = scans.length > 0 ? new Date(scans[scans.length-1].date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
+  var higherIsBetter = ["skinHealth","hydration","collagenScore","faceSymmetry","sleepSignal"].indexOf(key) > -1;
+
+  document.getElementById("improvingTitle").textContent = meta.label + " — Improving";
+  document.getElementById("improvingBadgeName").textContent = meta.label;
+  document.getElementById("improvingBadgePct").textContent = "improved " + pct + "% across " + scans.length + " scans";
+
+  var dotColors = { low:"#00e5a0", mild:"#ffd43b", moderate:"#ffa94d", high:"#ff6b6b", severe:"#ff3b3b", optimal:"#00e5a0", good:"#4ade80", fair:"#ffd43b", deprived:"#ffa94d" };
+  var scrollHtml = "";
+  scans.forEach(function(scan, i) {
+    var date = new Date(scan.date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    var rawVal = meta.extract(scan);
+    var displayVal = rawVal !== null ? (meta.label2 ? (scan[key] || "--") : (meta.text ? (scan[key] || "--") : rawVal + meta.unit)) : "--";
+    var dotColor = "var(--accent)";
+    if (meta.label2 && scan[key]) dotColor = dotColors[(scan[key]||"").toLowerCase()] || "var(--muted)";
+    var isActive = (i === scans.length - 1) ? "active" : "";
+    var thumbContent = scan.photoUrl ? '<img src="' + scan.photoUrl + '" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;">' : '<span style="font-size:28px;">&#128100;</span>';
+    scrollHtml += '<div class="attention-scan-thumb ' + isActive + '" onclick="selectImprovingScan(this,' + i + ')"><div class="attention-thumb-img">' + thumbContent + '<div class="attention-thumb-dot" style="background:' + dotColor + '"></div></div><div class="attention-thumb-date">' + date + '</div><div class="attention-thumb-val" style="color:' + dotColor + '">' + displayVal + '</div></div>';
+  });
+  document.getElementById("improvingScanScroll").innerHTML = scrollHtml;
+
+  if (lastScan) { document.getElementById("improvingScanDate").textContent = new Date(lastScan.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " scan"; }
+  setPhotoInPanel(lastScan, "improvingPhotoWrap", "improvingPhotoEmoji");
+  document.getElementById("improvingSvgOverlay").innerHTML = "";
+  document.getElementById("improvingFaceZones").innerHTML = faceZoneSvgDefs[key] || "";
+  document.getElementById("improvingFaceLegend").innerHTML = "";
+  document.getElementById("improvingWhatText").innerHTML = '<div style="color:var(--muted);font-size:11px;display:flex;align-items:center;gap:8px;"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span><span style="margin-left:4px;">Analyzing your progress...</span></div>';
+  document.getElementById("improvingStepsList").innerHTML = "";
+  document.getElementById("improvingPredictCard").innerHTML = "";
+
+  if (rawVals.length >= 2 && !meta.text) {
+    var perScan = (rawVals[rawVals.length-1] - rawVals[0]) / (rawVals.length - 1);
+    var projected = Math.round(rawVals[rawVals.length-1] + perScan * 5);
+    projected = Math.max(0, Math.min(100, projected));
+    var predictHtml = '<div class="improving-predict-card"><div class="improving-predict-title">Keep this up — 30-Day Projection</div>';
+    predictHtml += '<div class="improving-predict-sub">Based on ' + scans.length + ' scans · ' + firstDate + ' to ' + lastDate + '</div>';
+    predictHtml += '<div class="predict-timeline"><div class="predict-val"><div class="pnum" style="color:var(--accent)">' + currentVal + meta.unit + '</div><div class="plbl">Today</div></div><div class="predict-arrow"><div class="improving-predict-line"></div></div><div class="predict-val"><div class="pnum" style="color:var(--accent)">' + projected + meta.unit + '</div><div class="plbl">~30 days</div></div></div>';
+    predictHtml += '<div class="improving-predict-days">AT CURRENT RATE · +' + Math.abs(perScan).toFixed(1) + meta.unit + ' PER SCAN</div>';
+    predictHtml += '<div class="improving-predict-text">Up ' + Math.abs(rawVals[rawVals.length-1] - rawVals[0]) + meta.unit + ' since ' + firstDate + '. At this rate you reach ' + projected + meta.unit + ' within 30 days.</div></div>';
+    document.getElementById("improvingPredictCard").innerHTML = predictHtml;
+  }
+
+  document.getElementById("improvingPanel").classList.add("open");
+
+  var cacheKey = key + "_improving";
+
+  function renderImprovingData(d) {
+    document.getElementById("improvingWhatText").textContent = d.what || "";
+    var legendHtml = "";
+    if (d.zones && d.zones.length > 0) {
+      d.zones.forEach(function(z) {
+        legendHtml += '<div class="attention-face-legend-item"><div class="attention-face-legend-dot" style="background:var(--accent)"></div><div class="attention-face-legend-text"><strong>' + z.label + '</strong>' + z.detail + '</div></div>';
+      });
+    }
+    document.getElementById("improvingFaceLegend").innerHTML = legendHtml;
+    var stepsHtml = "";
+    if (d.steps) d.steps.forEach(function(s, i) {
+      stepsHtml += '<div class="attention-fix"><div class="attention-fix-num">' + (i+1) + '</div><div><div class="attention-fix-title">' + s.title + '</div><div class="attention-fix-detail">' + s.detail + '</div></div></div>';
+      if (i < d.steps.length - 1) stepsHtml += '<div class="attention-hdiv"></div>';
+    });
+    document.getElementById("improvingStepsList").innerHTML = stepsHtml;
+  }
+
+  if (_improvingCache[cacheKey]) {
+    renderImprovingData(_improvingCache[cacheKey]);
+  } else {
+    var scanHistory = scans.map(function(s) {
+      var val = meta.extract(s);
+      return new Date(s.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) + ": " + (val !== null ? (meta.label2 ? (s[key] || "--") : val + meta.unit) : "--");
+    }).join(", ");
+    fetch("/analyze-improving", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ metricKey: key, metricLabel: meta.label, pct: pct, scans: scans, scanHistory: scanHistory })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      if (res.success) { _improvingCache[cacheKey] = res.data; renderImprovingData(res.data); }
+      else { document.getElementById("improvingWhatText").textContent = "Unable to load analysis. Please try again."; }
+    })
+    .catch(function() { document.getElementById("improvingWhatText").textContent = "Unable to load analysis. Please try again."; });
+  }
+}
+
+function selectImprovingScan(el, index) {
+  document.querySelectorAll(".attention-scan-thumb").forEach(function(t) { t.classList.remove("active"); });
+  el.classList.add("active");
+  var scans = _allScans.filter(function(s) { return s.date; });
+  if (scans[index]) {
+    document.getElementById("improvingScanDate").textContent = new Date(scans[index].date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " scan";
+    setPhotoInPanel(scans[index], "improvingPhotoWrap", "improvingPhotoEmoji");
+  }
+}
+
+function closeImprovingPanel() {
+  document.getElementById("improvingPanel").classList.remove("open");
+}
+
+function addToHabitTracker() {  alert("Habit Tracker coming soon. This will create a daily check-in tied to this metric.");
 }
 
 async function doSignOut() {
