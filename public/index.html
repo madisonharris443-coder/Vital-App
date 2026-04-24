@@ -887,7 +887,18 @@ async function loadProfileData() {
       var date = new Date(scan.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
       list.innerHTML += '<div class="profile-scan-item"><div class="profile-scan-age">' + scan.biologicalAge + '</div><div class="profile-scan-info"><div class="profile-scan-date">' + date + '</div><div class="profile-scan-diff">' + (scan.chronologicalAgeDiff || "") + '</div><div class="profile-scan-rate">' + (scan.agingRate || "") + '</div></div></div>';
     });
+    }
+  var streak = 0;
+  if (scans.length > 0) {
+    streak = 1;
+    for (var si = scans.length - 1; si > 0; si--) {
+      var d1 = new Date(scans[si].date); d1.setHours(0,0,0,0);
+      var d2 = new Date(scans[si-1].date); d2.setHours(0,0,0,0);
+      var diff = (d1 - d2) / (1000 * 60 * 60 * 24);
+      if (diff === 1) { streak++; } else { break; }
+    }
   }
+  document.getElementById("profileStreak").textContent = streak;
 }
 
 var _allScans = [];
