@@ -85,11 +85,11 @@ canvas { display: none; }
 .metric-val { font-family: "Syne", sans-serif; font-weight: 700; font-size: 18px; }
 .risk-section { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 16px; }
 .risk-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--bad); margin-bottom: 14px; }
-.risk-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.risk-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
 .risk-label { font-size: 11px; color: var(--muted); width: 120px; flex-shrink: 0; }
 .risk-bar-wrap { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; }
 .risk-bar { height: 100%; border-radius: 6px; transition: width 1s ease; }
-.risk-pct { font-family: "Syne", sans-serif; font-weight: 700; font-size: 11px; width: 160px; text-align: right; }
+.risk-pct { font-family: "Syne", sans-serif; font-weight: 700; font-size: 10px; width: auto; text-align: right; flex-shrink: 0; max-width: 200px; }
 .insights-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 16px; }
 .insights-title { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
 .insight-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; font-size: 11px; color: var(--muted); line-height: 1.6; }
