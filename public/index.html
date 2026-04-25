@@ -223,7 +223,7 @@ canvas { display: none; }
 .attention-right-col { display: flex; flex-direction: column; gap: 14px; }
 .attention-bottom-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
 .attention-photo-card { background: var(--surface); border: 1px solid rgba(0,229,160,0.12); border-radius: 14px; overflow: hidden; }
-.attention-photo-wrap { width: 100%; height: 200px; position: relative; overflow: hidden; background: #111827; }
+.attention-photo-wrap { width: 100%; height: 260px; position: relative; overflow: hidden; background: #111827; display:flex; align-items:center; justify-content:center; }
 .attention-svg-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
 .attention-scan-date-badge { position: absolute; bottom: 6px; right: 8px; background: rgba(0,0,0,0.7); border-radius: 5px; padding: 2px 8px; font-size: 9px; color: #aaa; z-index: 3; }
 .attention-face-diagram { padding: 14px 16px; border-top: 1px solid var(--border); }
@@ -1080,7 +1080,7 @@ function setPhotoInPanel(scan, wrapId, emojiId) {
   if (scan && scan.photoUrl) {
     if (emoji) emoji.style.display = "none";
     if (existingImg) { existingImg.src = scan.photoUrl; existingImg.style.display = "block"; }
-    else { var img = document.createElement("img"); img.src = scan.photoUrl; img.className = "scan-photo"; img.style.cssText = "width:100%;height:100%;object-fit:cover;object-position:center 20%;position:absolute;top:0;left:0;"; wrap.insertBefore(img, wrap.firstChild); }
+    else { var img = document.createElement("img"); img.src = scan.photoUrl; img.className = "scan-photo"; img.style.cssText = "width:100%;height:100%;object-fit:contain;object-position:center 20%;position:absolute;top:0;left:0;"; wrap.insertBefore(img, wrap.firstChild); }
   } else {
     if (existingImg) existingImg.style.display = "none";
     if (emoji) emoji.style.display = "";
