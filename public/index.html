@@ -895,7 +895,7 @@ async function loadProfileData() {
       var d1 = new Date(scans[si].date); d1.setHours(0,0,0,0);
       var d2 = new Date(scans[si-1].date); d2.setHours(0,0,0,0);
       var diff = (d1 - d2) / (1000 * 60 * 60 * 24);
-      if (diff === 1) { streak++; } else { break; }
+     if (diff >= 1 && diff < 2) { streak++; } else { break; }   
     }
   }
   document.getElementById("profileStreak").textContent = streak;
