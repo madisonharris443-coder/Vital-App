@@ -263,7 +263,7 @@ app.post("/analyze-attention", async function(req, res) {
       "2. WHY THIS MATTERS FOR THIS PERSON SPECIFICALLY\n" +
       "Write 3-4 sentences that explain the downstream consequences of this trajectory for THIS person's exact profile. Reference their specific sleep hours, stress level, diet type, exercise frequency, and screen time as compounding or mitigating factors. End with one sentence stating what happens if they change nothing. Then add one hard-hitting research finding written as a plain English sentence of fact.\n\n" +
       "3. HOW TO FIX IT — RANKED BY BIOLOGICAL IMPACT\n" +
-      "Give exactly 3 fixes. Each fix must have: a sharp specific title, a shortName (3-6 words, plain English daily action, e.g. "Apply niacinamide 2x daily", "Drink 500ml on waking", "Lights off by 10:30pm" — no jargon), and detail (2 sentences: what to do + projected outcome).\n\n" +
+      "Give exactly 3 fixes. Each fix must have: a sharp specific title, a shortName (3-6 words, plain English daily action, e.g. Apply niacinamide 2x daily, Drink 500ml on waking, Lights off by 10:30pm — no jargon), and detail (2 sentences: what to do + projected outcome).\n\n" +
       "4. FACIAL ZONES\n" +
       "Identify 2-3 specific anatomical zones. Use precise anatomical language. One sentence per zone. Assign color bad for primary concern zones and warn for secondary zones.\n\n" +
       "5. WHAT IS ACTUALLY IMPROVING\n" +
