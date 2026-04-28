@@ -1635,8 +1635,7 @@ function renderHabitPanel() {
     var allKeys = Object.keys(_habitCompletions);
     var totalDone = allKeys.filter(function(k) { return (_habitCompletions[k][h.id] || "") === "done"; }).length;
     var pct = Math.min(100, allKeys.length > 0 ? Math.round((totalDone / allKeys.length) * 100) : 0);
-    var tagText = color === "green" ? "Improving" : color === "purple" ? "Tracking" : "Needs attention";
-    var tagColor = color === "green" ? "green" : (color === "red" || color === "warn") ? "red" : "neutral";
+    var tagText = h.source ? h.source.split(' •')[0] : (color === "green" ? "Improving" : color === "purple" ? "Tracking" : "Needs attention");    var tagColor = color === "green" ? "green" : (color === "red" || color === "warn") ? "red" : "neutral";
     var actualBarColor = status === "done" ? "#00e5a0" : barColor;
     var barMeta = status === "done" ? "Done today" : (status === "skip" ? "Skipped" : (pct > 0 ? pct + "% consistency" : "Not done yet"));
     var barMetaColor = status === "done" ? "#00e5a0" : (status === "skip" ? "#ff6b6b" : "#6b7a99");
@@ -1662,8 +1661,8 @@ function renderHabitPanel() {
     '<div class="habits-row"><div class="habit-section-lbl" style="margin-bottom:0;">Today\'s habits</div><button class="habit-add-btn" onclick="addCustomHabit()">+ Add habit</button></div>' +
     habitCards +
     '<div class="habit-insight"><div class="habit-insight-lbl">Today\'s insight</div><div class="habit-insight-text">Your habits are linked directly to your scan data. Every check-in feeds back into your biological age trajectory.</div></div>' +
-    '<button class="habit-complete-btn" onclick="markTodayComplete()">Mark today complete</button>';
-}
+    '<button class="habit-complete-btn" onclick="markTodayComplete()">Mark today complete</button>' +
+   '<div style="background:rgba(123,92,250,0.06);border:1px solid rgba(123,92,250,0.15);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;"><div style="width:28px;height:28px;border-radius:6px;background:rgba(123,92,250,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;">⌚</div><div><div style="font-family:Syne,sans-serif;font-weight:700;font-size:11px;color:#7b5cfa;margin-bottom:2px;">Connect a wearable</div><div style="font-size:10px;color:#6b7a99;line-height:1.5;">Link Apple Health, Whoop, or Oura to automatically track your habits from real biometric data.</div></div></div>'}
 
 function toggleHabit(id, action) {
   loadHabits();
