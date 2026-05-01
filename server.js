@@ -270,7 +270,7 @@ app.post("/analyze-attention", async function(req, res) {
       "5. WHAT IS ACTUALLY IMPROVING\n" +
       "Scan their full history and identify 1-2 metrics that are genuinely improving or holding strong. For each name the exact improvement with values, identify the most likely driver from their lifestyle data. Include one sentence on exactly what will reverse this improvement if they stop doing what is working.\n\n" +
       "6. FOOD INTELLIGENCE\n" +
-"Give EXACTLY 2 food groups and no more. Hard limit: 2 entries in the diet array only.\n\n" +
+"Give exactly 2 food groups. Include a label, 4-5 specific foods, and one sentence explaining the direct mechanism.\n\n" +
       "RESPOND ONLY WITH RAW JSON. NO MARKDOWN. NO BACKTICKS. NO PREAMBLE:\n" +
       "{" +
         "\"what\":\"3-4 sentences of clinical precision referencing exact values and trajectory\"," +
