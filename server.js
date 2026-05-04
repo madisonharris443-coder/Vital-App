@@ -382,8 +382,7 @@ app.post("/analyze-improving", async function(req, res) {
     res.status(500).json({ success: false, error: error.message });
   }
 });
-
-
+//
 app.post("/save-habits", async function(req, res) {
   var habits = req.body.habits;
   var completions = req.body.completions;
@@ -427,5 +426,77 @@ app.get("/get-habits", async function(req, res) {
   }
   return res.json({ success: true, habits: [], completions: {} });
 });
+// OURA OAUTH
+app.get("/oura-connect", function(req, res) {
+  var clientId = process.env.OURA_CLIENT_ID;
+  var redirectUri = "https://vital-app-production-c518.up.railway.app/oura-callback";
+  var url = "https://cloud.ouraring.com/oauth/authorize?response_type=code&client_id=" + clientId + "&redirect_uri=" + encodeURIComponent(redirectUri) + "&scope=daily+heartrate+personal+sleep+workout+session+tag";
+  res.redirect(url);
+});
 
+app.get("/oura-callback", async function(req, res) {
+  var code = req.query.code;
+  if (!code) return res.redirect("/wearable.html?error=no_code");
+  try {
+    var redirectUri = "https://vital-app-production-c518.up.railway.app/oura-callback";
+    var tokenRes = await fetch("https://api.ouraring.com/oauth/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "grant_type=authorization_code&code=" + code + "&redirect_uri=" + encodeURIComponent(redirectUri) + "&client_id=" + process.env.OURA_CLIENT_ID + "&client_secret=" + process.env.OURA_CLIENT_SECRET
+    });
+    var tokenData = await tokenRes.json();
+    if (!tokenData.access_token) return res.redirect("/wearable.html?error=token_failed");
+    var cookies = parseCookies(req);
+    var session = cookies.vital_session;
+    if (session && SUPABASE_SERVICE_KEY) {
+      var supabase = getSupabase(session);
+      var userRes = await supabase.auth.getUser();
+      if (userRes.data && userRes.data.user) {
+        var userId = userRes.data.user.id;
+        await supabase.from("oura_tokens").upsert({ user_id: userId, access_token: tokenData.access_token, refresh_token: tokenData.refresh_token || null, updated_at: new Date().toISOString() });
+      }
+    }
+    res.redirect("/wearable.html?connected=oura");
+  } catch(e) {
+    console.error("oura-callback error:", e.message);
+    res.redirect("/wearable.html?error=callback_failed");
+  }
+});
+
+app.get("/oura-data", async function(req, res) {
+  var cookies = parseCookies(req);
+  var session = cookies.vital_session;
+  if (!session || !SUPABASE_SERVICE_KEY) return res.json({ success: false });
+  try {
+    var supabase = getSupabase(session);
+    var userRes = await supabase.auth.getUser();
+    if (!userRes.data || !userRes.data.user) return res.json({ success: false });
+    var userId = userRes.data.user.id;
+    var tokenRow = await supabase.from("oura_tokens").select("access_token").eq("user_id", userId).single();
+    if (!tokenRow.data) return res.json({ success: false, reason: "not_connected" });
+    var token = tokenRow.data.access_token;
+    var end = new Date().toISOString().split("T")[0];
+    var start = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+    var headers = { "Authorization": "Bearer " + token };
+    var [sleepRes, readinessRes, hrRes] = await Promise.all([
+      fetch("https://api.ouraring.com/v2/usercollection/daily_sleep?start_date=" + start + "&end_date=" + end, { headers }),
+      fetch("https://api.ouraring.com/v2/usercollection/daily_readiness?start_date=" + start + "&end_date=" + end, { headers }),
+      fetch("https://api.ouraring.com/v2/usercollection/heartrate?start_datetime=" + start + "T00:00:00&end_datetime=" + end + "T23:59:59", { headers })
+    ]);
+    var sleepData = await sleepRes.json();
+    var readinessData = await readinessRes.json();
+    var hrData = await hrRes.json();
+    var sleepItems = sleepData.data || [];
+    var readinessItems = readinessData.data || [];
+    var hrItems = hrData.data || [];
+    var avgSleep = sleepItems.length > 0 ? (sleepItems.reduce(function(a, s) { return a + (s.contributors && s.contributors.total_sleep ? s.contributors.total_sleep : 0); }, 0) / sleepItems.length).toFixed(1) : null;
+    var avgReadiness = readinessItems.length > 0 ? Math.round(readinessItems.reduce(function(a, r) { return a + (r.score || 0); }, 0) / readinessItems.length) : null;
+    var avgHrv = hrItems.length > 0 ? Math.round(hrItems.reduce(function(a, h) { return a + (h.bpm || 0); }, 0) / hrItems.length) : null;
+    var latestSleep = sleepItems.length > 0 ? sleepItems[sleepItems.length - 1] : null;
+    res.json({ success: true, data: { avgSleepScore: avgSleep, avgReadiness: avgReadiness, avgHrv: avgHrv, latestSleepOnset: latestSleep ? latestSleep.bedtime_start : null, latestSleepEnd: latestSleep ? latestSleep.bedtime_end : null, days: sleepItems.length } });
+  } catch(e) {
+    console.error("oura-data error:", e.message);
+    res.json({ success: false, error: e.message });
+  }
+});
 app.listen(3000, function() { console.log("VITAL running on port 3000"); });
