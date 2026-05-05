@@ -12,7 +12,7 @@ const SUPABASE_URL = "https://xdtvecuitjnumobmsrhj.supabase.co";
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
 app.use(express.json());
-app.get("/", function(req, res) { res.sendFile(__dirname + "/public/auth.html"); });
+app.get("/", function(req, res) { res.sendFile(__dirname + "/public/splash.html"); });
 app.use(express.static("public"));
 
 function parseCookies(req) {
