@@ -224,7 +224,7 @@ async function init() {
   try {
     var dataRes = await fetch("/get-data");
     var data = await dataRes.json();
-    if (!data.user) { window.location.href = "/auth.html"; return; }
+    if (!data.user) { window.location.href = "/splash.html"; return; }
     var user = data.user;
     var name = (user.user_metadata && user.user_metadata.full_name) ? user.user_metadata.full_name : user.email.split("@")[0];
     var initial = name.charAt(0).toUpperCase();
