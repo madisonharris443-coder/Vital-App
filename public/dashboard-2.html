@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VITAL — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #05070a; --surface: #0c1018; --surface2: #111827;
+  --border: rgba(255,255,255,0.06); --text: #f0f4ff; --muted: #6b7a99;
+  --accent: #00e5a0; --bad: #ff6b6b; --warn: #ffa94d; --purple: #7b5cfa;
+}
+body { background: var(--bg); color: var(--text); font-family: "DM Mono", monospace; min-height: 100vh; padding-bottom: 40px; }
+.ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(ellipse 70% 50% at 20% 10%, rgba(0,229,160,0.06) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(123,92,250,0.07) 0%, transparent 60%); }
+.wrap { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 16px; }
+
+/* HEADER */
+.header { display: flex; align-items: center; justify-content: space-between; padding: 20px 0 16px; }
+.header-left { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: "Syne", sans-serif; font-weight: 800; font-size: 13px; color: #000; overflow: hidden; flex-shrink: 0; cursor: pointer; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.header-name { font-family: "Syne", sans-serif; font-weight: 700; font-size: 13px; }
+.header-sub { font-size: 9px; color: var(--muted); margin-top: 1px; }
+.logo-sm { font-family: "Syne", sans-serif; font-weight: 800; font-size: 18px; letter-spacing: -0.5px; cursor: pointer; }
+.logo-sm span { color: var(--accent); }
+
+/* BIO HERO */
+.bio-hero { background: linear-gradient(135deg, rgba(0,229,160,0.08), rgba(123,92,250,0.05)); border: 1px solid rgba(0,229,160,0.15); border-radius: 20px; padding: 20px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+.bio-lbl { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.bio-num { font-family: "Syne", sans-serif; font-weight: 800; font-size: 52px; color: var(--accent); line-height: 1; letter-spacing: -2px; }
+.bio-unit { font-size: 9px; color: var(--muted); margin-top: 3px; }
+.bio-diff { font-size: 10px; color: var(--accent); margin-top: 6px; }
+.bio-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.bio-scan-lbl { font-size: 9px; color: var(--muted); letter-spacing: 0.5px; }
+.new-scan-btn { background: var(--accent); color: #000; border: none; border-radius: 10px; padding: 10px 16px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 11px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.new-scan-btn:hover { background: #00ffb3; }
+.bio-empty { font-size: 11px; color: var(--muted); text-align: center; padding: 8px 0 4px; }
+
+/* SECTION LABEL */
+.sec-lbl { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; margin-top: 16px; }
+
+/* METRICS */
+.metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 4px; }
+.mt { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.mt-name { font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.mt-val { font-family: "Syne", sans-serif; font-weight: 700; font-size: 15px; }
+.mt-bar { height: 2px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.mt-fill { height: 100%; border-radius: 2px; transition: width 0.8s ease; }
+.mt.good .mt-val { color: var(--accent); }
+.mt.warn .mt-val { color: var(--warn); }
+.mt.bad .mt-val { color: var(--bad); }
+.mt.neutral .mt-val { color: var(--muted); }
+
+/* TOOLS GRID */
+.tools-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tool-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 13px; padding: 14px; cursor: pointer; display: flex; flex-direction: column; gap: 8px; transition: border-color 0.15s, transform 0.15s; }
+.tool-tile:hover { transform: translateY(-1px); }
+.tool-tile:active { transform: translateY(0); }
+.tool-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tool-icon svg { width: 14px; height: 14px; }
+.tool-icon.green { background: rgba(0,229,160,0.1); }
+.tool-icon.purple { background: rgba(123,92,250,0.1); }
+.tool-icon.warn { background: rgba(255,169,77,0.1); }
+.tool-icon.red { background: rgba(255,107,107,0.1); }
+.tool-icon.blue { background: rgba(59,130,246,0.1); }
+.tool-name { font-family: "Syne", sans-serif; font-weight: 700; font-size: 11px; line-height: 1.3; color: var(--text); }
+.tool-badge { font-size: 8px; padding: 2px 7px; border-radius: 20px; font-weight: 700; display: inline-block; letter-spacing: 0.5px; }
+.tool-badge.green { background: rgba(0,229,160,0.1); color: var(--accent); }
+.tool-badge.purple { background: rgba(123,92,250,0.1); color: var(--purple); }
+.tool-badge.red { background: rgba(255,107,107,0.1); color: var(--bad); }
+.tool-badge.soon { background: rgba(245,158,11,0.08); color: #f59e0b; }
+.tool-badge.muted { background: rgba(255,255,255,0.05); color: var(--muted); }
+
+/* SCAN HISTORY */
+.history-card { background: var(--surface); border: 1px solid var(--border); border-radius: 13px; padding: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.15s; }
+.history-card:hover { border-color: rgba(0,229,160,0.2); }
+.history-left { display: flex; align-items: center; gap: 12px; }
+.history-num { font-family: "Syne", sans-serif; font-weight: 800; font-size: 26px; color: var(--accent); flex-shrink: 0; }
+.history-lbl { font-size: 10px; color: var(--muted); }
+.history-last { font-size: 9px; color: #4a5568; margin-top: 2px; }
+.history-btn { font-size: 10px; color: var(--accent); background: rgba(0,229,160,0.06); border: 1px solid rgba(0,229,160,0.15); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-family: "DM Mono", monospace; white-space: nowrap; }
+
+/* SCAN HISTORY EXPANDED */
+.scan-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.scan-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 14px; }
+.scan-age { font-family: "Syne", sans-serif; font-weight: 800; font-size: 26px; color: var(--accent); flex-shrink: 0; }
+.scan-date { font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+.scan-diff { font-size: 11px; color: var(--text); margin-top: 2px; }
+.scan-rate { font-size: 10px; color: var(--warn); margin-top: 1px; }
+
+/* LOADING */
+.loading-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin: 0 3px; animation: bounce 1.2s infinite; }
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+.loading-wrap { text-align: center; padding: 20px; color: var(--muted); font-size: 11px; }
+
+/* SIGN OUT */
+.signout-row { text-align: center; margin-top: 24px; }
+.signout-link { font-size: 10px; color: #4a5568; cursor: pointer; letter-spacing: 0.5px; }
+.signout-link:hover { color: var(--bad); }
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="avatar" id="dashAvatar" onclick="goToProfile()"><span id="dashAvatarInitial">?</span></div>
+      <div>
+        <div class="header-name" id="dashName">Loading...</div>
+        <div class="header-sub" id="dashSince"></div>
+      </div>
+    </div>
+    <div class="logo-sm" onclick="window.location.href='/index.html'">VIT<span>AL</span></div>
+  </div>
+
+  <!-- BIO AGE HERO -->
+  <div class="bio-hero">
+    <div>
+      <div class="bio-lbl">Biological Age</div>
+      <div class="bio-num" id="dashBioAge">--</div>
+      <div class="bio-unit">years old</div>
+      <div class="bio-diff" id="dashBioDiff"></div>
+    </div>
+    <div class="bio-right">
+      <div class="bio-scan-lbl" id="dashLastScan">No scans yet</div>
+      <button class="new-scan-btn" onclick="window.location.href='/index.html'">+ New Scan</button>
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="sec-lbl">Health Metrics</div>
+  <div class="metrics" id="dashMetrics">
+    <div class="loading-wrap" style="grid-column:span 2"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
+  </div>
+
+  <!-- TOOLS -->
+  <div class="sec-lbl">Your Tools</div>
+  <div class="tools-grid">
+    <div class="tool-tile" onclick="openHabitTracker()">
+      <div class="tool-icon purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7b5cfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      </div>
+      <div class="tool-name">Habit Tracker</div>
+      <div class="tool-badge purple" id="habitBadge">Loading...</div>
+    </div>
+    <div class="tool-tile" onclick="openMetrics()">
+      <div class="tool-icon green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#00e5a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div class="tool-name">Metric Tracking</div>
+      <div class="tool-badge green" id="metricBadge">8 metrics</div>
+    </div>
+    <div class="tool-tile" onclick="window.location.href='/wearable.html'">
+      <div class="tool-icon warn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ffa94d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/><path d="M9 7h6M9 11h4"/></svg>
+      </div>
+      <div class="tool-name">Wearable Sync</div>
+      <div class="tool-badge muted" id="wearableBadge">Not connected</div>
+    </div>
+    <div class="tool-tile" onclick="window.location.href='/medical.html'">
+      <div class="tool-icon blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div class="tool-name">Medical Records</div>
+      <div class="tool-badge soon">Coming soon</div>
+    </div>
+    <div class="tool-tile" onclick="openNeedsAttention()">
+      <div class="tool-icon red">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="tool-name">Needs Attention</div>
+      <div class="tool-badge red" id="attentionBadge">--</div>
+    </div>
+    <div class="tool-tile" onclick="openImproving()">
+      <div class="tool-icon green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#00e5a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+      </div>
+      <div class="tool-name">Improving</div>
+      <div class="tool-badge green" id="improvingBadge">--</div>
+    </div>
+  </div>
+
+  <!-- SCAN HISTORY -->
+  <div class="sec-lbl" style="margin-top:20px;">Scan History</div>
+  <div class="history-card" id="historyCard" onclick="toggleHistory()">
+    <div class="history-left">
+      <div class="history-num" id="historyCount">0</div>
+      <div>
+        <div class="history-lbl">Total scans</div>
+        <div class="history-last" id="historyLast">No scans yet</div>
+      </div>
+    </div>
+    <div class="history-btn" id="historyBtn">View all →</div>
+  </div>
+  <div class="scan-list" id="scanList" style="display:none;"></div>
+
+  <div class="signout-row">
+    <span class="signout-link" onclick="doSignOut()">Sign out</span>
+  </div>
+
+</div>
+
+<script>
+var _scans = [];
+var _habits = [];
+var _habitCompletions = {};
+var _historyOpen = false;
+
+var metricMeta = {
+  skinHealth:    { label: "Skin Health",    extract: function(s) { var m = s.skinHealth ? String(s.skinHealth).match(/(\d+)/) : null; return m ? parseInt(m[1]) : null; }, unit: "/100", higherBetter: true },
+  hydration:     { label: "Hydration",      extract: function(s) { var m = s.hydration ? String(s.hydration).match(/(\d+)/) : null; return m ? parseInt(m[1]) : null; }, unit: "%", higherBetter: true },
+  inflammation:  { label: "Inflammation",   extract: function(s) { var str = (s.inflammation||"").toLowerCase(); var map = { low:10, mild:30, moderate:55, high:80, "very high":88, severe:95 }; for (var k in map) { if (str.includes(k)) return map[k]; } return null; }, unit: "", higherBetter: false, label2: true },
+  sleepSignal:   { label: "Sleep Signal",   extract: function(s) { var str = (s.sleepSignal||"").toLowerCase(); if (str.includes("optimal")) return 90; if (str.includes("good")) return 70; if (str.includes("fair")) return 50; if (str.includes("mild")) return 30; if (str.includes("deprived") || str.includes("chronic") || str.includes("severe")) return 15; if (str.includes("moderate")) return 45; return null; }, unit: "", higherBetter: true, label2: true }
+};
+
+async function init() {
+  // Load user
+  try {
+    var dataRes = await fetch("/get-data");
+    var data = await dataRes.json();
+    if (!data.user) { window.location.href = "/splash.html"; return; }
+    var user = data.user;
+    var name = (user.user_metadata && user.user_metadata.full_name) ? user.user_metadata.full_name : user.email.split("@")[0];
+    var initial = name.charAt(0).toUpperCase();
+    document.getElementById("dashName").textContent = name;
+    document.getElementById("dashAvatarInitial").textContent = initial;
+    if (user.created_at) {
+      var created = new Date(user.created_at);
+      document.getElementById("dashSince").textContent = "Member since " + created.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+    }
+    if (data.avatar) {
+      document.getElementById("dashAvatar").innerHTML = '<img src="' + data.avatar + '">';
+    }
+  } catch(e) { window.location.href = "/splash.html"; return; }
+
+  // Load scans
+  try {
+    var scanRes = await fetch("/get-scans");
+    var scanData = await scanRes.json();
+    _scans = scanData.scans || [];
+  } catch(e) { _scans = []; }
+
+  renderBioHero();
+  renderMetrics();
+  renderToolBadges();
+  renderHistoryCard();
+
+  // Load habits
+  try {
+    var habitRes = await fetch("/get-habits");
+    var habitData = await habitRes.json();
+    _habits = habitData.habits || [];
+    _habitCompletions = habitData.completions || {};
+  } catch(e) {
+    try { _habits = JSON.parse(localStorage.getItem("vital_habits") || "[]"); } catch(e2) {}
+    try { _habitCompletions = JSON.parse(localStorage.getItem("vital_habit_completions") || "{}"); } catch(e2) {}
+  }
+  renderHabitBadge();
+
+  // Check oura
+  try {
+    var ouraRes = await fetch("/oura-data");
+    var ouraData = await ouraRes.json();
+    if (ouraData.success) {
+      document.getElementById("wearableBadge").textContent = "Oura connected";
+      document.getElementById("wearableBadge").className = "tool-badge green";
+    }
+  } catch(e) {}
+}
+
+function renderBioHero() {
+  if (_scans.length === 0) {
+    document.getElementById("dashBioAge").textContent = "--";
+    document.getElementById("dashBioDiff").textContent = "";
+    document.getElementById("dashLastScan").textContent = "No scans yet";
+    return;
+  }
+  var latest = _scans[_scans.length - 1];
+  document.getElementById("dashBioAge").textContent = latest.biologicalAge || "--";
+  if (latest.chronologicalAgeDiff) {
+    document.getElementById("dashBioDiff").textContent = latest.chronologicalAgeDiff;
+  }
+  var date = new Date(latest.date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  document.getElementById("dashLastScan").textContent = "Last scan: " + date;
+}
+
+function renderMetrics() {
+  if (_scans.length === 0) {
+    document.getElementById("dashMetrics").innerHTML = '<div style="grid-column:span 2;text-align:center;padding:20px;color:var(--muted);font-size:11px;">Complete a scan to see your metrics</div>';
+    return;
+  }
+  var latest = _scans[_scans.length - 1];
+  var keys = ["skinHealth", "hydration", "inflammation", "sleepSignal"];
+  var html = keys.map(function(key) {
+    var meta = metricMeta[key];
+    var raw = meta.extract(latest);
+    var displayVal = latest[key] || "--";
+    var cls = "neutral";
+    var fillWidth = 0;
+    var fillColor = "var(--muted)";
+    if (raw !== null) {
+      if (meta.higherBetter) {
+        if (raw >= 60) { cls = "good"; fillColor = "var(--accent)"; }
+        else if (raw >= 40) { cls = "warn"; fillColor = "var(--warn)"; }
+        else { cls = "bad"; fillColor = "var(--bad)"; }
+        fillWidth = raw;
+      } else {
+        if (raw <= 30) { cls = "good"; fillColor = "var(--accent)"; }
+        else if (raw <= 55) { cls = "warn"; fillColor = "var(--warn)"; }
+        else { cls = "bad"; fillColor = "var(--bad)"; }
+        fillWidth = 100 - raw;
+      }
+    }
+    return '<div class="mt ' + cls + '"><div class="mt-name">' + meta.label + '</div><div class="mt-val">' + displayVal + '</div><div class="mt-bar"><div class="mt-fill" style="width:' + fillWidth + '%;background:' + fillColor + ';"></div></div></div>';
+  }).join("");
+  document.getElementById("dashMetrics").innerHTML = html;
+}
+
+function renderToolBadges() {
+  if (_scans.length < 2) {
+    document.getElementById("attentionBadge").textContent = "Need 2+ scans";
+    document.getElementById("attentionBadge").className = "tool-badge muted";
+    document.getElementById("improvingBadge").textContent = "Need 2+ scans";
+    document.getElementById("improvingBadge").className = "tool-badge muted";
+    return;
+  }
+  var attentionCount = 0;
+  var improvingCount = 0;
+  Object.keys(metricMeta).forEach(function(key) {
+    var meta = metricMeta[key];
+    if (meta.label2) return;
+    var vals = _scans.map(function(s) { return meta.extract(s); }).filter(function(v) { return v !== null; });
+    if (vals.length < 2) return;
+    var diff = vals[vals.length - 1] - vals[0];
+    var pct = vals[0] > 0 ? Math.abs(diff / vals[0]) * 100 : 0;
+    if (pct < 3) return;
+    var isImproving = (diff > 0 && meta.higherBetter) || (diff < 0 && !meta.higherBetter);
+    if (isImproving) improvingCount++;
+    else attentionCount++;
+  });
+  document.getElementById("attentionBadge").textContent = attentionCount > 0 ? attentionCount + " alert" + (attentionCount !== 1 ? "s" : "") : "All good";
+  document.getElementById("attentionBadge").className = attentionCount > 0 ? "tool-badge red" : "tool-badge green";
+  document.getElementById("improvingBadge").textContent = improvingCount > 0 ? improvingCount + " metric" + (improvingCount !== 1 ? "s" : "") : "None yet";
+  document.getElementById("improvingBadge").className = improvingCount > 0 ? "tool-badge green" : "tool-badge muted";
+}
+
+function renderHabitBadge() {
+  if (_habits.length === 0) {
+    document.getElementById("habitBadge").textContent = "No habits yet";
+    document.getElementById("habitBadge").className = "tool-badge muted";
+    return;
+  }
+  var todayKey = (function() { var d = new Date(); return d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate(); })();
+  var todayComp = _habitCompletions[todayKey] || {};
+  var done = _habits.filter(function(h) { return (todayComp[h.id] || "") === "done"; }).length;
+  document.getElementById("habitBadge").textContent = done + "/" + _habits.length + " today";
+  document.getElementById("habitBadge").className = done === _habits.length ? "tool-badge green" : "tool-badge purple";
+}
+
+function renderHistoryCard() {
+  document.getElementById("historyCount").textContent = _scans.length;
+  if (_scans.length === 0) {
+    document.getElementById("historyLast").textContent = "No scans yet";
+  } else {
+    var latest = _scans[_scans.length - 1];
+    var date = new Date(latest.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    document.getElementById("historyLast").textContent = "Last: " + date + " · Age " + latest.biologicalAge;
+  }
+}
+
+function toggleHistory() {
+  _historyOpen = !_historyOpen;
+  var list = document.getElementById("scanList");
+  var btn = document.getElementById("historyBtn");
+  if (_historyOpen) {
+    list.style.display = "flex";
+    btn.textContent = "Collapse ↑";
+    var html = _scans.slice().reverse().map(function(scan) {
+      var date = new Date(scan.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      return '<div class="scan-item"><div class="scan-age">' + (scan.biologicalAge || "--") + '</div><div><div class="scan-date">' + date + '</div><div class="scan-diff">' + (scan.chronologicalAgeDiff || "") + '</div><div class="scan-rate">' + (scan.agingRate || "") + '</div></div></div>';
+    }).join("");
+    list.innerHTML = html || '<div style="color:var(--muted);font-size:11px;text-align:center;padding:16px;">No scans yet</div>';
+  } else {
+    list.style.display = "none";
+    btn.textContent = "View all →";
+  }
+}
+
+function openHabitTracker() { window.location.href = "/index.html#habits"; }
+function openMetrics() { window.location.href = "/index.html#metrics"; }
+function openNeedsAttention() { window.location.href = "/index.html#attention"; }
+function openImproving() { window.location.href = "/index.html#improving"; }
+function goToProfile() { window.location.href = "/index.html#profile"; }
+
+async function doSignOut() {
+  try { await fetch("/signout", { method: "POST" }); } catch(e) {}
+  window.location.href = "/splash.html";
+}
+
+init();
+</script>
+</body>
+</html>
