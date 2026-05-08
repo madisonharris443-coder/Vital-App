@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VITAL — Medical Records</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#05070a;--surface:#0c1018;--border:rgba(255,255,255,0.06);--text:#f0f4ff;--muted:#6b7a99;--accent:#00e5a0;}
+body{background:var(--bg);color:var(--text);font-family:"DM Mono",monospace;min-height:100vh;padding:0 0 60px;}
+.ambient{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 30% 20%,rgba(59,130,246,0.05) 0%,transparent 60%);}
+.wrap{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px;}
+.header{display:flex;align-items:center;gap:14px;padding:20px 0 16px;}
+.back-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.header-title{font-family:"Syne",sans-serif;font-weight:800;font-size:18px;}
+.hero{background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:20px;padding:28px 24px;margin-bottom:16px;text-align:center;}
+.hero-icon{font-size:40px;margin-bottom:16px;}
+.hero-badge{display:inline-block;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);border-radius:20px;padding:4px 14px;font-size:9px;font-weight:700;color:#f59e0b;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.hero-title{font-family:"Syne",sans-serif;font-weight:800;font-size:22px;margin-bottom:10px;line-height:1.3;}
+.hero-sub{font-size:11px;color:var(--muted);line-height:1.8;}
+.feature-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;}
+.feature-icon{width:36px;height:36px;border-radius:9px;background:rgba(59,130,246,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.feature-icon svg{width:16px;height:16px;}
+.feature-title{font-family:"Syne",sans-serif;font-weight:700;font-size:13px;margin-bottom:4px;}
+.feature-sub{font-size:10px;color:var(--muted);line-height:1.6;}
+.notify-card{background:var(--surface);border:1px solid rgba(0,229,160,0.15);border-radius:14px;padding:20px;margin-top:6px;}
+.notify-title{font-family:"Syne",sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;}
+.notify-sub{font-size:10px;color:var(--muted);margin-bottom:14px;line-height:1.6;}
+.notify-input{width:100%;background:#111827;border:1px solid var(--border);border-radius:8px;padding:11px 14px;font-family:"DM Mono",monospace;font-size:12px;color:var(--text);outline:none;margin-bottom:10px;}
+.notify-input:focus{border-color:var(--accent);}
+.notify-btn{width:100%;background:var(--accent);color:#000;border:none;border-radius:10px;padding:13px;font-family:"Syne",sans-serif;font-weight:800;font-size:13px;cursor:pointer;}
+.privacy{font-size:9px;color:#4a5568;text-align:center;margin-top:12px;line-height:1.7;}
+.success-msg{display:none;text-align:center;padding:14px;background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.2);border-radius:10px;font-size:11px;color:var(--accent);}
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+<div class="wrap">
+  <div class="header">
+    <button class="back-btn" onclick="window.location.href='/dashboard.html'">&#8592;</button>
+    <div class="header-title">Medical Records</div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-icon">🏥</div>
+    <div class="hero-badge">Coming Soon</div>
+    <div class="hero-title">Real lab data.<br>Smarter scans.</div>
+    <div class="hero-sub">Connect your doctor and health system to pull in real bloodwork, lab results, and clinical history — so every VITAL scan is backed by actual medical data, not just estimates.</div>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+    <div><div class="feature-title">Lab Results Integration</div><div class="feature-sub">Pull in bloodwork, cholesterol panels, hormone levels, and more directly from your health system via FHIR — the same standard used by Epic, Cerner, and major hospital networks.</div></div>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+    <div><div class="feature-title">Longitudinal Tracking</div><div class="feature-sub">See how your lab values trend over months and years alongside your facial scan data. Connect biological aging markers to actual clinical measurements.</div></div>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+    <div><div class="feature-title">HIPAA Compliant</div><div class="feature-sub">Your medical data is encrypted, never sold, and only used to improve your VITAL results. You control what's connected and can disconnect at any time.</div></div>
+  </div>
+
+  <div class="notify-card">
+    <div class="notify-title">Get notified when it launches</div>
+    <div class="notify-sub">Enter your email and we'll let you know the moment Medical Records is available.</div>
+    <input class="notify-input" type="email" id="notifyEmail" placeholder="your@email.com">
+    <button class="notify-btn" onclick="submitNotify()">Notify Me</button>
+    <div class="success-msg" id="successMsg">✓ You're on the list. We'll notify you when Medical Records launches.</div>
+    <div class="privacy">Your email is only used for this notification. No spam, ever.</div>
+  </div>
+</div>
+<script>
+function submitNotify() {
+  var email = document.getElementById("notifyEmail").value;
+  if (!email || !email.includes("@")) { alert("Please enter a valid email."); return; }
+  document.getElementById("notifyEmail").style.display = "none";
+  document.querySelector(".notify-btn").style.display = "none";
+  document.getElementById("successMsg").style.display = "block";
+}
+</script>
+</body>
+</html>
