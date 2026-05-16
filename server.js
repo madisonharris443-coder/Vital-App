@@ -37,7 +37,7 @@ function getSupabase(token) {
 app.get("/config", function(req, res) {
   res.json({
     supabaseUrl: SUPABASE_URL,
-    supabaseKey: "sb_publishable_HqxQ_1RqmVazq4BfkMhNwg_Th6JKCsL"
+    supabaseKey: process.env.SUPABASE_ANON_KEY
   });
 });
 
