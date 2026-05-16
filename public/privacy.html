@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — VITAL</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#05070a;
+  --surface:#0c1018;
+  --border:rgba(255,255,255,0.07);
+  --accent:#00e5a0;
+  --text:#f0f4ff;
+  --muted:#6b7a99;
+  --body-text:#a8b4cc;
+}
+
+body{
+  background:var(--bg);
+  color:var(--body-text);
+  font-family:"DM Mono",monospace;
+  font-size:14px;
+  line-height:1.8;
+  min-height:100vh;
+}
+
+/* ── NAV ── */
+nav{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(5,7,10,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 32px;
+  height:60px;
+}
+.nav-logo{
+  font-family:"Syne",sans-serif;
+  font-weight:800;
+  font-size:22px;
+  letter-spacing:-1px;
+  color:var(--text);
+  text-decoration:none;
+}
+.nav-logo span{color:var(--accent);}
+.nav-back{
+  font-size:11px;
+  color:var(--muted);
+  text-decoration:none;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  transition:color .2s;
+}
+.nav-back:hover{color:var(--accent);}
+
+/* ── HERO ── */
+.hero{
+  border-bottom:1px solid var(--border);
+  padding:64px 32px 48px;
+  max-width:860px;
+  margin:0 auto;
+}
+.hero-badge{
+  display:inline-block;
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--accent);
+  border:1px solid rgba(0,229,160,0.3);
+  border-radius:4px;
+  padding:4px 10px;
+  margin-bottom:20px;
+}
+.hero h1{
+  font-family:"Syne",sans-serif;
+  font-weight:800;
+  font-size:clamp(28px,5vw,48px);
+  letter-spacing:-1px;
+  color:var(--text);
+  margin-bottom:12px;
+  line-height:1.1;
+}
+.hero h1 span{color:var(--accent);}
+.hero-date{
+  font-size:12px;
+  color:var(--muted);
+  letter-spacing:1px;
+}
+
+/* ── ACCENT LINE ── */
+.accent-line{
+  height:2px;
+  background:linear-gradient(90deg,var(--accent),transparent);
+  max-width:860px;
+  margin:0 auto;
+  opacity:0.4;
+}
+
+/* ── CONTENT WRAPPER ── */
+.content{
+  max-width:860px;
+  margin:0 auto;
+  padding:52px 32px 80px;
+}
+
+/* ── OVERRIDE TERMLY STYLES to match VITAL brand ── */
+.content [data-custom-class='body'],
+.content [data-custom-class='body'] *{
+  background:transparent !important;
+}
+
+/* Remove Termly logo */
+.content > span:first-child{display:none !important;}
+
+/* Title */
+.content [data-custom-class='title'],
+.content [data-custom-class='title'] *{
+  font-family:"Syne",sans-serif !important;
+  font-size:28px !important;
+  color:var(--text) !important;
+  font-weight:800 !important;
+  letter-spacing:-0.5px !important;
+}
+.content h1{
+  font-family:"Syne",sans-serif !important;
+  font-size:28px !important;
+  color:var(--text) !important;
+  margin-bottom:8px !important;
+}
+
+/* Subtitle / date */
+.content [data-custom-class='subtitle'],
+.content [data-custom-class='subtitle'] *{
+  font-family:"DM Mono",monospace !important;
+  color:var(--muted) !important;
+  font-size:12px !important;
+}
+
+/* Headings */
+.content [data-custom-class='heading_1'],
+.content [data-custom-class='heading_1'] *,
+.content h2{
+  font-family:"Syne",sans-serif !important;
+  font-size:18px !important;
+  color:var(--text) !important;
+  font-weight:700 !important;
+  margin-top:48px !important;
+  margin-bottom:16px !important;
+  padding-bottom:10px !important;
+  border-bottom:1px solid var(--border) !important;
+  letter-spacing:-0.3px !important;
+}
+
+.content [data-custom-class='heading_2'],
+.content [data-custom-class='heading_2'] *,
+.content h3{
+  font-family:"Syne",sans-serif !important;
+  font-size:14px !important;
+  color:var(--accent) !important;
+  font-weight:700 !important;
+  margin-top:32px !important;
+  margin-bottom:10px !important;
+  text-transform:uppercase !important;
+  letter-spacing:1px !important;
+}
+
+/* Body text */
+.content [data-custom-class='body_text'],
+.content [data-custom-class='body_text'] *{
+  color:var(--body-text) !important;
+  font-size:13.5px !important;
+  font-family:"DM Mono",monospace !important;
+  line-height:1.85 !important;
+}
+
+/* Links */
+.content [data-custom-class='link'],
+.content [data-custom-class='link'] *,
+.content a{
+  color:var(--accent) !important;
+  font-size:13.5px !important;
+  font-family:"DM Mono",monospace !important;
+  text-decoration:none !important;
+  word-break:break-word !important;
+  transition:opacity .2s !important;
+}
+.content a:hover{opacity:0.75 !important;}
+
+/* Lists */
+.content ul{
+  margin:12px 0 12px 20px !important;
+}
+.content ul li{
+  color:var(--body-text) !important;
+  font-size:13.5px !important;
+  font-family:"DM Mono",monospace !important;
+  margin-bottom:6px !important;
+  list-style-type:square !important;
+}
+.content ul>li>ul{list-style-type:circle !important;}
+
+/* Tables */
+.content table{
+  width:100% !important;
+  border-collapse:collapse !important;
+  margin:20px 0 !important;
+  font-size:12px !important;
+}
+.content table th{
+  background:rgba(0,229,160,0.06) !important;
+  color:var(--accent) !important;
+  font-family:"Syne",sans-serif !important;
+  font-size:11px !important;
+  text-transform:uppercase !important;
+  letter-spacing:1px !important;
+  padding:10px 14px !important;
+  border:1px solid var(--border) !important;
+  text-align:left !important;
+}
+.content table td{
+  color:var(--body-text) !important;
+  font-family:"DM Mono",monospace !important;
+  font-size:12px !important;
+  padding:10px 14px !important;
+  border:1px solid var(--border) !important;
+  vertical-align:top !important;
+}
+
+/* Strong / em */
+.content strong{color:var(--text) !important;}
+.content em{color:var(--muted) !important; font-style:italic !important;}
+
+/* Paragraph spacing */
+.content div[style*="line-height"]{
+  margin-bottom:6px !important;
+}
+
+/* Termly branding footer — subtle */
+.content > br + div{
+  margin-top:48px !important;
+  padding-top:24px !important;
+  border-top:1px solid var(--border) !important;
+  font-size:11px !important;
+  color:var(--muted) !important;
+}
+.content > br + div a{
+  color:var(--muted) !important;
+  font-size:11px !important;
+}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--border);
+  padding:32px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:16px;
+  max-width:860px;
+  margin:0 auto;
+}
+.footer-logo{
+  font-family:"Syne",sans-serif;
+  font-weight:800;
+  font-size:18px;
+  color:var(--text);
+  letter-spacing:-1px;
+}
+.footer-logo span{color:var(--accent);}
+.footer-links{
+  display:flex;
+  gap:24px;
+}
+.footer-links a{
+  font-size:11px;
+  color:var(--muted);
+  text-decoration:none;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  transition:color .2s;
+}
+.footer-links a:hover{color:var(--accent);}
+.footer-copy{
+  font-size:11px;
+  color:var(--muted);
+  width:100%;
+}
+
+@media(max-width:600px){
+  nav{padding:0 20px;}
+  .hero{padding:40px 20px 32px;}
+  .content{padding:40px 20px 60px;}
+  footer{padding:24px 20px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/splash.html" class="nav-logo">VIT<span>AL</span></a>
+  <a href="/dashboard.html" class="nav-back">← Back to Dashboard</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">Legal</div>
+  <h1>Privacy <span>Policy</span></h1>
+  <div class="hero-date">Last updated May 14, 2026 &nbsp;·&nbsp; VITAL Health Intelligence LLC</div>
+</div>
+
+<div class="accent-line"></div>
+
+<div class="content">
+  <style>
+    [data-custom-class='body'], [data-custom-class='body'] * {
+            background: transparent !important;
+          }
+  [data-custom-class='title'], [data-custom-class='title'] * {
+            font-family: Arial !important;
+  font-size: 26px !important;
+  color: #000000 !important;
+          }
+  [data-custom-class='subtitle'], [data-custom-class='subtitle'] * {
+            font-family: Arial !important;
+  color: #595959 !important;
+  font-size: 14px !important;
+          }
+  [data-custom-class='heading_1'], [data-custom-class='heading_1'] * {
+            font-family: Arial !important;
+  font-size: 19px !important;
+  color: #000000 !important;
+          }
+  [data-custom-class='heading_2'], [data-custom-class='heading_2'] * {
+            font-family: Arial !important;
+  font-size: 17px !important;
+  color: #000000 !important;
+          }
+  [data-custom-class='body_text'], [data-custom-class='body_text'] * {
+            color: #595959 !important;
+  font-size: 14px !important;
+  font-family: Arial !important;
+          }
+  [data-custom-class='link'], [data-custom-class='link'] * {
+            color: #3030F1 !important;
+  font-size: 14px !important;
+  font-family: Arial !important;
+  word-break: break-word !important;
+          }
+  </style>
+
+  <!-- Termly logo span is hidden by CSS — already handled above -->
+  <span style="display:none;margin: 0 auto 3.125rem;width: 11.125rem;height: 2.375rem;"></span>
+
+  <div data-custom-class="body">
+    <div><strong><span style="font-size: 26px;"><span data-custom-class="title"><h1>VITAL PRIVACY POLICY</h1></span></span></strong></div><div><span style="color: rgb(127, 127, 127);"><strong><span style="font-size: 15px;"><span data-custom-class="subtitle">Last updated May 14, 2026</span></span></strong></span></div><div><br></div><div style="line-height: 1.5;"><span style="color: rgb(127, 127, 127);"><span style="color: rgb(89, 89, 89); font-size: 15px;"><span data-custom-class="body_text">This Privacy Notice for <strong>VITAL Health Intelligence LLC</strong> (doing business as <strong>VITAL</strong>) ("we," "us," or "our"), describes how and why we might access, collect, store, use, and/or share ("process") your personal information when you use our services ("Services"), including when you:</span></span></span></div><ul><li data-custom-class="body_text" style="line-height: 1.5;"><span style="font-size: 15px; color: rgb(89, 89, 89);"><span data-custom-class="body_text">Visit our website at <a target="_blank" data-custom-class="link" href="https://vital-app-production.up.railway.app/splash.html">https://vital-app-production.up.railway.app/splash.html</a> or any website of ours that links to this Privacy Notice</span></span></li></ul><ul><li data-custom-class="body_text" style="line-height: 1.5;"><span style="font-size: 15px; color: rgb(89, 89, 89);"><span data-custom-class="body_text">Download and use our mobile application (VITAL), or any other application of ours that links to this Privacy Notice</span></span></li></ul><ul><li data-custom-class="body_text" style="line-height: 1.5;"><span style="font-size: 15px;">Use VITAL. VITAL is an AI-powered health intelligence platform that analyzes facial biomarkers to estimate biological age, disease risk, and provides personalized health insights</span></li></ul><ul><li data-custom-class="body_text" style="line-height: 1.5;"><span style="font-size: 15px; color: rgb(89, 89, 89);"><span data-custom-class="body_text">Engage with us in other related ways, including any marketing or events</span></span></li></ul><div style="line-height: 1.5;"><span style="font-size: 15px;"><span data-custom-class="body_text"><strong>Questions or concerns?</strong> Reading this Privacy Notice will help you understand your privacy rights and choices. If you do not agree with our policies and practices, please do not use our Services. If you still have any questions or concerns, please contact us at <a target="_blank" data-custom-class="link" href="mailto:madisonharris443@gmail.com">madisonharris443@gmail.com</a>.</span></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><strong><span style="font-size: 15px;"><span data-custom-class="heading_1"><h2>SUMMARY OF KEY POINTS</h2></span></span></strong></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><span data-custom-class="body_text"><strong><em>This summary provides key points from our Privacy Notice. Click any link or use the table of contents below to find more details.</em></strong></span></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><span data-custom-class="body_text"><strong>What personal information do we process?</strong> When you visit, use, or navigate our Services, we may process personal information depending on how you interact with us.</span></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><span data-custom-class="body_text"><strong>Do we process any sensitive personal information?</strong> We may process sensitive personal information when necessary with your consent or as otherwise permitted by applicable law.</span></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><span data-custom-class="body_text"><strong>How do we process your information?</strong> We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law.</span></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><span data-custom-class="body_text"><strong>How do we keep your information safe?</strong> We have organizational and technical processes in place to protect your personal information, though no electronic transmission over the internet can be guaranteed 100% secure.</span></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><span data-custom-class="body_text"><strong>What are your rights?</strong> Depending on where you are located, the applicable privacy law may mean you have certain rights regarding your personal information.</span></span></div><div style="line-height: 1.5;"><br></div><div id="toc" style="line-height: 1.5;"><span style="font-size: 15px;"><strong><span data-custom-class="heading_1"><h2>TABLE OF CONTENTS</h2></span></strong></span></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><a data-custom-class="link" href="#infocollect"><span style="color: rgb(0, 58, 250);">1. WHAT INFORMATION DO WE COLLECT?</span></a></span></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><a data-custom-class="link" href="#infouse"><span style="color: rgb(0, 58, 250);">2. HOW DO WE PROCESS YOUR INFORMATION?</span></a></span></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><a data-custom-class="link" href="#legalbases"><span style="color: rgb(0, 58, 250);">3. WHAT LEGAL BASES DO WE RELY ON TO PROCESS YOUR PERSONAL INFORMATION?</span></a></span></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><a data-custom-class="link" href="#whoshare"><span style="color: rgb(0, 58, 250);">4. WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?</span></a></span></div><div style="line-height: 1.5;"><a data-custom-class="link" href="#ai"><span style="color: rgb(0, 58, 250);">5. DO WE OFFER ARTIFICIAL INTELLIGENCE-BASED PRODUCTS?</span></a></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><a data-custom-class="link" href="#intltransfers"><span style="color: rgb(0, 58, 250);">6. IS YOUR INFORMATION TRANSFERRED INTERNATIONALLY?</span></a></span></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><a data-custom-class="link" href="#inforetain"><span style="color: rgb(0, 58, 250);">7. HOW LONG DO WE KEEP YOUR INFORMATION?</span></a></span></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><a data-custom-class="link" href="#infosafe"><span style="color: rgb(0, 58, 250);">8. HOW DO WE KEEP YOUR INFORMATION SAFE?</span></a></span></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><a data-custom-class="link" href="#infominors"><span style="color: rgb(0, 58, 250);">9. DO WE COLLECT INFORMATION FROM MINORS?</span></a></span></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><a data-custom-class="link" href="#privacyrights"><span style="color: rgb(0, 58, 250);">10. WHAT ARE YOUR PRIVACY RIGHTS?</span></a></span></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><a data-custom-class="link" href="#DNT"><span style="color: rgb(0, 58, 250);">11. CONTROLS FOR DO-NOT-TRACK FEATURES</span></a></span></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><a data-custom-class="link" href="#uslaws"><span style="color: rgb(0, 58, 250);">12. DO UNITED STATES RESIDENTS HAVE SPECIFIC PRIVACY RIGHTS?</span></a></span></div><div style="line-height: 1.5;"><span style="font-size: 15px;"><a data-custom-class="link" href="#policyupdates"><span style="color: rgb(0, 58, 250);">13. DO WE MAKE UPDATES TO THIS NOTICE?</span></a></span></div><div style="line-height: 1.5;"><a data-custom-class="link" href="#contact"><span style="color: rgb(0, 58, 250); font-size: 15px;">14. HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</span></a></div><div style="line-height: 1.5;"><a data-custom-class="link" href="#request"><span style="color: rgb(0, 58, 250);">15. HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?</span></a></div><div style="line-height: 1.5;"><br></div>
+
+    <div id="infocollect" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>1. WHAT INFORMATION DO WE COLLECT?</h2></span></strong><span data-custom-class="heading_2"><strong><h3>Personal information you disclose to us</h3></strong></span><span data-custom-class="body_text"><em>We collect personal information that you provide to us.</em></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text">We collect personal information that you voluntarily provide to us when you register on the Services, express an interest in obtaining information about us or our products and Services, when you participate in activities on the Services, or otherwise when you contact us.</span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text"><strong>Personal Information Provided by You.</strong> The personal information we collect may include: names, email addresses, usernames, passwords, contact or authentication data.</span></div><div style="line-height: 1.5;"><br></div><div id="sensitiveinfo" style="line-height: 1.5;"><span data-custom-class="body_text"><strong>Sensitive Information.</strong> When necessary, with your consent or as otherwise permitted by applicable law, we process: health data, genetic data, biometric data.</span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text"><strong>Application Data.</strong> If you use our application(s), we may also collect: camera and storage access (for selfie scanning); mobile device data (device ID, model, OS, IP address); and related device information for security and troubleshooting.</span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text">All personal information that you provide to us must be true, complete, and accurate.</span></div><div style="line-height: 1.5;"><br></div><span data-custom-class="heading_2"><strong><h3>Information collected from other sources</h3></strong></span><div style="line-height: 1.5;"><span data-custom-class="body_text">We may collect limited data from public databases, marketing partners, and other outside sources to enhance our ability to provide relevant services.</span></div>
+
+    <div id="infouse" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>2. HOW DO WE PROCESS YOUR INFORMATION?</h2></span></strong><span data-custom-class="body_text"><em>We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law. We may also process your information for other purposes only with your prior explicit consent.</em></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text">We process your personal information for: facilitating account creation and authentication; providing AI health analysis; improving our services; communicating with you; security and fraud prevention; and complying with legal obligations.</span></div>
+
+    <div id="legalbases" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>3. WHAT LEGAL BASES DO WE RELY ON TO PROCESS YOUR INFORMATION?</h2></span></strong><span data-custom-class="body_text">We only process your personal information when we have a valid legal reason to do so — like with your consent, to comply with laws, to provide you with services, to fulfill our contractual obligations, or to fulfill our legitimate business interests.</span></div>
+
+    <div id="whoshare" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>4. WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?</h2></span></strong><span data-custom-class="body_text">We may need to share your personal information in the following situations: <strong>Business Transfers</strong> — in connection with any merger, sale, financing, or acquisition of our business.</span></div>
+
+    <div id="ai" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>5. DO WE OFFER ARTIFICIAL INTELLIGENCE-BASED PRODUCTS?</h2></span></strong><em><span data-custom-class="body_text">We offer products, features, or tools powered by artificial intelligence, machine learning, or similar technologies.</span></em></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text">We provide AI Products through third-party service providers, including <strong>Anthropic</strong>. Your input, output, and personal information will be shared with and processed by these AI Service Providers. You must not use the AI Products in any way that violates the terms or policies of any AI Service Provider.</span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text">Our AI Products are designed for: AI predictive analytics, AI insights, AI research, AI automation.</span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text"><strong>How to Opt Out:</strong> You can opt out by contacting us using the contact information provided.</span></div>
+
+    <div id="intltransfers" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>6. IS YOUR INFORMATION TRANSFERRED INTERNATIONALLY?</h2></span></strong><span data-custom-class="body_text"><em>We may transfer, store, and process your information in countries other than your own.</em></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text">Please be aware that your information may be transferred to, stored by, and processed by us and our third-party providers in the United States and other countries.</span></div>
+
+    <div id="inforetain" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>7. HOW LONG DO WE KEEP YOUR INFORMATION?</h2></span></strong><span data-custom-class="body_text"><em>We keep your information for as long as necessary to fulfill the purposes outlined in this Privacy Notice unless otherwise required by law.</em></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text">We retain your personal information for as long as you have an account with us. When we have no ongoing legitimate business need to process your personal information, we will delete or anonymize it.</span></div>
+
+    <div id="infosafe" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>8. HOW DO WE KEEP YOUR INFORMATION SAFE?</h2></span></strong><span data-custom-class="body_text"><em>We aim to protect your personal information through a system of organizational and technical security measures.</em></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text">We have implemented appropriate and reasonable technical and organizational security measures. However, no electronic transmission over the Internet can be guaranteed 100% secure. Transmission of personal information to and from our Services is at your own risk.</span></div>
+
+    <div id="infominors" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>9. DO WE COLLECT INFORMATION FROM MINORS?</h2></span></strong><span data-custom-class="body_text"><em>We do not knowingly collect data from or market to children under 18 years of age.</em></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text">By using the Services, you represent that you are at least 18 or that you are the parent or guardian of such a minor and consent to such minor dependent's use of the Services. If you become aware of any data we may have collected from children under age 18, please contact us at <a target="_blank" data-custom-class="link" href="mailto:madisonharris443@gmail.com">madisonharris443@gmail.com</a>.</span></div>
+
+    <div id="privacyrights" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>10. WHAT ARE YOUR PRIVACY RIGHTS?</h2></span></strong><span data-custom-class="body_text"><em>Depending on your state of residence in the US, you have rights that allow you greater access to and control over your personal information. You may review, change, or terminate your account at any time.</em></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text">To exercise your rights, contact us at <a target="_blank" data-custom-class="link" href="mailto:madisonharris443@gmail.com">madisonharris443@gmail.com</a> or submit a <a data-custom-class="link" href="https://app.termly.io/dsar/aadac6b0-fa96-4a52-a7e3-3522a3039316" rel="noopener noreferrer" target="_blank">data subject access request</a>.</span></div><div style="line-height: 1.5;"><br></div><span data-custom-class="heading_2"><h3>Account Information</h3></span><div style="line-height: 1.5;"><span data-custom-class="body_text">To review or change the information in your account or terminate your account, contact us using the contact information provided. Upon your request to terminate your account, we will deactivate or delete your account and information from our active databases.</span></div>
+
+    <div id="DNT" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>11. CONTROLS FOR DO-NOT-TRACK FEATURES</h2></span></strong><span data-custom-class="body_text">Most web browsers include a Do-Not-Track ("DNT") feature. At this stage, no uniform technology standard for recognizing and implementing DNT signals has been finalized. As such, we do not currently respond to DNT browser signals. California law requires us to let you know how we respond to web browser DNT signals — we do not respond to them at this time.</span></div>
+
+    <div id="uslaws" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>12. DO UNITED STATES RESIDENTS HAVE SPECIFIC PRIVACY RIGHTS?</h2></span></strong><span data-custom-class="body_text"><em>If you are a resident of California, Colorado, Connecticut, Delaware, Florida, Indiana, Iowa, Kentucky, Maryland, Minnesota, Montana, Nebraska, New Hampshire, New Jersey, Oregon, Rhode Island, Tennessee, Texas, Utah, or Virginia, you may have the right to request access to and receive details about the personal information we maintain about you.</em></span></div><div style="line-height: 1.5;"><br></div><span data-custom-class="heading_2"><h3>Categories of Personal Information We Collect</h3></span><div style="line-height: 1.5;"><br></div><table style="width: 100%;"><thead><tr><th style="width: 33%; border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid black; text-align: left;"><span data-custom-class="body_text"><strong>Category</strong></span></th><th style="width: 52%; border-top: 1px solid black; border-right: 1px solid black; text-align: left;"><span data-custom-class="body_text"><strong>Examples</strong></span></th><th style="width: 15%; border-right: 1px solid black; border-top: 1px solid black; text-align: left;"><span data-custom-class="body_text"><strong>Collected</strong></span></th></tr></thead><tbody><tr><td style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid black; padding:8px;"><span data-custom-class="body_text">A. Identifiers</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">Name, email, IP address, account name</span></td><td style="border-right: 1px solid black; border-top: 1px solid black; padding:8px;"><span data-custom-class="body_text">YES</span></td></tr><tr><td style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid black; padding:8px;"><span data-custom-class="body_text">B. California Customer Records</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">Name, contact information</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">YES</span></td></tr><tr><td style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid black; padding:8px;"><span data-custom-class="body_text">C. Protected classification characteristics</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">Age, date of birth, demographic data</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">YES</span></td></tr><tr><td style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid black; padding:8px;"><span data-custom-class="body_text">D. Commercial information</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">Transaction information, purchase history</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">NO</span></td></tr><tr><td style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid black; padding:8px;"><span data-custom-class="body_text">E. Biometric information</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">Facial scan data</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">YES</span></td></tr><tr><td style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid black; padding:8px;"><span data-custom-class="body_text">F. Internet or network activity</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">Browsing history, interactions with our app</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">YES</span></td></tr><tr><td style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid black; padding:8px;"><span data-custom-class="body_text">G. Geolocation data</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">Device location</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">NO</span></td></tr><tr><td style="border-left: 1px solid black; border-right: 1px solid black; border-top: 1px solid black; padding:8px;"><span data-custom-class="body_text">K. Inferences</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">Health profiles, biological age estimates</span></td><td style="border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">YES</span></td></tr><tr><td style="border-left: 1px solid black; border-right: 1px solid black; border-bottom: 1px solid black; border-top: 1px solid black; padding:8px;"><span data-custom-class="body_text">L. Sensitive personal information</span></td><td style="border-bottom: 1px solid black; border-top: 1px solid black; border-right: 1px solid black; padding:8px;"><span data-custom-class="body_text">Account login, biometric data, genetic data, health data</span></td><td style="border-right: 1px solid black; border-bottom: 1px solid black; border-top: 1px solid black; padding:8px;"><span data-custom-class="body_text">YES</span></td></tr></tbody></table><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text">We will not sell or share personal information in the future belonging to website visitors, users, and other consumers.</span></div>
+
+    <div id="policyupdates" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>13. DO WE MAKE UPDATES TO THIS NOTICE?</h2></span></strong><span data-custom-class="body_text"><em>Yes, we will update this notice as necessary to stay compliant with relevant laws.</em></span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text">We may update this Privacy Notice from time to time. The updated version will be indicated by an updated "Revised" date at the top. We encourage you to review this Privacy Notice frequently.</span></div>
+
+    <div id="contact" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>14. HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</h2></span></strong><span data-custom-class="body_text">If you have questions or comments about this notice, you may email us at <a target="_blank" data-custom-class="link" href="mailto:madisonharris443@gmail.com">madisonharris443@gmail.com</a> or contact us by post at:</span></div><div style="line-height: 1.5;"><br></div><div style="line-height: 1.5;"><span data-custom-class="body_text">VITAL Health Intelligence LLC<br>305 East Julian Street<br>Martinsburg, PA 16662<br>United States</span></div>
+
+    <div id="request" style="line-height: 1.5;"><strong><span data-custom-class="heading_1"><h2>15. HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?</h2></span></strong><span data-custom-class="body_text">Based on the applicable laws of your state of residence in the US, you may have the right to request access to the personal information we collect from you, correct inaccuracies, or delete your personal information. To request to review, update, or delete your personal information, please fill out and submit a <a data-custom-class="link" href="https://app.termly.io/dsar/aadac6b0-fa96-4a52-a7e3-3522a3039316" rel="noopener noreferrer" target="_blank">data subject access request</a>.</span></div>
+  </div>
+
+  <br>
+  <div>
+    <span data-custom-class='body_text'>This Privacy Policy was created using Termly's </span><a href="https://termly.io/products/privacy-policy-generator/" target="_blank" rel="noopener external" data-custom-class='link'>Privacy Policy Generator</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">VIT<span>AL</span></div>
+  <div class="footer-links">
+    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/terms.html">Terms of Service</a>
+    <a href="mailto:madisonharris443@gmail.com">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 VITAL Health Intelligence LLC · Martinsburg, PA</div>
+</footer>
+
+</body>
+</html>
