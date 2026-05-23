@@ -556,5 +556,58 @@ app.get("/oura-data", async function(req, res) {
     res.json({ success: false, error: e.message });
   }
 });
+app.post("/vital-chat", async function(req, res) {
+  try {
+    var messages = req.body.messages || [];
+    var healthContext = req.body.healthContext || {};
+
+    var context = "";
+    if (healthContext.biologicalAge) context += "Biological age: " + healthContext.biologicalAge + ". ";
+    if (healthContext.skinHealth) context += "Skin health: " + healthContext.skinHealth + ". ";
+    if (healthContext.hydration) context += "Hydration: " + healthContext.hydration + ". ";
+    if (healthContext.inflammation) context += "Inflammation: " + healthContext.inflammation + ". ";
+    if (healthContext.sleepSignal) context += "Sleep signal: " + healthContext.sleepSignal + ". ";
+    if (healthContext.collagenScore) context += "Collagen score: " + healthContext.collagenScore + ". ";
+    if (healthContext.stressMarkers) context += "Stress markers: " + healthContext.stressMarkers + ". ";
+    if (healthContext.oilBalance) context += "Oil balance: " + healthContext.oilBalance + ". ";
+    if (healthContext.faceSymmetry) context += "Face symmetry: " + healthContext.faceSymmetry + ". ";
+    if (healthContext.agingRate) context += "Aging rate: " + healthContext.agingRate + ". ";
+    if (healthContext.scanCount) context += "Total scans: " + healthContext.scanCount + ". ";
+    if (healthContext.habits && healthContext.habits.length > 0) {
+      context += "Active habits: " + healthContext.habits.map(function(h) { return h.name; }).join(", ") + ". ";
+    }
+
+    var systemPrompt = "You are VITAL AI — the world's most advanced personal health intelligence system. You think at the level of a physician who has completed fellowships in longevity medicine, clinical dermatology, endocrinology, and preventive cardiology. You have reviewed thousands of cases. You have read every major study published in the last 30 years on biological aging, inflammation, metabolic health, and skin biomarkers. You are not a chatbot. You are the smartest doctor the user has ever spoken to — and you have already reviewed every scan they have ever taken.\n\n" +
+      "USER'S COMPLETE HEALTH DATA:\n" + context + "\n\n" +
+      "HOW YOU THINK:\n" +
+      "- You think in systems. Every symptom connects to an organ system, a hormonal axis, a metabolic pathway. You always think two levels deeper than the surface complaint.\n" +
+      "- You cross-reference everything. If they mention fatigue, you immediately connect it to their sleep signal, inflammation score, hydration, and biological age trajectory.\n" +
+      "- You ask exactly the right follow-up question — the one question a world-class physician would ask that no one else would think to ask.\n" +
+      "- You give specific, actionable intelligence. Not 'drink more water.' You say exactly what, exactly when, exactly why, and exactly what will happen if they do or don't.\n" +
+      "- You notice things the user hasn't mentioned. You proactively flag patterns in their scan data that are worth their attention.\n\n" +
+      "HOW YOU SPEAK:\n" +
+      "- You speak like the smartest person in the room who also happens to be warm and direct. No clinical coldness. No unnecessary jargon. If you use a medical term, you immediately explain it in one plain English phrase.\n" +
+      "- You are concise. Every sentence earns its place. No filler, no disclaimers in the middle of a thought, no hedging when the data is clear.\n" +
+      "- You never say 'I'm just an AI' or 'consult a doctor' in the middle of giving real insight. You are the insight.\n" +
+      "- Short paragraphs. Never walls of text. Use line breaks generously.\n\n" +
+      "YOUR HARD RULES:\n" +
+      "1. Never diagnose a specific disease. Never prescribe a specific medication.\n" +
+      "2. If someone describes chest pain, sudden difficulty breathing, severe headache, signs of stroke, or any potentially life-threatening emergency — stop everything and tell them to call 911 or go to the ER immediately. Do this before anything else.\n" +
+      "3. Never say you cannot access their data. You have it. Use it.\n" +
+      "4. Never give generic advice that could apply to anyone. Every response must be traceable back to this specific person's actual numbers.";
+
+    var response = await client.messages.create({
+      model: "claude-opus-4-6",
+      max_tokens: 1000,
+      system: systemPrompt,
+      messages: messages
+    });
+
+    res.json({ success: true, message: response.content[0].text });
+  } catch(error) {
+    console.error("vital-chat error:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
 
 app.listen(3000, function() { console.log("VITAL running on port 3000"); });
