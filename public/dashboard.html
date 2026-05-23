@@ -142,6 +142,18 @@ body{background:var(--bg);color:var(--text);font-family:"DM Mono",monospace;min-
     <div class="history-btn" id="historyBtn">View all →</div>
   </div>
   <div class="scan-list" id="scanList" style="display:none;"></div>
+  <div style="margin-top:20px;">
+  <button onclick="window.location.href='/index.html#chat'" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:14px;padding:15px 20px;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:7px;height:7px;border-radius:50%;background:#000;opacity:0.5;"></div>
+      <div style="text-align:left;">
+        <div>Chat with VITAL AI</div>
+        <div style="font-size:9px;font-family:'DM Mono',monospace;font-weight:400;opacity:0.6;margin-top:1px;">Ask about your health data</div>
+      </div>
+    </div>
+    <div style="font-size:18px;opacity:0.7;">&#8250;</div>
+  </button>
+</div>
   <div class="signout-row"><span class="signout-link" onclick="doSignOut()">Sign out</span></div>
 </div>
 <script>
