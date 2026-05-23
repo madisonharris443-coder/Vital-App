@@ -694,6 +694,13 @@ canvas { display: none; }
       <div class="profile-stat"><div class="profile-stat-val" id="profileBioAge">--</div><div class="profile-stat-label">Bio Age</div></div>
       <div class="profile-stat"><div class="profile-stat-val" id="profileStreak">0</div><div class="profile-stat-label">Streak</div></div>
     </div>
+    <button class="profile-nav-btn" onclick="closeProfile();openChat();" style="border-color:rgba(0,229,160,0.25);background:rgba(0,229,160,0.04);margin-bottom:8px;">
+  <div class="profile-nav-left">
+    <div class="profile-nav-icon" style="background:rgba(0,229,160,0.1);color:var(--accent);font-size:9px;">AI</div>
+    <div><div class="profile-nav-label" style="color:var(--accent);">VITAL AI</div><div class="profile-nav-sub">Chat about your health data</div></div>
+  </div>
+  <span class="profile-nav-arrow" style="color:var(--accent);">&#8250;</span>
+</button>
     <div class="profile-section-label" style="margin-bottom:10px;">Health Tracking</div>
     <button class="profile-nav-btn" onclick="openMetricPanel()">
       <div class="profile-nav-left">
@@ -1662,6 +1669,7 @@ async function doSignOut() {
   var hash = window.location.hash;
   if (hash === "#habits") { setTimeout(function() { openHabitPanel(); }, 400); }
   else if (hash === "#metrics") { setTimeout(function() { openMetricPanel(); }, 400); }
+  else if (hash === "#chat") { setTimeout(function() { openChat(); }, 400); }
   else if (hash === "#profile") { setTimeout(function() { openProfile(); }, 400); }
 })();
 
