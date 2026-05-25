@@ -483,6 +483,89 @@ canvas { display: none; }
 .chat-input::placeholder { color: var(--muted); }
 .chat-send { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
 .chat-send:hover { background: #00ffb3; transform: scale(1.05); }
+/* DISEASE RISK PANEL */
+.risk-panel { position: fixed; top: 0; right: 0; width: 100%; height: 100vh; background: var(--bg); z-index: 800; overflow-y: auto; transform: translateX(100%); transition: transform 0.3s ease; -webkit-overflow-scrolling: touch; }
+.risk-panel.open { transform: translateX(0); }
+.risk-panel-header { display: flex; align-items: center; gap: 16px; padding: 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+.risk-panel-back { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+.risk-panel-back:hover { border-color: var(--accent); color: var(--accent); }
+.risk-panel-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 18px; }
+.risk-panel-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; max-width: 600px; margin: 0 auto; }
+.risk-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+.risk-tabs::-webkit-scrollbar { display: none; }
+.risk-tab { flex-shrink: 0; padding: 7px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.risk-tab.active.metabolic { border-color: var(--warn); color: var(--warn); background: rgba(255,169,77,0.08); }
+.risk-tab.active.cardio { border-color: var(--bad); color: var(--bad); background: rgba(255,107,107,0.08); }
+.risk-tab.active.inflam { border-color: var(--mid); color: var(--mid); background: rgba(255,212,59,0.08); }
+.risk-tab.active.hormonal { border-color: var(--accent); color: var(--accent); background: rgba(0,229,160,0.08); }
+.risk-hero { border-radius: 16px; padding: 24px; text-align: center; }
+.risk-hero.metabolic { background: linear-gradient(135deg,rgba(255,169,77,0.1),rgba(255,169,77,0.03)); border: 1px solid rgba(255,169,77,0.2); }
+.risk-hero.cardio { background: linear-gradient(135deg,rgba(255,107,107,0.1),rgba(255,107,107,0.03)); border: 1px solid rgba(255,107,107,0.2); }
+.risk-hero.inflam { background: linear-gradient(135deg,rgba(255,212,59,0.1),rgba(255,212,59,0.03)); border: 1px solid rgba(255,212,59,0.2); }
+.risk-hero.hormonal { background: linear-gradient(135deg,rgba(0,229,160,0.1),rgba(0,229,160,0.03)); border: 1px solid rgba(0,229,160,0.2); }
+.risk-hero-lbl { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.risk-hero-pct { font-family: "Syne", sans-serif; font-weight: 800; font-size: 72px; letter-spacing: -3px; line-height: 1; }
+.metabolic .risk-hero-pct { color: var(--warn); }
+.cardio .risk-hero-pct { color: var(--bad); }
+.inflam .risk-hero-pct { color: var(--mid); }
+.hormonal .risk-hero-pct { color: var(--accent); }
+.risk-hero-unit { font-size: 11px; color: var(--muted); margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+.risk-hero-conf { display: inline-block; margin-top: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 6px; padding: 4px 12px; font-size: 10px; color: var(--muted); }
+.risk-level-track { height: 6px; background: rgba(255,255,255,0.06); border-radius: 6px; overflow: hidden; margin: 14px 0 6px; }
+.risk-level-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease; }
+.metabolic .risk-level-fill { background: var(--warn); }
+.cardio .risk-level-fill { background: var(--bad); }
+.inflam .risk-level-fill { background: var(--mid); }
+.hormonal .risk-level-fill { background: var(--accent); }
+.risk-level-labels { display: flex; justify-content: space-between; font-size: 8px; color: var(--muted); letter-spacing: 1px; }
+.risk-info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+.risk-info-card.red { background: rgba(255,107,107,0.04); border-color: rgba(255,107,107,0.12); }
+.risk-info-lbl { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.lbl-riskwarn { color: var(--warn); }
+.lbl-riskbad { color: var(--bad); }
+.lbl-riskaccent { color: var(--accent); }
+.lbl-riskmid { color: var(--mid); }
+.risk-info-text { font-size: 11px; color: var(--muted); line-height: 1.8; }
+.risk-info-text strong { color: var(--text); }
+.risk-driver { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+.risk-driver:last-child { margin-bottom: 0; }
+.risk-driver-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.risk-driver-text { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.risk-driver-text strong { color: var(--text); }
+.risk-timeline { display: flex; gap: 0; margin-top: 14px; }
+.risk-tl-item { flex: 1; text-align: center; padding: 10px 4px; background: var(--surface2); border: 1px solid var(--border); }
+.risk-tl-item:first-child { border-radius: 8px 0 0 8px; }
+.risk-tl-item:last-child { border-radius: 0 8px 8px 0; }
+.risk-tl-num { font-family: "Syne", sans-serif; font-weight: 800; font-size: 15px; }
+.risk-tl-lbl { font-size: 8px; color: var(--muted); margin-top: 2px; letter-spacing: 1px; }
+.risk-action { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.risk-action:last-child { border-bottom: none; padding-bottom: 0; }
+.risk-action-num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; font-family: "Syne", sans-serif; flex-shrink: 0; margin-top: 1px; background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.2); color: var(--accent); }
+.risk-action-title { font-family: "Syne", sans-serif; font-weight: 700; font-size: 12px; color: var(--text); margin-bottom: 3px; }
+.risk-action-detail { font-size: 10px; color: var(--muted); line-height: 1.6; }
+.risk-disclaimer { font-size: 9px; color: #4a5568; text-align: center; line-height: 1.7; padding: 4px 0; }
+.risk-cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.risk-mini-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; cursor: pointer; transition: all 0.15s; position: relative; overflow: hidden; }
+.risk-mini-card:hover { transform: translateY(-1px); }
+.risk-mini-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.risk-mini-card.metabolic::before { background: var(--warn); }
+.risk-mini-card.cardio::before { background: var(--bad); }
+.risk-mini-card.inflam::before { background: var(--mid); }
+.risk-mini-card.hormonal::before { background: var(--accent); }
+.risk-mini-name { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.risk-mini-pct { font-family: "Syne", sans-serif; font-weight: 800; font-size: 22px; margin-bottom: 2px; }
+.risk-mini-card.metabolic .risk-mini-pct { color: var(--warn); }
+.risk-mini-card.cardio .risk-mini-pct { color: var(--bad); }
+.risk-mini-card.inflam .risk-mini-pct { color: var(--mid); }
+.risk-mini-card.hormonal .risk-mini-pct { color: var(--accent); }
+.risk-mini-conf { font-size: 8px; color: var(--muted); }
+.risk-mini-bar { height: 3px; background: rgba(255,255,255,0.06); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+.risk-mini-fill { height: 100%; border-radius: 3px; }
+.risk-mini-card.metabolic .risk-mini-fill { background: var(--warn); }
+.risk-mini-card.cardio .risk-mini-fill { background: var(--bad); }
+.risk-mini-card.inflam .risk-mini-fill { background: var(--mid); }
+.risk-mini-card.hormonal .risk-mini-fill { background: var(--accent); }
+.risk-mini-arrow { position: absolute; bottom: 8px; right: 10px; font-size: 12px; color: var(--muted); }
 
 </style>
 </head>
@@ -834,12 +917,82 @@ canvas { display: none; }
         <div class="metric-card"><div class="metric-name">Face Symmetry</div><div class="metric-val" id="faceSymmetry">--</div></div>
       </div>
       <div class="risk-section">
-        <div class="risk-title">Disease Risk Forecast</div>
-        <div class="risk-row"><span class="risk-label">Metabolic</span><div class="risk-bar-wrap"><div class="risk-bar" id="riskMetabolicBar" style="background:var(--warn);width:0%"></div></div><span class="risk-pct" id="riskMetabolic" style="color:var(--warn)">--</span></div>
-        <div class="risk-row"><span class="risk-label">Cardiovascular</span><div class="risk-bar-wrap"><div class="risk-bar" id="riskCardioBar" style="background:var(--bad);width:0%"></div></div><span class="risk-pct" id="riskCardio" style="color:var(--bad)">--</span></div>
-        <div class="risk-row"><span class="risk-label">Inflammation</span><div class="risk-bar-wrap"><div class="risk-bar" id="riskInflamBar" style="background:var(--mid);width:0%"></div></div><span class="risk-pct" id="riskInflam" style="color:var(--mid)">--</span></div>
-        <div class="risk-row"><span class="risk-label">Hormonal</span><div class="risk-bar-wrap"><div class="risk-bar" id="riskHormBar" style="background:var(--accent);width:0%"></div></div><span class="risk-pct" id="riskHorm" style="color:var(--accent)">--</span></div>
-      </div>
+  <div class="risk-title">Disease Risk Forecast</div>
+  <div style="font-size:9px;color:var(--muted);margin-bottom:12px;">Tap any card for full analysis</div>
+  <div class="risk-cards-grid">
+    <div class="risk-mini-card metabolic" onclick="openRiskPanel('metabolic')">
+      <div class="risk-mini-name">Metabolic</div>
+      <div class="risk-mini-pct" id="riskMetabolic">--</div>
+      <div class="risk-mini-conf" id="riskMetabolicConf"></div>
+      <div class="risk-mini-bar"><div class="risk-mini-fill" id="riskMetabolicBar" style="width:0%"></div></div>
+      <div class="risk-mini-arrow">›</div>
+    </div>
+    <div class="risk-mini-card cardio" onclick="openRiskPanel('cardio')">
+      <div class="risk-mini-name">Cardiovascular</div>
+      <div class="risk-mini-pct" id="riskCardio">--</div>
+      <div class="risk-mini-conf" id="riskCardioConf"></div>
+      <div class="risk-mini-bar"><div class="risk-mini-fill" id="riskCardioBar" style="width:0%"></div></div>
+      <div class="risk-mini-arrow">›</div>
+    </div>
+    <div class="risk-mini-card inflam" onclick="openRiskPanel('inflam')">
+      <div class="risk-mini-name">Inflammation</div>
+      <div class="risk-mini-pct" id="riskInflam">--</div>
+      <div class="risk-mini-conf" id="riskInflamConf"></div>
+      <div class="risk-mini-bar"><div class="risk-mini-fill" id="riskInflamBar" style="width:0%"></div></div>
+      <div class="risk-mini-arrow">›</div>
+    </div>
+    <div class="risk-mini-card hormonal" onclick="openRiskPanel('hormonal')">
+      <div class="risk-mini-name">Hormonal</div>
+      <div class="risk-mini-pct" id="riskHorm">--</div>
+      <div class="risk-mini-conf" id="riskHormConf"></div>
+      <div class="risk-mini-bar"><div class="risk-mini-fill" id="riskHormBar" style="width:0%"></div></div>
+      <div class="risk-mini-arrow">›</div>
+    </div>
+  </div>
+</div>
+
+<!-- DISEASE RISK SLIDE-IN PANEL -->
+<div class="risk-panel" id="riskPanel">
+  <div class="risk-panel-header">
+    <button class="risk-panel-back" onclick="closeRiskPanel()">&#8592;</button>
+    <div class="risk-panel-title" id="riskPanelTitle">Disease Risk</div>
+  </div>
+  <div class="risk-panel-body">
+    <div class="risk-tabs">
+      <div class="risk-tab active metabolic" onclick="switchRiskTab('metabolic',this)">Metabolic</div>
+      <div class="risk-tab" onclick="switchRiskTab('cardio',this)">Cardiovascular</div>
+      <div class="risk-tab" onclick="switchRiskTab('inflam',this)">Inflammation</div>
+      <div class="risk-tab" onclick="switchRiskTab('hormonal',this)">Hormonal</div>
+    </div>
+    <div class="risk-hero metabolic" id="riskHero">
+      <div class="risk-hero-lbl">10-Year Risk Estimate</div>
+      <div class="risk-hero-pct" id="riskHeroPct">--</div>
+      <div class="risk-hero-unit" id="riskHeroUnit">Metabolic Dysfunction</div>
+      <div class="risk-hero-conf" id="riskHeroConf"></div>
+      <div class="risk-level-track"><div class="risk-level-fill" id="riskHeroFill" style="width:0%"></div></div>
+      <div class="risk-level-labels"><span>Low</span><span>Moderate</span><span>High</span><span>Critical</span></div>
+    </div>
+    <div class="risk-info-card">
+      <div class="risk-info-lbl lbl-riskwarn" id="riskWhatLbl">What this means</div>
+      <div class="risk-info-text" id="riskWhatText">Loading analysis...</div>
+    </div>
+    <div class="risk-info-card">
+      <div class="risk-info-lbl lbl-riskwarn" id="riskDriversLbl">What's driving it</div>
+      <div id="riskDriversContent"></div>
+    </div>
+    <div class="risk-info-card red">
+      <div class="risk-info-lbl lbl-riskbad">If you change nothing</div>
+      <div class="risk-info-text" id="riskProjText"></div>
+      <div class="risk-timeline" id="riskTimeline"></div>
+    </div>
+    <div class="risk-info-card">
+      <div class="risk-info-lbl lbl-riskaccent">How to slow it down</div>
+      <div id="riskActionsContent"></div>
+    </div>
+    <div class="risk-disclaimer">VITAL disease risk scores are AI estimates based on facial biomarker analysis. They are not medical diagnoses. Always consult a qualified healthcare professional.</div>
+  </div>
+</div>
+
       <div class="insights-card"><div class="insights-title">AI Health Insights</div><div id="insightsList"></div></div>
       <div class="positives-card"><div class="positives-title">Positive Health Markers</div><div id="positivesList"></div></div>
       <div class="recs-card"><div class="recs-title">Recommended Actions</div><div id="recsList"></div></div>
@@ -997,18 +1150,25 @@ async function analyze() {
       document.getElementById("shareAge").textContent = d.biologicalAge;
       document.getElementById("shareDiff").textContent = d.chronologicalAgeDiff + " · " + (d.agingRate || d.agingVelocity);
       if (d.diseaseRisk) {
-        document.getElementById("riskMetabolic").textContent = d.diseaseRisk.metabolic;
-        document.getElementById("riskCardio").textContent = d.diseaseRisk.cardiovascular;
-        document.getElementById("riskInflam").textContent = d.diseaseRisk.inflammation;
-        document.getElementById("riskHorm").textContent = d.diseaseRisk.hormonal;
-        setTimeout(function() {
-          function extractPct(str) { var m = str ? str.match(/(\d+)%/) : null; return m ? parseInt(m[1]) : 0; }
-          document.getElementById("riskMetabolicBar").style.width = extractPct(d.diseaseRisk.metabolic) + "%";
-          document.getElementById("riskCardioBar").style.width = extractPct(d.diseaseRisk.cardiovascular) + "%";
-          document.getElementById("riskInflamBar").style.width = extractPct(d.diseaseRisk.inflammation) + "%";
-          document.getElementById("riskHormBar").style.width = extractPct(d.diseaseRisk.hormonal) + "%";
-        }, 300);
-      }
+  _riskData = d.diseaseRisk;
+  function extractPct(val) { var str = typeof val === "object" ? (val.pct || "") : (val || ""); var m = str ? str.match(/(\d+)/) : null; return m ? parseInt(m[1]) : 0; }
+  function getPct(val) { return typeof val === "object" ? (val.pct || "--") : (val || "--"); }
+  function getConf(val) { return typeof val === "object" ? (val.confidence ? val.confidence + " confidence" : "") : ""; }
+  document.getElementById("riskMetabolic").textContent = getPct(d.diseaseRisk.metabolic);
+  document.getElementById("riskCardio").textContent = getPct(d.diseaseRisk.cardiovascular);
+  document.getElementById("riskInflam").textContent = getPct(d.diseaseRisk.inflammation);
+  document.getElementById("riskHorm").textContent = getPct(d.diseaseRisk.hormonal);
+  document.getElementById("riskMetabolicConf").textContent = getConf(d.diseaseRisk.metabolic);
+  document.getElementById("riskCardioConf").textContent = getConf(d.diseaseRisk.cardiovascular);
+  document.getElementById("riskInflamConf").textContent = getConf(d.diseaseRisk.inflammation);
+  document.getElementById("riskHormConf").textContent = getConf(d.diseaseRisk.hormonal);
+  setTimeout(function() {
+    document.getElementById("riskMetabolicBar").style.width = extractPct(d.diseaseRisk.metabolic) + "%";
+    document.getElementById("riskCardioBar").style.width = extractPct(d.diseaseRisk.cardiovascular) + "%";
+    document.getElementById("riskInflamBar").style.width = extractPct(d.diseaseRisk.inflammation) + "%";
+    document.getElementById("riskHormBar").style.width = extractPct(d.diseaseRisk.hormonal) + "%";
+  }, 300);
+}
       var insightsList = document.getElementById("insightsList");
       insightsList.innerHTML = "";
       if (d.topInsights) d.topInsights.forEach(function(i) { insightsList.innerHTML += '<div class="insight-item">' + i + '</div>'; });
@@ -2226,7 +2386,74 @@ async function chatSend() {
     chatAddMessage("ai", "Unable to connect. Please check your connection and try again.");
   }
 }
+var _riskData = {};
+var _riskTypeMap = {
+  metabolic: { key: "metabolic", title: "Metabolic Risk", unit: "Metabolic Dysfunction", lblClass: "lbl-riskwarn" },
+  cardio: { key: "cardiovascular", title: "Cardiovascular Risk", unit: "Cardiovascular Dysfunction", lblClass: "lbl-riskbad" },
+  inflam: { key: "inflammation", title: "Inflammation Risk", unit: "Systemic Inflammation", lblClass: "lbl-riskmid" },
+  hormonal: { key: "hormonal", title: "Hormonal Risk", unit: "Hormonal Imbalance", lblClass: "lbl-riskaccent" }
+};
 
+function openRiskPanel(type) {
+  document.getElementById("riskPanel").classList.add("open");
+  switchRiskTab(type, document.querySelector('.risk-tab'));
+}
+
+function closeRiskPanel() {
+  document.getElementById("riskPanel").classList.remove("open");
+}
+
+function switchRiskTab(type, el) {
+  var map = _riskTypeMap[type];
+  var data = _riskData[map.key] || {};
+  var isObj = typeof data === "object" && data.pct;
+  var pct = isObj ? data.pct : (data || "--");
+  var conf = isObj ? (data.confidence || "") : "";
+  var pctNum = parseInt((pct || "").replace(/[^0-9]/g,"")) || 0;
+
+  document.getElementById("riskPanelTitle").textContent = map.title;
+  document.getElementById("riskHeroPct").textContent = pct;
+  document.getElementById("riskHeroUnit").textContent = map.unit;
+  document.getElementById("riskHeroConf").textContent = conf ? conf + " model confidence" : "";
+  document.getElementById("riskHero").className = "risk-hero " + type;
+  document.getElementById("riskHeroFill").style.width = pctNum + "%";
+  document.getElementById("riskWhatLbl").className = "risk-info-lbl " + map.lblClass;
+  document.getElementById("riskDriversLbl").className = "risk-info-lbl " + map.lblClass;
+
+  if (isObj) {
+    document.getElementById("riskWhatText").innerHTML = data.what || "Analysis not available for this scan. Do a new scan to see full breakdown.";
+    var driversHtml = "";
+    if (data.drivers && data.drivers.length > 0) {
+      var driverColors = ["var(--bad)","var(--warn)","var(--mid)"];
+      data.drivers.forEach(function(dr, i) {
+        driversHtml += '<div class="risk-driver"><div class="risk-driver-dot" style="background:' + (driverColors[i] || "var(--muted)") + '"></div><div class="risk-driver-text">' + dr + '</div></div>';
+      });
+    } else { driversHtml = '<div style="font-size:11px;color:var(--muted);">No driver data available for this scan.</div>'; }
+    document.getElementById("riskDriversContent").innerHTML = driversHtml;
+    document.getElementById("riskProjText").innerHTML = data.projection || "";
+    var tlColors = ["var(--warn)","var(--warn)","var(--bad)","var(--bad)"];
+    var tlLabels = ["Now","2 yrs","5 yrs","10 yrs"];
+    document.getElementById("riskTimeline").innerHTML = tlLabels.map(function(lbl, i) {
+      return '<div class="risk-tl-item"><div class="risk-tl-num" style="color:' + tlColors[i] + '">' + (i === 0 ? pct : "–") + '</div><div class="risk-tl-lbl">' + lbl + '</div></div>';
+    }).join("");
+    var actionsHtml = "";
+    if (data.actions && data.actions.length > 0) {
+      data.actions.forEach(function(a, i) {
+        actionsHtml += '<div class="risk-action"><div class="risk-action-num">' + (i+1) + '</div><div><div class="risk-action-detail">' + a + '</div></div></div>';
+      });
+    } else { actionsHtml = '<div style="font-size:11px;color:var(--muted);">No action data available for this scan.</div>'; }
+    document.getElementById("riskActionsContent").innerHTML = actionsHtml;
+  } else {
+    document.getElementById("riskWhatText").innerHTML = "This scan was done before the full disease risk breakdown was available. Do a new scan to see the complete analysis.";
+    document.getElementById("riskDriversContent").innerHTML = '<div style="font-size:11px;color:var(--muted);">Do a new scan to see driver data.</div>';
+    document.getElementById("riskProjText").innerHTML = "";
+    document.getElementById("riskTimeline").innerHTML = "";
+    document.getElementById("riskActionsContent").innerHTML = '<div style="font-size:11px;color:var(--muted);">Do a new scan to see action steps.</div>';
+  }
+
+  document.querySelectorAll(".risk-tab").forEach(function(t) { t.className = "risk-tab"; });
+  if (el) el.className = "risk-tab active " + type;
+}
 </script>
 </body>
 </html>
