@@ -2432,10 +2432,12 @@ function switchRiskTab(type, el) {
     document.getElementById("riskDriversContent").innerHTML = driversHtml;
     document.getElementById("riskProjText").innerHTML = data.projection || "";
     var tlColors = ["var(--warn)","var(--warn)","var(--bad)","var(--bad)"];
-    var tlLabels = ["Now","2 yrs","5 yrs","10 yrs"];
-    document.getElementById("riskTimeline").innerHTML = tlLabels.map(function(lbl, i) {
-      return '<div class="risk-tl-item"><div class="risk-tl-num" style="color:' + tlColors[i] + '">' + (i === 0 ? pct : "–") + '</div><div class="risk-tl-lbl">' + lbl + '</div></div>';
-    }).join("");
+var tlLabels = ["Now","2 yrs","5 yrs","10 yrs"];
+var basePct = pctNum;
+var projected = [basePct, Math.round(basePct * 1.18), Math.round(basePct * 1.4), Math.round(basePct * 1.7)];
+document.getElementById("riskTimeline").innerHTML = tlLabels.map(function(lbl, i) {
+  return '<div class="risk-tl-item"><div class="risk-tl-num" style="color:' + tlColors[i] + '">' + projected[i] + '%</div><div class="risk-tl-lbl">' + lbl + '</div></div>';
+}).join("");
     var actionsHtml = "";
     if (data.actions && data.actions.length > 0) {
       data.actions.forEach(function(a, i) {
