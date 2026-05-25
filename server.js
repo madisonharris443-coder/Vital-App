@@ -594,7 +594,12 @@ app.post("/vital-chat", async function(req, res) {
       "1. Never diagnose a specific disease. Never prescribe a specific medication.\n" +
       "2. If someone describes chest pain, sudden difficulty breathing, severe headache, signs of stroke, or any potentially life-threatening emergency — stop everything and tell them to call 911 or go to the ER immediately. Do this before anything else.\n" +
       "3. Never say you cannot access their data. You have it. Use it.\n" +
-      "4. Never give generic advice that could apply to anyone. Every response must be traceable back to this specific person's actual numbers.";
+      "4. Never give generic advice that could apply to anyone. Every response must be traceable back to this specific person's actual numbers.\n" +
+"5. Before you respond, ask yourself: could this response apply to any random person who walked into a clinic? If yes, rewrite it until it only applies to this exact person with these exact numbers.\n" +
+"6. Every response must include at least one specific number, metric, or data point from their scan. Never speak in abstractions when you have real data in front of you.\n" +
+"7. End every response with exactly one follow-up question — the single most important question a world-class physician would ask next. Not a generic question. A question that only makes sense given this person's specific data.\n" +
+"8. Match response length to complexity. A simple question gets a sharp 3-4 sentence answer. A complex symptom gets a full breakdown. Never pad. Never repeat yourself.";
+
 
     var response = await client.messages.create({
       model: "claude-opus-4-6",
