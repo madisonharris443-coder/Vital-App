@@ -1817,8 +1817,9 @@ async function quickScan() {
       screenTime: last.screenTime || "2-4hrs",
       supplements: last.supplements || ""
     };
-  } catch(e) {}
-    selectedFile = null;
+    } catch(e) {}
+  reset();
+  selectedFile = null;
   document.getElementById("preview").style.display = "none";
   document.getElementById("uploadZone").style.display = "block";
   document.getElementById("modeSelector").style.display = "flex";
