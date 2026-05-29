@@ -868,9 +868,7 @@ canvas { display: none; }
           <label class="checkbox-item" onclick="toggleDisease(this,'autoimmune')"><input type="checkbox"> Autoimmune</label>
           <label class="checkbox-item" onclick="toggleDisease(this,'none')"><input type="checkbox"> None Known</label>
         </div>
-      <button class="next-btn" onclick="goToScan()">Continue to Scan</button>
-<button class="retry-btn" id="quickScanBtn" onclick="quickScan()" style="display:none;margin-top:10px;border-color:rgba(0,229,160,0.3);color:var(--accent);">Quick Scan — use last profile</button>
-
+      <button class="next-btn" onclick="goToScan()">Continue to Scan</
     </div>
   </div>
   <div class="page" id="page2">
@@ -1792,46 +1790,7 @@ function addCustomHabit() {
   }
   renderHabitPanel();
 }
-async function quickScan() {
-  try {
-    var res = await fetch("/get-scans");
-    var data = await res.json();
-    var scans = data.scans || [];
-    if (scans.length === 0) { goToScan(); return; }
-    var last = scans[scans.length - 1];
-    userData = {
-      sleep: 7, water: 2, diseases: [],
-      age: last.age || document.getElementById("age").value || "",
-      sex: last.sex || "",
-      height: last.height || "",
-      weight: last.weight || "",
-      ethnicity: last.ethnicity || "",
-      fitness: last.fitness || "",
-      diet: last.diet || "",
-      stress: last.stress || "",
-      smoker: last.smoker || "no",
-      alcohol: last.alcohol || "none",
-      bloodType: last.bloodType || "",
-      sunExposure: last.sunExposure || "minimal",
-      exerciseDays: last.exerciseDays || "0",
-      screenTime: last.screenTime || "2-4hrs",
-      supplements: last.supplements || ""
-    };
-    } catch(e) {}
-  reset();
-  selectedFile = null;
-  document.getElementById("preview").style.display = "none";
-  document.getElementById("uploadZone").style.display = "block";
-  document.getElementById("modeSelector").style.display = "flex";
-  document.getElementById("analyzeBtn").style.display = "none";
-  document.getElementById("loading").style.display = "none";
-  document.getElementById("fileInput").value = "";
-  document.getElementById("page1").classList.remove("active");
-  document.getElementById("page2").classList.add("active");
-  document.getElementById("step1").classList.remove("active");
-  document.getElementById("step1").classList.add("done");
-  document.getElementById("step2").classList.add("active");
-}
+
 
 async function doSignOut() {
   try { await fetch("/signout", { method: "POST" }); } catch(e) {}
@@ -1875,14 +1834,6 @@ async function doSignOut() {
   else if (hash === "#metrics") { setTimeout(function() { openMetricPanel(); }, 400); }
   else if (hash === "#chat") { setTimeout(function() { openChat(); }, 400); }
   else if (hash === "#profile") { setTimeout(function() { openProfile(); }, 400); }
-    try {
-    var qsRes = await fetch("/get-scans");
-    var qsData = await qsRes.json();
-    if (qsData.scans && qsData.scans.length > 0) {
-      var qsBtn = document.getElementById("quickScanBtn");
-      if (qsBtn) qsBtn.style.display = "block";
-    }
-  } catch(e) {}
 
 })();
 
