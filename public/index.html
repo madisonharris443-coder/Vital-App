@@ -1043,8 +1043,14 @@ function toggleDisease(el, disease) {
     userData.diseases = userData.diseases.filter(function(d) { return d !== disease; });
   }
 }
-
-function goToScan() {
+  function goToScan() {
+  selectedFile = null;
+  document.getElementById("preview").style.display = "none";
+  document.getElementById("uploadZone").style.display = "block";
+  document.getElementById("modeSelector").style.display = "flex";
+  document.getElementById("analyzeBtn").style.display = "none";
+  document.getElementById("loading").style.display = "none";
+    document.getElementById("fileInput").value = "";
   userData.age = document.getElementById("age").value;
   userData.sex = document.getElementById("sex").value;
   var hVal = document.getElementById("height").value;
