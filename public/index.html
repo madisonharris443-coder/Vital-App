@@ -1818,6 +1818,13 @@ async function quickScan() {
       supplements: last.supplements || ""
     };
   } catch(e) {}
+    selectedFile = null;
+  document.getElementById("preview").style.display = "none";
+  document.getElementById("uploadZone").style.display = "block";
+  document.getElementById("modeSelector").style.display = "flex";
+  document.getElementById("analyzeBtn").style.display = "none";
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("fileInput").value = "";
   document.getElementById("page1").classList.remove("active");
   document.getElementById("page2").classList.add("active");
   document.getElementById("step1").classList.remove("active");
