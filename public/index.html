@@ -566,6 +566,50 @@ canvas { display: none; }
 .risk-mini-card.inflam .risk-mini-fill { background: var(--mid); }
 .risk-mini-card.hormonal .risk-mini-fill { background: var(--accent); }
 .risk-mini-arrow { position: absolute; bottom: 8px; right: 10px; font-size: 12px; color: var(--muted); }
+/* HEALTH CHART PANEL */
+.chart-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg); z-index: 900; overflow-y: auto; transform: translateX(-100%); transition: transform 0.3s ease; -webkit-overflow-scrolling: touch; }
+.chart-panel.open { transform: translateX(0); }
+.chart-panel-header { display: flex; align-items: center; gap: 16px; padding: 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+.chart-panel-back { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.chart-panel-back:hover { border-color: var(--accent); color: var(--accent); }
+.chart-panel-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 18px; }
+.chart-tabs { display: flex; gap: 4px; padding: 12px 24px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+.chart-tabs::-webkit-scrollbar { display: none; }
+.chart-tab { flex-shrink: 0; padding: 7px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; font-family: "DM Mono", monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.chart-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(0,229,160,0.08); }
+.chart-body { padding: 24px; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.chart-section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+.chart-section-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.chart-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.chart-row:last-child { border-bottom: none; }
+.chart-row-label { font-size: 10px; color: var(--muted); }
+.chart-row-val { font-size: 10px; color: var(--text); font-weight: 500; }
+.chart-note-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: border-color 0.15s; }
+.chart-note-card:hover { border-color: rgba(0,229,160,0.2); }
+.chart-note-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.chart-note-scan { font-family: "Syne", sans-serif; font-weight: 700; font-size: 12px; }
+.chart-note-status { font-size: 9px; letter-spacing: 1px; padding: 2px 8px; border-radius: 4px; }
+.chart-note-status.improving { background: rgba(0,229,160,0.08); color: var(--accent); border: 1px solid rgba(0,229,160,0.2); }
+.chart-note-status.stable { background: rgba(255,212,59,0.08); color: var(--mid); border: 1px solid rgba(255,212,59,0.2); }
+.chart-note-status.concern { background: rgba(255,107,107,0.08); color: var(--bad); border: 1px solid rgba(255,107,107,0.2); }
+.chart-note-text { font-size: 11px; color: var(--muted); line-height: 1.7; }
+.chart-flag { display: inline-flex; align-items: center; background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); border-radius: 4px; padding: 2px 8px; font-size: 9px; color: var(--bad); margin-top: 8px; margin-right: 4px; }
+.chart-pattern { background: var(--surface); border: 1px solid rgba(0,229,160,0.1); border-radius: 12px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+.chart-pattern-num { font-family: "Syne", sans-serif; font-weight: 800; font-size: 18px; color: rgba(0,229,160,0.3); flex-shrink: 0; line-height: 1; }
+.chart-pattern-text { font-size: 11px; color: var(--text); line-height: 1.7; }
+.chart-hero { background: linear-gradient(135deg, rgba(0,229,160,0.08), rgba(123,92,250,0.05)); border: 1px solid rgba(0,229,160,0.15); border-radius: 16px; padding: 20px; display: flex; align-items: center; justify-content: space-between; }
+.chart-hero-age { font-family: "Syne", sans-serif; font-weight: 800; font-size: 52px; color: var(--accent); line-height: 1; letter-spacing: -2px; }
+.chart-hero-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+.chart-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.chart-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.chart-stat-val { font-family: "Syne", sans-serif; font-weight: 800; font-size: 20px; color: var(--accent); }
+.chart-stat-lbl { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+.chart-scan-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 14px; }
+.chart-scan-age { font-family: "Syne", sans-serif; font-weight: 800; font-size: 28px; color: var(--accent); flex-shrink: 0; }
+.chart-scan-info { flex: 1; }
+.chart-scan-date { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+.chart-scan-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.chart-scan-chip { font-size: 9px; padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.08); color: var(--muted); }
 
 </style>
 </head>
@@ -739,6 +783,19 @@ canvas { display: none; }
   </div>
   <div class="cal-body" id="calBody"></div>
 </div>
+<div class="chart-panel" id="chartPanel">
+  <div class="chart-panel-header">
+    <button class="chart-panel-back" onclick="closeHealthChart()">&#8592;</button>
+    <div class="chart-panel-title">Health Chart</div>
+  </div>
+  <div class="chart-tabs">
+    <button class="chart-tab active" id="chartTab1" onclick="switchChartTab('history')">Scan History</button>
+    <button class="chart-tab" id="chartTab2" onclick="switchChartTab('profile')">Profile</button>
+    <button class="chart-tab" id="chartTab3" onclick="switchChartTab('notes')">Clinical Notes</button>
+    <button class="chart-tab" id="chartTab4" onclick="switchChartTab('patterns')">AI Patterns</button>
+  </div>
+  <div class="chart-body" id="chartBody"></div>
+</div>
 <div class="habit-panel" id="habitPanel">
  <div class="habit-panel-header">
     <button class="habit-panel-back" id="habit-panel-back-btn" onclick="closeHabitPanel()">&#8592;</button>
@@ -788,6 +845,13 @@ canvas { display: none; }
   <span class="profile-nav-arrow" style="color:var(--accent);">&#8250;</span>
 </button>
     <div class="profile-section-label" style="margin-bottom:10px;">Health Tracking</div>
+        <button class="profile-nav-btn" onclick="openHealthChart()" style="margin-bottom:8px;">
+      <div class="profile-nav-left">
+        <div class="profile-nav-icon" style="background:rgba(0,229,160,0.1);color:var(--accent);">HC</div>
+        <div><div class="profile-nav-label">Health Chart</div><div class="profile-nav-sub">Your persistent medical record</div></div>
+      </div>
+      <span class="profile-nav-arrow">&#8250;</span>
+    </button>
     <button class="profile-nav-btn" onclick="openMetricPanel()">
       <div class="profile-nav-left">
         <div class="profile-nav-icon" style="background:rgba(0,229,160,0.1);color:var(--accent);">M</div>
@@ -1797,6 +1861,102 @@ function addCustomHabit() {
   renderHabitPanel();
 }
 
+var _chartTab = 'history';
+var _chartEntries = [];
+
+async function openHealthChart() {
+  closeProfile();
+  document.getElementById("chartPanel").classList.add("open");
+  switchChartTab('history');
+  try {
+    var res = await fetch("/get-health-chart");
+    var data = await res.json();
+    _chartEntries = data.entries || [];
+  } catch(e) { _chartEntries = []; }
+  renderChartTab(_chartTab);
+}
+
+function closeHealthChart() {
+  document.getElementById("chartPanel").classList.remove("open");
+}
+
+function switchChartTab(tab) {
+  _chartTab = tab;
+  document.querySelectorAll(".chart-tab").forEach(function(t) { t.classList.remove("active"); });
+  var map = { history: "chartTab1", profile: "chartTab2", notes: "chartTab3", patterns: "chartTab4" };
+  var el = document.getElementById(map[tab]);
+  if (el) el.classList.add("active");
+  renderChartTab(tab);
+}
+
+async function renderChartTab(tab) {
+  var body = document.getElementById("chartBody");
+  if (!body) return;
+
+  if (tab === "history") {
+    var scans = [];
+    try { var r = await fetch("/get-scans"); var d = await r.json(); scans = d.scans || []; } catch(e) {}
+    if (scans.length === 0) { body.innerHTML = '<div class="chart-section"><div style="text-align:center;color:var(--muted);font-size:11px;padding:20px 0;">No scans yet. Complete your first scan to start your Health Chart.</div></div>'; return; }
+    var latest = scans[scans.length - 1];
+    var firstBioAge = scans[0].biologicalAge;
+    var currentBioAge = latest.biologicalAge;
+    var improvement = firstBioAge - currentBioAge;
+    var html = '<div class="chart-hero"><div><div class="chart-hero-age">' + currentBioAge + '</div><div class="chart-hero-label">Current Bio Age</div></div><div style="text-align:right"><div style="font-size:10px;color:var(--muted);margin-bottom:4px;">Chrono age vs bio age</div><div style="font-family:Syne,sans-serif;font-weight:800;font-size:18px;color:var(--warn)">+' + (currentBioAge - (latest.age || currentBioAge)) + ' yrs</div><div style="font-size:10px;color:var(--accent);margin-top:4px;">' + (improvement > 0 ? '↓ ' + improvement + ' yr improvement' : 'Tracking since scan 1') + '</div></div></div>';
+    html += '<div class="chart-stat-grid"><div class="chart-stat"><div class="chart-stat-val">' + scans.length + '</div><div class="chart-stat-lbl">Total Scans</div></div><div class="chart-stat"><div class="chart-stat-val">' + firstBioAge + '</div><div class="chart-stat-lbl">Starting Bio Age</div></div></div>';
+    html += '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">All Scans</div>';
+    scans.slice().reverse().forEach(function(scan, i) {
+      var date = new Date(scan.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      var infColor = (scan.inflammation || "").toLowerCase().includes("high") ? "var(--bad)" : (scan.inflammation || "").toLowerCase().includes("moderate") ? "var(--warn)" : "var(--accent)";
+      var sleepColor = (scan.sleepSignal || "").toLowerCase().includes("deprived") ? "var(--bad)" : (scan.sleepSignal || "").toLowerCase().includes("fair") ? "var(--warn)" : "var(--accent)";
+      html += '<div class="chart-scan-item"><div class="chart-scan-age">' + scan.biologicalAge + '</div><div class="chart-scan-info"><div class="chart-scan-date">' + date + '</div><div class="chart-scan-chips"><span class="chart-scan-chip" style="color:' + infColor + ';border-color:' + infColor + '30">Inflam: ' + (scan.inflammation || "--") + '</span><span class="chart-scan-chip" style="color:' + sleepColor + ';border-color:' + sleepColor + '30">Sleep: ' + (scan.sleepSignal || "--") + '</span><span class="chart-scan-chip">Skin: ' + (scan.skinHealth || "--") + '</span></div></div></div>';
+    });
+    body.innerHTML = html;
+  }
+
+  else if (tab === "profile") {
+    var scans2 = [];
+    try { var r2 = await fetch("/get-scans"); var d2 = await r2.json(); scans2 = d2.scans || []; } catch(e) {}
+    var latest2 = scans2.length > 0 ? scans2[scans2.length - 1] : null;
+    var snap = latest2 || {};
+    var html2 = '<div class="chart-section"><div class="chart-section-label">Basic Information</div>';
+    [["Age", snap.age], ["Sex", snap.sex], ["Height", snap.height], ["Weight", snap.weight], ["Blood Type", snap.bloodType], ["Ethnicity", snap.ethnicity]].forEach(function(row) {
+      if (row[1]) html2 += '<div class="chart-row"><span class="chart-row-label">' + row[0] + '</span><span class="chart-row-val">' + row[1] + '</span></div>';
+    });
+    html2 += '</div><div class="chart-section"><div class="chart-section-label">Daily Habits</div>';
+    [["Fitness", snap.fitness], ["Diet", snap.diet], ["Stress", snap.stress], ["Sleep", snap.sleep ? snap.sleep + " hrs" : null], ["Water", snap.water ? snap.water + "L" : null], ["Smoker", snap.smoker], ["Alcohol", snap.alcohol], ["Sun Exposure", snap.sunExposure], ["Exercise", snap.exerciseDays ? snap.exerciseDays + " days/wk" : null], ["Screen Time", snap.screenTime], ["Supplements", snap.supplements]].forEach(function(row) {
+      if (row[1]) html2 += '<div class="chart-row"><span class="chart-row-label">' + row[0] + '</span><span class="chart-row-val">' + row[1] + '</span></div>';
+    });
+    html2 += '</div>';
+    if (!latest2) html2 = '<div class="chart-section"><div style="text-align:center;color:var(--muted);font-size:11px;padding:20px 0;">Complete a scan to populate your profile.</div></div>';
+    body.innerHTML = html2;
+  }
+
+  else if (tab === "notes") {
+    if (_chartEntries.length === 0) { body.innerHTML = '<div class="chart-section"><div style="text-align:center;color:var(--muted);font-size:11px;padding:20px 0;">No clinical notes yet. Complete a scan to generate your first note.</div></div>'; return; }
+    var html3 = '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">AI-generated after each scan</div>';
+    _chartEntries.slice().reverse().forEach(function(entry) {
+      var date = new Date(entry.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      var statusCls = entry.status || "stable";
+      var statusLabel = statusCls === "improving" ? "Improving" : statusCls === "concern" ? "Needs Attention" : "Stable";
+      html3 += '<div class="chart-note-card"><div class="chart-note-header"><div class="chart-note-scan">Scan ' + entry.scan_number + ' — ' + date + '</div><span class="chart-note-status ' + statusCls + '">' + statusLabel + '</span></div><div class="chart-note-text">' + (entry.clinical_note || "") + '</div>';
+      if (entry.flags && entry.flags.length > 0) {
+        entry.flags.forEach(function(f) { html3 += '<span class="chart-flag">' + f + '</span>'; });
+      }
+      html3 += '</div>';
+    });
+    body.innerHTML = html3;
+  }
+
+  else if (tab === "patterns") {
+    var allPatterns = [];
+    _chartEntries.forEach(function(e) { if (e.patterns) allPatterns = allPatterns.concat(e.patterns); });
+    var unique = allPatterns.filter(function(p, i) { return allPatterns.indexOf(p) === i; });
+    if (unique.length === 0) { body.innerHTML = '<div class="chart-section"><div style="text-align:center;color:var(--muted);font-size:11px;padding:20px 0;">Patterns appear after multiple scans. Keep scanning to see correlations in your data.</div></div>'; return; }
+    var html4 = '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Detected across your scan history</div>';
+    unique.forEach(function(p, i) { html4 += '<div class="chart-pattern"><div class="chart-pattern-num">#' + (i+1) + '</div><div class="chart-pattern-text">' + p + '</div></div>'; });
+    body.innerHTML = html4;
+  }
+}
 
 async function doSignOut() {
   try { await fetch("/signout", { method: "POST" }); } catch(e) {}
