@@ -272,7 +272,62 @@ var p21 = "Replace ALL placeholder values with real analysis. Every insight must
       } catch(e) { console.error("Photo upload error:", e.message); }
     }
 
-    fs.unlinkSync(req.file.path);
+        fs.unlinkSync(req.file.path);
+
+    // HEALTH CHART — generate clinical note
+    try {
+      var cookies2 = parseCookies(req);
+      var session2 = cookies2.vital_session;
+      if (session2 && SUPABASE_SERVICE_KEY) {
+        var supabase2 = getSupabase(session2);
+        var userRes2 = await supabase2.auth.getUser();
+        if (userRes2.data && userRes2.data.user) {
+          var userId2 = userRes2.data.user.id;
+          var scanCountRes = await supabase2.from("health_chart").select("id").eq("user_id", userId2);
+          var scanNumber = (scanCountRes.data ? scanCountRes.data.length : 0) + 1;
+
+          var notePrompt = "You are VITAL — a clinical AI health system. Write a concise physician-style clinical note for this scan. Be specific, reference actual numbers, and flag anything concerning. Write like a doctor updating a patient chart after a visit.\n\n" +
+            "SCAN DATA:\n" +
+            "Biological Age: " + result.biologicalAge + "\n" +
+            "Chronological Age: " + (userData.age || "unknown") + "\n" +
+            "Skin Health: " + result.skinHealth + "\n" +
+            "Hydration: " + result.hydration + "\n" +
+            "Inflammation: " + result.inflammation + "\n" +
+            "Sleep Signal: " + result.sleepSignal + "\n" +
+            "Collagen Score: " + result.collagenScore + "\n" +
+            "Stress Markers: " + result.stressMarkers + "\n" +
+            "Oil Balance: " + result.oilBalance + "\n" +
+            "Face Symmetry: " + result.faceSymmetry + "\n" +
+            "Aging Rate: " + (result.agingRate || result.agingVelocity) + "\n\n" +
+            "HEALTH PROFILE:\n" + profile + "\n\n" +
+            "RESPOND ONLY WITH RAW JSON. NO MARKDOWN. NO BACKTICKS:\n" +
+            "{\"note\":\"2-3 sentence clinical note\",\"flags\":[\"flag1\",\"flag2\"],\"status\":\"improving|stable|concern\",\"patterns\":[\"pattern1\"]}";
+
+          var noteRes = await client.messages.create({
+            model: "claude-opus-4-6",
+            max_tokens: 500,
+            messages: [{ role: "user", content: notePrompt }]
+          });
+
+          var noteJson = JSON.parse(noteRes.content[0].text.replace(/```json|```/g, "").trim());
+
+          await supabase2.from("health_chart").insert({
+            user_id: userId2,
+            scan_number: scanNumber,
+            date: new Date().toISOString(),
+            clinical_note: noteJson.note,
+            flags: noteJson.flags || [],
+            status: noteJson.status || "stable",
+            patterns: noteJson.patterns || [],
+            profile_snapshot: userData
+          });
+          console.log("Health chart entry saved for scan " + scanNumber);
+        }
+      }
+    } catch(chartErr) {
+      console.error("Health chart generation error:", chartErr.message);
+    }
+
     res.json({ success: true, data: result, photoUrl: photoUrl });
   } catch (error) {
     console.error("Error:", error);
@@ -612,6 +667,41 @@ app.post("/vital-chat", async function(req, res) {
   } catch(error) {
     console.error("vital-chat error:", error);
     res.status(500).json({ success: false, error: error.message });
+  }
+});
+app.post("/save-health-chart", async function(req, res) {
+  var cookies = parseCookies(req);
+  var session = cookies.vital_session;
+  if (!session || !SUPABASE_SERVICE_KEY) return res.json({ success: false });
+  try {
+    var supabase = getSupabase(session);
+    var userRes = await supabase.auth.getUser();
+    if (!userRes.data || !userRes.data.user) return res.json({ success: false });
+    var userId = userRes.data.user.id;
+    var entry = req.body;
+    entry.user_id = userId;
+    await supabase.from("health_chart").insert(entry);
+    return res.json({ success: true });
+  } catch(e) {
+    console.error("save-health-chart error:", e.message);
+    return res.json({ success: false });
+  }
+});
+
+app.get("/get-health-chart", async function(req, res) {
+  var cookies = parseCookies(req);
+  var session = cookies.vital_session;
+  if (!session || !SUPABASE_SERVICE_KEY) return res.json({ success: false, entries: [] });
+  try {
+    var supabase = getSupabase(session);
+    var userRes = await supabase.auth.getUser();
+    if (!userRes.data || !userRes.data.user) return res.json({ success: false, entries: [] });
+    var userId = userRes.data.user.id;
+    var result = await supabase.from("health_chart").select("*").eq("user_id", userId).order("date", { ascending: true });
+    return res.json({ success: true, entries: result.data || [] });
+  } catch(e) {
+    console.error("get-health-chart error:", e.message);
+    return res.json({ success: false, entries: [] });
   }
 });
 
