@@ -1939,9 +1939,11 @@ async function renderChartTab(tab) {
       var statusCls = entry.status || "stable";
       var statusLabel = statusCls === "improving" ? "Improving" : statusCls === "concern" ? "Needs Attention" : "Stable";
       html3 += '<div class="chart-note-card"><div class="chart-note-header"><div class="chart-note-scan">Scan ' + entry.scan_number + ' — ' + date + '</div><span class="chart-note-status ' + statusCls + '">' + statusLabel + '</span></div><div class="chart-note-text">' + (entry.clinical_note || "") + '</div>';
-      if (entry.flags && entry.flags.length > 0) {
-        entry.flags.forEach(function(f) { html3 += '<span class="chart-flag">' + f + '</span>'; });
-      }
+      var flags = typeof entry.flags === "string" ? JSON.parse(entry.flags || "[]") : (entry.flags || []);
+if (flags.length > 0) {
+  flags.forEach(function(f) { html3 += '<span class="chart-flag">' + f + '</span>'; });
+}
+
       html3 += '</div>';
     });
     body.innerHTML = html3;
@@ -1949,7 +1951,10 @@ async function renderChartTab(tab) {
 
   else if (tab === "patterns") {
     var allPatterns = [];
-    _chartEntries.forEach(function(e) { if (e.patterns) allPatterns = allPatterns.concat(e.patterns); });
+    _chartEntries.forEach(function(e) { 
+  var p = typeof e.patterns === "string" ? JSON.parse(e.patterns || "[]") : (e.patterns || []);
+  allPatterns = allPatterns.concat(p); 
+});
     var unique = allPatterns.filter(function(p, i) { return allPatterns.indexOf(p) === i; });
     if (unique.length === 0) { body.innerHTML = '<div class="chart-section"><div style="text-align:center;color:var(--muted);font-size:11px;padding:20px 0;">Patterns appear after multiple scans. Keep scanning to see correlations in your data.</div></div>'; return; }
     var html4 = '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Detected across your scan history</div>';
