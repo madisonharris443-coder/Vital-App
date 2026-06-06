@@ -316,9 +316,9 @@ var p21 = "Replace ALL placeholder values with real analysis. Every insight must
             scan_number: scanNumber,
             date: new Date().toISOString(),
             clinical_note: noteJson.note,
-            flags: noteJson.flags || [],
+            flags: JSON.stringify(noteJson.flags || []),
             status: noteJson.status || "stable",
-            patterns: noteJson.patterns || [],
+            patterns: JSON.stringify(noteJson.patterns || []),
             profile_snapshot: userData
           });
           console.log("Health chart entry saved for scan " + scanNumber);
