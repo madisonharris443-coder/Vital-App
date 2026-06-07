@@ -567,9 +567,9 @@ canvas { display: none; }
 .risk-mini-card.hormonal .risk-mini-fill { background: var(--accent); }
 .risk-mini-arrow { position: absolute; bottom: 8px; right: 10px; font-size: 12px; color: var(--muted); }
 /* HEALTH CHART PANEL */
-.chart-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg); z-index: 900; overflow-y: auto; transform: translateX(-100%); transition: transform 0.3s ease; -webkit-overflow-scrolling: touch; }
-.chart-panel.open { transform: translateX(0); }
-.chart-panel-header { display: flex; align-items: center; gap: 16px; padding: 24px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+.chart-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--bg); z-index: 900; overflow-y: auto; transform: translateX(-100%); transition: transform 0.3s ease; -webkit-overflow-scrolling: touch; pointer-events: none; }
+.chart-panel.open { transform: translateX(0); pointer-events: all; }
+.chart-panel-header { display: flex;
 .chart-panel-back { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .chart-panel-back:hover { border-color: var(--accent); color: var(--accent); }
 .chart-panel-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 18px; }
