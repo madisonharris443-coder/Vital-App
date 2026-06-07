@@ -16,6 +16,7 @@
 }
 body { background: var(--bg); color: var(--text); font-family: "DM Mono", monospace; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
 .ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(ellipse 70% 50% at 20% 10%, rgba(0,229,160,0.06) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(123,92,250,0.07) 0%, transparent 60%); }
+.metric-panel:not(.open), .attention-panel:not(.open), .improving-panel:not(.open), .habit-panel:not(.open), .cal-panel:not(.open), .chat-panel:not(.open), .risk-panel:not(.open), .chart-panel:not(.open), .profile-panel:not(.open) { pointer-events: none !important; }
 .wrap { position: relative; z-index: 1; width: 100%; max-width: 600px; }
 .logo { font-family: "Syne", sans-serif; font-weight: 800; font-size: 28px; letter-spacing: -1px; text-align: center; margin-bottom: 8px; }
 .logo span { color: var(--accent); }
