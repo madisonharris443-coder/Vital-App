@@ -776,5 +776,27 @@ app.get("/get-health-chart", async function(req, res) {
     return res.json({ success: false, entries: [] });
   }
 });
+app.get("/product-search", async function(req, res) {
+  var query = req.query.q;
+  if (!query) return res.json({ success: false, products: [] });
+  try {
+    var serpRes = await fetch("https://serpapi.com/search.json?engine=google_shopping&q=" + encodeURIComponent(query) + "&api_key=" + process.env.SERPAPI_KEY + "&num=3");
+    var serpData = await serpRes.json();
+    var results = serpData.shopping_results || [];
+    var products = results.slice(0, 3).map(function(p) {
+      return {
+        name: p.title,
+        price: p.price,
+        retailer: p.source,
+        link: p.link,
+        image: p.thumbnail
+      };
+    });
+    res.json({ success: true, products: products });
+  } catch(e) {
+    console.error("product-search error:", e.message);
+    res.json({ success: false, products: [] });
+  }
+});
 
 app.listen(3000, function() { console.log("VITAL running on port 3000"); });
