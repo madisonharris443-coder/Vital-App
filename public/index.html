@@ -2597,7 +2597,7 @@ function renderChatProducts(products) {
   if (!bubble) return;
   var scrollHtml = '<div class="chat-product-scroll">';
   products.forEach(function(p) {
-    scrollHtml += '<a href="' + p.link + '" target="_blank" class="product-scroll-card">' +
+    scrollHtml += '<a href="' + (p.link && p.link.startsWith("http") ? p.link : "https://www.google.com/search?q=" + encodeURIComponent(p.name)) + '" target="_blank" rel="noopener" class="product-scroll-card">' +
       '<div class="product-scroll-img">' +
       (p.image ? '<img src="' + p.image + '" alt="' + p.name + '">' : '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="1.2"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/></svg>') +
       '<div class="product-scroll-retailer">' + (p.retailer || "") + '</div>' +
