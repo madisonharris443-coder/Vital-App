@@ -2505,9 +2505,14 @@ function chatAddMessage(role, text, suggestions) {
       return '<button class="chat-suggestion" onclick="chatUseSuggestion(this)">' + s + '</button>';
     }).join("") + '</div>';
   }
-  div.innerHTML = html;
+    div.innerHTML = html;
   msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
+  if (role === "ai") {
+    msgs.scrollTo({ top: div.offsetTop - 16, behavior: "smooth" });
+  } else {
+    msgs.scrollTo({ top: msgs.scrollHeight, behavior: "smooth" });
+  }
+
   if (role === "user") _chatMessages.push({ role: "user", content: text });
   else _chatMessages.push({ role: "assistant", content: text });
 }
