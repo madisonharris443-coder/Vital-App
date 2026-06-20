@@ -1896,6 +1896,61 @@ function addCustomHabit() {
 
 var _chartTab = 'history';
 var _chartEntries = [];
+var PRODUCT_KEYWORDS_HABIT = ["spf","sunscreen","retinol","retinoid","niacinamide","vitamin c serum","collagen peptides","hyaluronic acid","zinc supplement","omega-3","fish oil","magnesium","vitamin d","cerave","the ordinary","moisturizer","serum","eye cream","peptide","glycolic acid","lactic acid","aha","bha","salicylic acid","benzoyl peroxide","supplement","probiotic"];
+var _habitProductCache = {};
+
+function isProductHabit(habitName) {
+  var lower = habitName.toLowerCase();
+  return PRODUCT_KEYWORDS_HABIT.find(function(k) { return lower.includes(k); }) || null;
+}
+
+function toggleHabitProducts(habitId, keyword) {
+  var trigger = document.getElementById("productTrigger_" + habitId);
+  var panel = document.getElementById("productPanel_" + habitId);
+  if (!trigger || !panel) return;
+  var isOpen = trigger.classList.contains("expanded");
+  if (isOpen) {
+    trigger.classList.remove("expanded");
+    panel.style.display = "none";
+    return;
+  }
+  trigger.classList.add("expanded");
+  panel.style.display = "flex";
+  if (_habitProductCache[keyword]) {
+    renderHabitProductList(panel, _habitProductCache[keyword]);
+    return;
+  }
+  panel.innerHTML = '<div class="product-list-loading">Finding products...</div>';
+  fetch("/product-search?q=" + encodeURIComponent(keyword + " best"))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.products && data.products.length > 0) {
+        _habitProductCache[keyword] = data.products;
+        renderHabitProductList(panel, data.products);
+      } else {
+        panel.innerHTML = '<div class="product-list-loading">No products found.</div>';
+      }
+    })
+    .catch(function() { panel.innerHTML = '<div class="product-list-loading">Unable to load products.</div>'; });
+}
+
+function renderHabitProductList(panel, products) {
+  var html = "";
+  products.forEach(function(p) {
+    var link = (p.link && p.link.startsWith("http")) ? p.link : "https://www.google.com/search?q=" + encodeURIComponent(p.name);
+    html += '<a href="' + link + '" target="_blank" rel="noopener" class="product-list-card">' +
+      '<div class="product-list-img">' +
+      (p.image ? '<img src="' + p.image + '" alt="' + p.name + '">' : '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="1.2"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/></svg>') +
+      '</div>' +
+      '<div class="product-list-body">' +
+      '<div class="product-list-name">' + p.name + '</div>' +
+      '<div class="product-list-retailer-row"><span class="product-list-retailer">' + (p.retailer || "") + '</span><span class="product-list-price">' + (p.price || "") + '</span></div>' +
+      '</div>' +
+      '<div class="product-list-arrow">›</div></a>';
+  });
+  html += '<div class="product-list-disclaimer">Tap any product to visit the retailer\'s website. VITAL may earn a commission.</div>';
+  panel.innerHTML = html;
+}
 
 async function openHealthChart() {
   closeProfile();
