@@ -2314,7 +2314,7 @@ function renderHabitDetail(metricKey) {
     return '<div class="habit-day' + (d.isToday ? " active" : "") + '"><div class="habit-day-lbl">' + d.lbl + '</div><div class="habit-day-num">' + d.num + '</div><div class="habit-day-score ' + sc + '"></div></div>';
   }).join("");
 
-  // Habit cards
+    // Habit cards
   var habitCards = mHabits.map(function(h, i) {
     var status = todayComp[h.id] || "";
     var doneCls = status === "done" ? " done" : "";
@@ -2327,6 +2327,17 @@ function renderHabitDetail(metricKey) {
     var barMeta = status === "done" ? "Done today" : (status === "skip" ? "Skipped" : (pct > 0 ? pct + "% consistency" : "Not done yet"));
     var barMetaColor = status === "done" ? "#00e5a0" : (status === "skip" ? "#ff6b6b" : "#6b7a99");
     var whyLine = h.why ? '<div class="habit-card-why">' + h.why + '</div>' : '';
+    var productKeyword = isProductHabit(h.name);
+    var productSection = "";
+    if (productKeyword) {
+      productSection =
+        '<div class="product-trigger" id="productTrigger_' + h.id + '" onclick="toggleHabitProducts(' + h.id + ',\'' + productKeyword.replace(/'/g,"\\x27") + '\')">' +
+          '<div class="product-trigger-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#00e5a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.91 8.84L8.56 21.19a4 4 0 0 1-5.66-5.66l12.35-12.35a4 4 0 0 1 5.66 0 4 4 0 0 1 0 5.66z"/></svg></div>' +
+          '<div class="product-trigger-text">See recommended product</div>' +
+          '<div class="product-trigger-chevron">&#8250;</div>' +
+        '</div>' +
+        '<div class="product-list-wrap" id="productPanel_' + h.id + '" style="display:none;"></div>';
+    }
     return '<div class="habit-card ' + color + '">' +
       '<div class="habit-card-top">' +
       '<div class="habit-card-num">' + (i+1) + '</div>' +
@@ -2336,8 +2347,11 @@ function renderHabitDetail(metricKey) {
       '<div class="habit-bar-meta2"><span class="habit-bar-lbl2">Consistency</span><span class="habit-bar-val2" style="color:' + barMetaColor + ';">' + barMeta + '</span></div></div>' +
       '<div class="habit-check-row"><div class="habit-check-lbl">Did you do this today?</div>' +
       '<div class="habit-check-btns"><button class="habit-check-btn' + doneCls + '" onclick="toggleHabit(' + h.id + ',\'done\')">' + doneText + '</button>' +
-      '<button class="habit-check-btn' + skipCls + '" onclick="toggleHabit(' + h.id + ',\'skip\')">&#10005;</button></div></div></div>';
+      '<button class="habit-check-btn' + skipCls + '" onclick="toggleHabit(' + h.id + ',\'skip\')">&#10005;</button></div></div>' +
+      productSection +
+      '</div>';
   }).join("");
+
 
   document.getElementById("habitBody").innerHTML =
     // 1. Streak banner
