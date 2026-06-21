@@ -443,7 +443,10 @@ app.post("/analyze-attention", async function(req, res) {
 "- NEVER name or suggest a specific diagnosable medical condition or disease (e.g. PCOS, thyroid disease, diabetes, hormonal disorders) by name, even as a possibility or risk. Describe only visible skin/facial patterns — never the underlying diagnosis that might explain them.\n" +
 "- NEVER calculate, state, or reference a BMI number. You cannot measure BMI from a photo.\n" +
 "- NEVER recommend specific lab tests, bloodwork panels, imaging, or name specific hormones to test. Instead say 'a routine checkup with your doctor' or 'discuss this with a healthcare provider.'\n" +
-"- NEVER frame a risk percentage as evidence that confirms an undiagnosed condition exists.\n\n" +
+"- NEVER frame a risk percentage as evidence that confirms an undiagnosed condition exists.\n" +
+"- NEVER assert internal physiological states as established fact (e.g. 'your heart never gets recovery windows', 'elevated sympathetic tone', 'hormone cycling is disrupted'). You cannot measure heart rate, blood pressure, hormone levels, or organ function from a photo. Ground every claim in what is visibly observable (skin color, texture, vascular patterns on the face) plus what the person self-reported (sleep hours, exercise frequency, stress level) — phrase internal mechanisms as 'this pattern is commonly associated with' rather than stating it as their current physiological reality.\n" +
+"- When uncertain whether a claim crosses from observable to assumed, default to the more conservative, less certain framing.\n\n" +
+
 
       "HEALTH PROFILE:\n" + profile + "\n\n" +
       "METRIC UNDER ANALYSIS:\n" +
