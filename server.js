@@ -256,6 +256,12 @@ app.post("/analyze", upload.single("photo"), async function(req, res) {
 "- Every insight must name a specific facial zone, skin signal, or profile data point\n" +
 "- Recommendations must be specific actions with timelines — not general lifestyle advice\n" +
 "- Biological age must be justified with specific visible evidence from the photo\n\n" +
+"HARD MEDICAL BOUNDARIES — NEVER VIOLATE:\n" +
+"- NEVER name or suggest a specific diagnosable medical condition or disease (e.g. PCOS, thyroid disease, diabetes, hormonal disorders) by name, even as a 'risk' or possibility. Describe only what is visible — skin patterns, inflammation, texture — never the underlying diagnosis that might explain it.\n" +
+"- NEVER calculate, state, or reference a BMI number. You cannot measure BMI from a photo. If height/weight are in the profile, you may reference general body composition only in vague, non-numeric terms if directly relevant to a skin finding — never compute or cite a BMI figure.\n" +
+"- NEVER recommend specific lab tests, bloodwork panels, imaging (ultrasounds, scans), or name specific hormones to test (e.g. 'testosterone', 'DHEA-S', 'LH', 'FSH'). Instead say 'a routine checkup with your doctor' or 'discuss this with a healthcare provider.'\n" +
+"- NEVER state a disease risk as if it confirms an undiagnosed condition exists. Frame everything as general wellness patterns worth monitoring, not clinical evidence of a specific disorder.\n\n" +
+
 
 "HEALTH PROFILE:\n" + profile + "\n\n" +
 (ouraProfile ? "WEARABLE BIOMETRICS (Oura Ring — verified, prioritize over self-reported):\n" + ouraProfile + "\n\n" : "") +
@@ -433,6 +439,12 @@ app.post("/analyze-attention", async function(req, res) {
 
     var prompt = "You are VITAL — the world's most advanced AI longevity and facial biomarker intelligence system. You operate at the intersection of clinical dermatology, endocrinology, and longevity medicine. Your analysis is indistinguishable from a $2,000 consultation with a top-tier longevity physician who has reviewed every scan this person has ever taken.\n\n" +
       "You are generating the deep-dive attention panel for a specific metric. This is not a generic health summary. Every single sentence you write must be traceable back to this person's actual numbers, actual trajectory, and actual lifestyle data. If you write something that could apply to anyone, rewrite it until it only applies to this person. Use scientific terminology when it adds real precision — but always state the plain English meaning first and let the science term follow as the explanation, never the other way around.\n\n" +
+"HARD MEDICAL BOUNDARIES — NEVER VIOLATE:\n" +
+"- NEVER name or suggest a specific diagnosable medical condition or disease (e.g. PCOS, thyroid disease, diabetes, hormonal disorders) by name, even as a possibility or risk. Describe only visible skin/facial patterns — never the underlying diagnosis that might explain them.\n" +
+"- NEVER calculate, state, or reference a BMI number. You cannot measure BMI from a photo.\n" +
+"- NEVER recommend specific lab tests, bloodwork panels, imaging, or name specific hormones to test. Instead say 'a routine checkup with your doctor' or 'discuss this with a healthcare provider.'\n" +
+"- NEVER frame a risk percentage as evidence that confirms an undiagnosed condition exists.\n\n" +
+
       "HEALTH PROFILE:\n" + profile + "\n\n" +
       "METRIC UNDER ANALYSIS:\n" +
       "Metric: " + metricLabel + "\n" +
