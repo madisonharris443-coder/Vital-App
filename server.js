@@ -325,10 +325,16 @@ app.post("/analyze", upload.single("photo"), async function(req, res) {
       }]
     });
     var resultText = response.content[0].text;
-    var cleanJson = resultText.replace(/```json|```/g, "").trim();
-    var result = JSON.parse(cleanJson);
+var cleanJson = resultText.replace(/```json|```/g, "").trim();
+var jsonStart = cleanJson.indexOf("{");
+var jsonEnd = cleanJson.lastIndexOf("}");
+if (jsonStart !== -1 && jsonEnd !== -1) {
+  cleanJson = cleanJson.substring(jsonStart, jsonEnd + 1);
+}
+var result = JSON.parse(cleanJson);
 
-    var photoUrl = null;
+var photoUrl = null;
+
     var cookies = parseCookies(req);
     var session = cookies.vital_session;
     if (session && SUPABASE_SERVICE_KEY) {
@@ -387,7 +393,12 @@ app.post("/analyze", upload.single("photo"), async function(req, res) {
             messages: [{ role: "user", content: notePrompt }]
           });
 
-          var noteJson = JSON.parse(noteRes.content[0].text.replace(/```json|```/g, "").trim());
+          var noteRaw = noteRes.content[0].text.replace(/```json|```/g, "").trim();
+var noteStart = noteRaw.indexOf("{");
+var noteEnd = noteRaw.lastIndexOf("}");
+if (noteStart !== -1 && noteEnd !== -1) { noteRaw = noteRaw.substring(noteStart, noteEnd + 1); }
+var noteJson = JSON.parse(noteRaw);
+
 
           await supabase2.from("health_chart").insert({
             user_id: userId2,
