@@ -340,8 +340,13 @@ select:focus, input:focus { border-color: rgba(0,229,160,0.3); }
 <div class="ambient"></div>
 <div class="wrap">
 
+<!-- APP LOADING SCREEN — shown until init() knows which page to display -->
+<div id="appLoading" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;">
+  <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:26px;letter-spacing:-1px;">VIT<span style="color:var(--accent)">AL</span></div>
+</div>
+
 <!-- PAGE 1: HEALTH PROFILE -->
-<div class="page active" id="page1">
+<div class="page" id="page1">
   <div style="padding:16px 20px 8px;text-align:center;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:-1px;">VIT<span style="color:var(--accent)">AL</span></div></div>
   <div class="progress">
     <div class="step active" id="step1"><div class="step-dot">1</div></div>
@@ -698,7 +703,12 @@ function updateProfileUI(user) {
   var em = document.getElementById("profileEmail"); if(em) em.textContent = user.email || "";
 }
 
-function showPage(id) { document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");}); document.getElementById(id).classList.add("active"); }
+function showPage(id) {
+  var ld = document.getElementById("appLoading");
+  if (ld) ld.style.display = "none";
+  document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});
+  document.getElementById(id).classList.add("active");
+}
 function goToScan() {
   selectedFile = null;
   document.getElementById("preview").style.display = "none";
