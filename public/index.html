@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>VITAL</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -289,6 +290,25 @@ select:focus, input:focus { border-color: rgba(0,229,160,0.3); }
 .pod-hero-sub { font-size: 11px; color: var(--muted); line-height: 1.7; }
 .hidden { display: none !important; }
 
+/* ---- In-app sign-in (page0) ---- */
+.auth-wrap{padding:60px 24px 24px;max-width:400px;margin:0 auto;width:100%;}
+.auth-logo{font-family:"Syne",sans-serif;font-weight:800;font-size:28px;letter-spacing:-1px;text-align:center;margin-bottom:8px;}
+.auth-logo span{color:var(--accent);}
+.auth-tagline{text-align:center;font-size:11px;color:var(--muted);margin-bottom:32px;letter-spacing:1px;}
+.auth-tabs{display:flex;margin-bottom:24px;border-bottom:1px solid var(--border);}
+.auth-tab{flex:1;padding:10px;text-align:center;font-size:12px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;}
+.auth-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.auth-panel{display:none;}
+.auth-panel.active{display:block;}
+.auth-input{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:"DM Mono",monospace;font-size:16px;color:var(--text);outline:none;width:100%;margin-bottom:12px;}
+.auth-input:focus{border-color:var(--accent);}
+.auth-submit{width:100%;background:var(--accent);color:#000;border:none;border-radius:12px;padding:14px;font-family:"Syne",sans-serif;font-weight:800;font-size:14px;cursor:pointer;margin-top:4px;}
+.auth-error{background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.2);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--bad);margin-top:12px;display:none;}
+.auth-success{background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.2);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--accent);margin-top:12px;display:none;}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0;}
+.auth-divider-line{flex:1;height:1px;background:var(--border);}
+.auth-guest{width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:12px;padding:14px;font-family:"DM Mono",monospace;font-size:12px;cursor:pointer;}
+
 /* ---- Dashboard v2 (simplified) ---- */
 .dash2-topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px;}
 .dash2-logo{font-family:"Syne",sans-serif;font-weight:800;font-size:18px;letter-spacing:-0.5px;}
@@ -341,8 +361,40 @@ select:focus, input:focus { border-color: rgba(0,229,160,0.3); }
 <div class="wrap">
 
 <!-- APP LOADING SCREEN — shown until init() knows which page to display -->
-<div id="appLoading" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;">
-  <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:26px;letter-spacing:-1px;">VIT<span style="color:var(--accent)">AL</span></div>
+<div id="appLoading" style="position:fixed;inset:0;z-index:9999;background:var(--bg);"></div>
+
+<!-- PAGE 0: SIGN IN (in-app, no navigation) -->
+<div class="page" id="page0">
+  <div class="auth-wrap">
+    <div class="auth-logo">VIT<span>AL</span></div>
+    <div class="auth-tagline">AI &middot; Health Intelligence Platform</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="authTabSignin" onclick="switchAuthTab('signin')">Sign In</div>
+      <div class="auth-tab" id="authTabSignup" onclick="switchAuthTab('signup')">Create Account</div>
+    </div>
+    <div class="auth-panel active" id="authSigninPanel">
+      <input class="auth-input" type="email" id="signinEmail" placeholder="Email">
+      <input class="auth-input" type="password" id="signinPassword" placeholder="Password">
+      <button class="auth-submit" onclick="doSignIn()">Sign In</button>
+      <div class="auth-error" id="signinError"></div>
+    </div>
+    <div class="auth-panel" id="authSignupPanel">
+      <input class="auth-input" type="text" id="signupName" placeholder="Full name">
+      <input class="auth-input" type="email" id="signupEmail" placeholder="Email">
+      <input class="auth-input" type="password" id="signupPassword" placeholder="Password (min 6 characters)">
+      <button class="auth-submit" onclick="doSignUp()">Create Account</button>
+      <div class="auth-error" id="signupError"></div>
+      <div class="auth-success" id="signupSuccess"></div>
+    </div>
+    <div class="auth-divider"><div class="auth-divider-line"></div><div style="font-size:10px;color:var(--muted);letter-spacing:1px;">OR</div><div class="auth-divider-line"></div></div>
+    <button class="auth-guest" onclick="continueAsGuest()">Continue without account</button>
+    <p style="text-align:center;margin-top:20px;font-size:10px;color:#4a5568;">
+      By using VITAL you agree to our
+      <a href="/privacy.html" style="color:#00e5a0;text-decoration:none;">Privacy Policy</a>
+      and
+      <a href="/terms.html" style="color:#00e5a0;text-decoration:none;">Terms of Service</a>
+    </p>
+  </div>
 </div>
 
 <!-- PAGE 1: HEALTH PROFILE -->
@@ -675,6 +727,7 @@ select:focus, input:focus { border-color: rgba(0,229,160,0.3); }
 var userData = {}, selectedFile = null, stream = null, _scanData = null, _scans = [];
 var _habitData = {}, _habitCompletions = {}, _activeHabitMetric = null, _calDate = new Date();
 var _habitProductCache = {};
+var supabaseClient = null;
 var PRODUCT_KEYWORDS = ["spf","sunscreen","retinol","niacinamide","vitamin c serum","collagen peptides","hyaluronic acid","zinc","omega-3","magnesium","vitamin d","cerave","ordinary","moisturizer","serum","eye cream","peptide","glycolic","salicylic","supplement","probiotic"];
 var PRODUCT_KEYWORDS_HABIT = ["spf","sunscreen","retinol","retinoid","niacinamide","vitamin c","collagen","hyaluronic","zinc","omega-3","fish oil","magnesium","vitamin d","cerave","ordinary","moisturizer","serum","eye cream","peptide","glycolic","salicylic","supplement","probiotic"];
 
@@ -686,15 +739,67 @@ var PRODUCT_KEYWORDS_HABIT = ["spf","sunscreen","retinol","retinoid","niacinamid
       updateProfileUI(d.user);
       await loadScans();
       loadHabits();
-      if (_scans && _scans.length) {
-        _scanData = _scans[_scans.length - 1];
-      }
+      if (_scans && _scans.length) { _scanData = _scans[_scans.length - 1]; }
       showDashboard(_scanData);
-    } else {
-      showPage("page4");
+      return;
     }
   } catch(e) {}
+  // Not signed in — set up Supabase client and show in-app sign-in page
+  try {
+    var config = await fetch("/config").then(function(r) { return r.json(); });
+    if (config.supabaseUrl && config.supabaseKey) {
+      supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
+    }
+  } catch(e) {}
+  showPage("page0");
 })();
+
+function switchAuthTab(tab) {
+  document.getElementById("authTabSignin").classList.toggle("active", tab === "signin");
+  document.getElementById("authTabSignup").classList.toggle("active", tab === "signup");
+  document.getElementById("authSigninPanel").classList.toggle("active", tab === "signin");
+  document.getElementById("authSignupPanel").classList.toggle("active", tab === "signup");
+}
+
+function showAuthError(id, msg) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = "block";
+}
+
+async function doSignIn() {
+  if (!supabaseClient) { showAuthError("signinError", "Auth service unavailable"); return; }
+  var email = document.getElementById("signinEmail").value;
+  var password = document.getElementById("signinPassword").value;
+  if (!email || !password) { showAuthError("signinError", "Please fill in all fields"); return; }
+  var result = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+  if (result.error) { showAuthError("signinError", result.error.message); return; }
+  await fetch("/save-user", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user: result.data.user, session: result.data.session.access_token }) });
+  updateProfileUI(result.data.user);
+  await loadScans();
+  loadHabits();
+  if (_scans && _scans.length) { _scanData = _scans[_scans.length - 1]; }
+  showDashboard(_scanData);
+}
+
+async function doSignUp() {
+  if (!supabaseClient) { showAuthError("signupError", "Auth service unavailable"); return; }
+  var name = document.getElementById("signupName").value;
+  var email = document.getElementById("signupEmail").value;
+  var password = document.getElementById("signupPassword").value;
+  if (!name || !email || !password) { showAuthError("signupError", "Please fill in all fields"); return; }
+  if (password.length < 6) { showAuthError("signupError", "Password must be at least 6 characters"); return; }
+  var result = await supabaseClient.auth.signUp({ email: email, password: password, options: { data: { full_name: name } } });
+  if (result.error) { showAuthError("signupError", result.error.message); return; }
+  document.getElementById("signupError").style.display = "none";
+  var successEl = document.getElementById("signupSuccess");
+  successEl.textContent = "Account created! Check your email to confirm, then sign in.";
+  successEl.style.display = "block";
+}
+
+function continueAsGuest() {
+  showDashboard(null);
+}
 
 function updateProfileUI(user) {
   var init = (user.email || "U")[0].toUpperCase();
@@ -1213,7 +1318,11 @@ function calNext(){_calDate=new Date(_calDate.getFullYear(),_calDate.getMonth()+
 
 async function signOut() {
   try{await fetch("/signout",{method:"POST"});}catch(e){}
-  window.location.href="/splash.html";
+  closeProfile();
+  _scanData = null; _scans = []; _habitData = {}; _habitCompletions = {};
+  document.getElementById("signinEmail").value = "";
+  document.getElementById("signinPassword").value = "";
+  showPage("page0");
 }
 </script>
 </body>
