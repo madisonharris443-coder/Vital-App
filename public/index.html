@@ -517,7 +517,11 @@ select:focus, input:focus { border-color: rgba(0,229,160,0.3); }
       </div>
       <div class="dash2-hero-diff" id="dash2HeroDiff">Complete a scan to see your results</div>
     </div>
-
+<div id="dash2Metrics" style="display:none;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 20px 12px;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 10px;text-align:center;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--accent);margin-bottom:3px;" id="dash2Skin">--</div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Skin</div></div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 10px;text-align:center;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--warn);margin-bottom:3px;" id="dash2Hydration">--</div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Hydration</div></div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 10px;text-align:center;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--bad);margin-bottom:3px;" id="dash2Inflammation">--</div><div style="font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;">Inflam.</div></div>
+</div>
     <button class="dash2-primary-btn" onclick="startNewScan()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
       New Scan
@@ -560,7 +564,15 @@ select:focus, input:focus { border-color: rgba(0,229,160,0.3); }
       <div class="dash2-wide-tag">Pending</div>
       <div class="dash2-wide-arrow">&#8250;</div>
     </div>
-
+<div id="dash2WearableStrip" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;align-items:center;gap:10px;margin:0 20px 10px;">
+  <div style="width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;animation:livePulse 2s infinite;"></div>
+  <div style="flex:1;font-size:10px;color:var(--muted);"><strong style="color:var(--text);">Oura Ring</strong> · Last night</div>
+  <div style="display:flex;gap:12px;">
+    <div style="text-align:right;"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--accent);" id="dash2OuraSleep">--</div><div style="font-size:7px;color:var(--muted);">Sleep</div></div>
+    <div style="text-align:right;"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--warn);" id="dash2OuraRecovery">--</div><div style="font-size:7px;color:var(--muted);">Recovery</div></div>
+    <div style="text-align:right;"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;" id="dash2OuraHR">--</div><div style="font-size:7px;color:var(--muted);">HR</div></div>
+  </div>
+</div>
     <div class="dash2-streak" onclick="openHabits()">
       <div class="dash2-streak-left">
         <div class="dash2-streak-num" id="dash2StreakNum">0</div>
@@ -963,6 +975,12 @@ function renderHero(r) {
   document.getElementById("dash2BioAge").textContent = r.biologicalAge || "--";
   document.getElementById("dash2ChronoAge").textContent = (userData && userData.age) ? userData.age : "--";
   document.getElementById("dash2HeroDiff").innerHTML = r.chronologicalAgeDiff ? r.chronologicalAgeDiff : "";
+  // Metric chips
+  var metrics = document.getElementById("dash2Metrics");
+  if (metrics) { metrics.style.display = "grid"; }
+  var sk = document.getElementById("dash2Skin"); if(sk) sk.textContent = r.skinHealth || "--";
+  var hy = document.getElementById("dash2Hydration"); if(hy) hy.textContent = r.hydration || "--";
+  var inf = document.getElementById("dash2Inflammation"); if(inf) inf.textContent = r.inflammation || "--";
 }
 
 function renderQuickGrid() {
@@ -1001,6 +1019,13 @@ function renderQuickGrid() {
       document.getElementById("dash2WearableBadge").textContent = "Live";
       document.getElementById("dash2WearableBadge").className = "dash2-card-badge green";
       document.getElementById("dash2WearableDot").style.display = "block";
+      var strip = document.getElementById("dash2WearableStrip");
+      if (strip) { strip.style.display = "flex"; }
+      var oura = data.data;
+      var sleep = oura.sleep?.contributors?.total_sleep || oura.sleep?.total_sleep_duration;
+      if (sleep) { var hrs = Math.round(sleep/3600*10)/10; var sl = document.getElementById("dash2OuraSleep"); if(sl) sl.textContent = hrs+"h"; }
+      if (oura.readiness?.score) { var rv = document.getElementById("dash2OuraRecovery"); if(rv) rv.textContent = oura.readiness.score; }
+      if (oura.heartRate?.average) { var hr = document.getElementById("dash2OuraHR"); if(hr) hr.textContent = Math.round(oura.heartRate.average); }
     } else {
       document.getElementById("dash2WearableSub").textContent = "Not connected";
       document.getElementById("dash2WearableBadge").textContent = "Connect";
