@@ -24,22 +24,21 @@ body{background:#05070a;color:#f0f4ff;font-family:"DM Mono",monospace;min-height
   <div class="logo">VIT<span>AL</span></div>
   <div class="copy">Know your body<br>before it tells you.</div>
   <button class="cta" onclick="getStarted()">Get Started</button>
-  <div class="signin">Already have an account? <a href="/auth.html">Sign in</a></div>
+  <div class="signin">Already have an account? <a href="/index.html">Sign in</a></div>
 </div>
 <script>
 async function getStarted() {
   try {
     var data = await fetch("/get-data").then(function(r) { return r.json(); });
-    if (data.user) { window.location.href = "/dashboard.html"; return; }
+    if (data.user) { window.location.href = "/index.html"; return; }
   } catch(e) {}
-  window.location.href = "/auth.html";
+  window.location.href = "/index.html";
 }
-
 // Auto-redirect if already logged in
 (async function() {
   try {
     var data = await fetch("/get-data").then(function(r) { return r.json(); });
-    if (data.user) { window.location.href = "/dashboard.html"; }
+    if (data.user) { window.location.href = "/index.html"; }
   } catch(e) {}
 })();
 </script>
