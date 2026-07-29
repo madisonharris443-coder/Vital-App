@@ -107,15 +107,28 @@ app.post("/save-avatar", function(req, res) {
   res.json({ success: true });
 });
 
-app.get("/get-data", function(req, res) {
+app.get("/get-data", async function(req, res) {
   var cookies = parseCookies(req);
   var user = null;
   var scans = "[]";
   var avatar = null;
-  try { if (cookies.vital_user) user = JSON.parse(cookies.vital_user); } catch(e) {}
   try { if (cookies.vital_scans) scans = cookies.vital_scans; } catch(e) {}
   try { if (cookies.vital_avatar) avatar = cookies.vital_avatar; } catch(e) {}
-  res.json({ user: user, session: cookies.vital_session || null, scans: scans, avatar: avatar });
+
+  var session = cookies.vital_session;
+  if (session && SUPABASE_SERVICE_KEY) {
+    try {
+      var supabase = getSupabase(session);
+      var userRes = await supabase.auth.getUser();
+      if (userRes.data && userRes.data.user) {
+        user = userRes.data.user;
+      }
+    } catch(e) {
+      console.error("get-data session validation error:", e.message);
+    }
+  }
+
+  res.json({ user: user, session: user ? session : null, scans: scans, avatar: avatar });
 });
 
 app.post("/signout", function(req, res) {
