@@ -353,9 +353,7 @@ select:focus, input:focus { border-color: rgba(0,229,160,0.3); }
 .dash2-streak-dots{display:flex;gap:5px;}
 .dash2-sdot{width:6px;height:6px;border-radius:50%;}
 .dash2-sdot.on{background:var(--accent);}
-.dash2-sdot.off{background:rgba(255,255,255,0.08);}
-#dash2Metrics { display: none; }
-#dash2Metrics.visible { display: grid !important; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 0 20px 12px; }  
+.dash2-sdot.off{background:rgba(255,255,255,0.08);} 
 </style>
 </head>
 <body>
@@ -978,8 +976,8 @@ function renderHero(r) {
   document.getElementById("dash2ChronoAge").textContent = (userData && userData.age) ? userData.age : "--";
   document.getElementById("dash2HeroDiff").innerHTML = r.chronologicalAgeDiff ? r.chronologicalAgeDiff : "";
   // Metric chips
- var metrics = document.getElementById("dash2Metrics");
-if (metrics) { metrics.classList.add("visible"); }
+var metrics = document.getElementById("dash2Metrics");
+if (metrics) { metrics.style.display = "grid"; }
   var sk = document.getElementById("dash2Skin"); if(sk) sk.textContent = r.skinHealth || "--";
   var hy = document.getElementById("dash2Hydration"); if(hy) hy.textContent = r.hydration || "--";
   var inf = document.getElementById("dash2Inflammation"); if(inf) inf.textContent = r.inflammation || "--";
