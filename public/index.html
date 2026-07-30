@@ -363,39 +363,7 @@ select:focus, input:focus { border-color: rgba(0,229,160,0.3); }
 <!-- APP LOADING SCREEN — shown until init() knows which page to display -->
 <div id="appLoading" style="position:fixed;inset:0;z-index:9999;background:var(--bg);"></div>
 
-<!-- PAGE 0: SIGN IN (in-app, no navigation) -->
-<div class="page" id="page0">
-  <div class="auth-wrap">
-    <div class="auth-logo">VIT<span>AL</span></div>
-    <div class="auth-tagline">AI &middot; Health Intelligence Platform</div>
-    <div class="auth-tabs">
-      <div class="auth-tab active" id="authTabSignin" onclick="switchAuthTab('signin')">Sign In</div>
-      <div class="auth-tab" id="authTabSignup" onclick="switchAuthTab('signup')">Create Account</div>
-    </div>
-    <div class="auth-panel active" id="authSigninPanel">
-      <input class="auth-input" type="email" id="signinEmail" placeholder="Email">
-      <input class="auth-input" type="password" id="signinPassword" placeholder="Password">
-      <button class="auth-submit" onclick="doSignIn()">Sign In</button>
-      <div class="auth-error" id="signinError"></div>
-    </div>
-    <div class="auth-panel" id="authSignupPanel">
-      <input class="auth-input" type="text" id="signupName" placeholder="Full name">
-      <input class="auth-input" type="email" id="signupEmail" placeholder="Email">
-      <input class="auth-input" type="password" id="signupPassword" placeholder="Password (min 6 characters)">
-      <button class="auth-submit" onclick="doSignUp()">Create Account</button>
-      <div class="auth-error" id="signupError"></div>
-      <div class="auth-success" id="signupSuccess"></div>
-    </div>
-    <div class="auth-divider"><div class="auth-divider-line"></div><div style="font-size:10px;color:var(--muted);letter-spacing:1px;">OR</div><div class="auth-divider-line"></div></div>
-    <button class="auth-guest" onclick="continueAsGuest()">Continue without account</button>
-    <p style="text-align:center;margin-top:20px;font-size:10px;color:#4a5568;">
-      By using VITAL you agree to our
-      <a href="/privacy.html" style="color:#00e5a0;text-decoration:none;">Privacy Policy</a>
-      and
-      <a href="/terms.html" style="color:#00e5a0;text-decoration:none;">Terms of Service</a>
-    </p>
-  </div>
-</div>
+
 
 <!-- PAGE 1: HEALTH PROFILE -->
 <div class="page" id="page1">
@@ -763,9 +731,10 @@ var PRODUCT_KEYWORDS_HABIT = ["spf","sunscreen","retinol","retinoid","niacinamid
       supabaseClient = window.supabase.createClient(config.supabaseUrl, config.supabaseKey);
     }
   } catch(e) {}
-  showPage("page0");
+window.location.href = "/auth.html";
 })();
 
+  
 function switchAuthTab(tab) {
   document.getElementById("authTabSignin").classList.toggle("active", tab === "signin");
   document.getElementById("authTabSignup").classList.toggle("active", tab === "signup");
@@ -773,12 +742,14 @@ function switchAuthTab(tab) {
   document.getElementById("authSignupPanel").classList.toggle("active", tab === "signup");
 }
 
+
 function showAuthError(id, msg) {
   var el = document.getElementById(id);
   el.textContent = msg;
   el.style.display = "block";
 }
 
+  
 async function doSignIn() {
   if (!supabaseClient) { showAuthError("signinError", "Auth service unavailable"); return; }
   var email = document.getElementById("signinEmail").value;
@@ -793,6 +764,8 @@ async function doSignIn() {
   if (_scans && _scans.length) { _scanData = _scans[_scans.length - 1]; }
   showDashboard(_scanData);
 }
+
+
 
 async function doSignUp() {
   if (!supabaseClient) { showAuthError("signupError", "Auth service unavailable"); return; }
