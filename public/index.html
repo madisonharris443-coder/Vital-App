@@ -354,6 +354,22 @@ select:focus, input:focus { border-color: rgba(0,229,160,0.3); }
 .dash2-sdot{width:6px;height:6px;border-radius:50%;}
 .dash2-sdot.on{background:var(--accent);}
 .dash2-sdot.off{background:rgba(255,255,255,0.08);} 
+  .slider-wrap { display: flex; flex-direction: column; gap: 8px; }
+.slider-header { display: flex; justify-content: space-between; align-items: center; }
+.slider-val { font-family: "Syne", sans-serif; font-weight: 800; font-size: 14px; color: var(--accent); }
+input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 4px; background: var(--surface2); outline: none; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid var(--bg); }
+.slider-labels { display: flex; justify-content: space-between; font-size: 8px; color: var(--muted); }
+.chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 7px 14px; font-size: 11px; color: var(--muted); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.chip.selected { background: rgba(0,229,160,0.1); border-color: rgba(0,229,160,0.35); color: var(--accent); }
+.disease-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.disease-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; cursor: pointer; transition: all 0.15s; }
+.disease-item.selected { background: rgba(255,107,107,0.06); border-color: rgba(255,107,107,0.25); }
+.disease-check { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; }
+.disease-item.selected .disease-check { background: rgba(255,107,107,0.2); border-color: rgba(255,107,107,0.4); color: var(--bad); }
+.disease-name { font-size: 10px; color: var(--muted); line-height: 1.3; }
+.disease-item.selected .disease-name { color: var(--text); }
 </style>
 </head>
 <body>
@@ -378,40 +394,104 @@ select:focus, input:focus { border-color: rgba(0,229,160,0.3); }
   <div class="card">
     <div class="card-title">Health Profile</div>
     <div class="card-sub">This helps VITAL give you accurate, personalized results.</div>
-    <div class="form-section">
-      <div class="form-section-title">Basic Info</div>
-      <div class="form-row">
-        <div class="form-group"><label>Age</label><input type="number" id="age" placeholder="25" min="13" max="100"></div>
-        <div class="form-group"><label>Biological Sex</label><select id="sex"><option value="">Select</option><option value="female">Female</option><option value="male">Male</option><option value="other">Other</option></select></div>
-      </div>
-      <div class="form-group"><label>Height</label><div class="unit-row"><input type="number" id="height" placeholder="5.6"><select id="heightUnit"><option value="ft">ft</option><option value="cm">cm</option></select></div></div>
-      <div class="form-group"><label>Weight</label><div class="unit-row"><input type="number" id="weight" placeholder="140"><select id="weightUnit"><option value="lbs">lbs</option><option value="kg">kg</option></select></div></div>
-      <div class="form-group"><label>Ethnicity</label><select id="ethnicity"><option value="">Select</option><option>Caucasian/White</option><option>African/Black</option><option>East Asian</option><option>South Asian</option><option>Hispanic/Latino</option><option>Middle Eastern</option><option>Mixed/Other</option><option>Prefer not to say</option></select></div>
-      <div class="form-group"><label>Blood Type</label><select id="bloodType"><option value="">Unknown</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+
+    <div class="form-section-title">Basic Info</div>
+    <div class="form-row">
+      <div class="form-group"><label>Age</label><input type="number" id="age" placeholder="25" min="13" max="100"></div>
+      <div class="form-group"><label>Biological Sex</label><select id="sex"><option value="">Select</option><option value="female">Female</option><option value="male">Male</option><option value="other">Other</option></select></div>
     </div>
-    <div class="form-section">
-      <div class="form-section-title">Lifestyle</div>
-      <div class="form-group"><label>Sleep (hours/night)</label><select id="sleep"><option value="">Select</option><option value="less than 5">Less than 5 hrs</option><option value="5-6">5-6 hrs</option><option value="6-7">6-7 hrs</option><option value="7-8">7-8 hrs</option><option value="8+">8+ hrs</option></select></div>
-      <div class="form-group"><label>Stress Level</label><select id="stress"><option value="">Select</option><option value="low">Low</option><option value="moderate">Moderate</option><option value="high">High</option><option value="very high">Very High</option></select></div>
-      <div class="form-group"><label>Diet</label><select id="diet"><option value="">Select</option><option value="standard">Standard</option><option value="mediterranean">Mediterranean</option><option value="vegetarian">Vegetarian</option><option value="vegan">Vegan</option><option value="keto">Keto/Low-carb</option><option value="poor">Poor/Processed heavy</option></select></div>
-      <div class="form-group"><label>Exercise</label><select id="fitness"><option value="">Select</option><option value="sedentary">Sedentary</option><option value="light">Light (1-2x/week)</option><option value="moderate">Moderate (3-4x/week)</option><option value="active">Active (5-6x/week)</option><option value="athlete">Athlete (daily)</option></select></div>
-      <div class="form-row">
-        <div class="form-group"><label>Exercise Days/Week</label><select id="exerciseDays"><option value="">Select</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></div>
-        <div class="form-group"><label>Sun Exposure</label><select id="sunExposure"><option value="">Select</option><option value="minimal">Minimal</option><option value="moderate">Moderate</option><option value="high">High</option></select></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Smoker</label><select id="smoker"><option value="no">No</option><option value="yes">Yes</option><option value="former">Former</option></select></div>
-        <div class="form-group"><label>Alcohol</label><select id="alcohol"><option value="none">None</option><option value="light">Light</option><option value="moderate">Moderate</option><option value="heavy">Heavy</option></select></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Screen Time/Day</label><select id="screenTime"><option value="">Select</option><option value="less than 2hrs">Under 2 hrs</option><option value="2-4hrs">2-4 hrs</option><option value="4-8hrs">4-8 hrs</option><option value="8+hrs">8+ hrs</option></select></div>
-        <div class="form-group"><label>Supplements</label><select id="supplements"><option value="none">None</option><option value="basic">Basic (vitamin D, C)</option><option value="comprehensive">Comprehensive stack</option></select></div>
+    <div class="form-group"><label>Height</label><input type="text" id="height" placeholder="e.g. 5'1 or 155cm"></div>
+    <div class="form-group"><label>Weight</label><div class="unit-row"><input type="number" id="weight" placeholder="140"><select id="weightUnit"><option value="lbs">lbs</option><option value="kg">kg</option></select></div></div>
+    <div class="form-group"><label>Ethnicity</label><select id="ethnicity"><option value="">Select</option><option>Caucasian/White</option><option>African/Black</option><option>East Asian</option><option>South Asian</option><option>Hispanic/Latino</option><option>Middle Eastern</option><option>Mixed/Other</option><option>Prefer not to say</option></select></div>
+    <div class="form-group"><label>Blood Type</label><select id="bloodType"><option value="">Unknown</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+
+    <div class="form-section-title" style="margin-top:20px;">Lifestyle</div>
+
+    <div class="form-group">
+      <label>Sleep — hours per night</label>
+      <div class="slider-wrap">
+        <div class="slider-header">
+          <span style="font-size:10px;color:var(--muted)">Drag to set</span>
+          <span class="slider-val" id="sleepVal">7h</span>
+        </div>
+        <input type="range" id="sleep" min="3" max="12" value="7" step="0.5" oninput="document.getElementById('sleepVal').textContent=this.value+'h'">
+        <div class="slider-labels"><span>3h</span><span>6h</span><span>9h</span><span>12h</span></div>
       </div>
     </div>
-    <div class="form-section">
-      <div class="form-section-title">Family History</div>
-      <div class="form-group"><label>Known conditions in immediate family</label><select id="familyHistory"><option value="none known">None known</option><option value="heart disease">Heart disease</option><option value="diabetes">Diabetes</option><option value="cancer">Cancer</option><option value="multiple conditions">Multiple conditions</option></select></div>
+
+    <div class="form-group">
+      <label>Stress Level</label>
+      <div class="chip-group" id="stressChips">
+        <div class="chip selected" onclick="selectChip('stressChips',this,'stress','low')">Low</div>
+        <div class="chip" onclick="selectChip('stressChips',this,'stress','moderate')">Moderate</div>
+        <div class="chip" onclick="selectChip('stressChips',this,'stress','high')">High</div>
+        <div class="chip" onclick="selectChip('stressChips',this,'stress','very high')">Very High</div>
+      </div>
+      <input type="hidden" id="stress" value="low">
     </div>
+
+    <div class="form-group">
+      <label>Exercise Days per Week</label>
+      <div class="slider-wrap">
+        <div class="slider-header">
+          <span style="font-size:10px;color:var(--muted)">Days</span>
+          <span class="slider-val" id="exerciseVal">3</span>
+        </div>
+        <input type="range" id="exerciseDays" min="0" max="7" value="3" step="1" oninput="document.getElementById('exerciseVal').textContent=this.value">
+        <div class="slider-labels"><span>0</span><span>2</span><span>4</span><span>7</span></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Diet</label>
+      <div class="chip-group" id="dietChips">
+        <div class="chip selected" onclick="selectChip('dietChips',this,'diet','balanced')">Balanced</div>
+        <div class="chip" onclick="selectChip('dietChips',this,'diet','mediterranean')">Mediterranean</div>
+        <div class="chip" onclick="selectChip('dietChips',this,'diet','vegetarian')">Vegetarian</div>
+        <div class="chip" onclick="selectChip('dietChips',this,'diet','vegan')">Vegan</div>
+        <div class="chip" onclick="selectChip('dietChips',this,'diet','keto')">Keto</div>
+        <div class="chip" onclick="selectChip('dietChips',this,'diet','poor')">Poor / Processed</div>
+      </div>
+      <input type="hidden" id="diet" value="balanced">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group"><label>Smoker</label><select id="smoker"><option value="no">No</option><option value="yes">Yes</option><option value="former">Former</option></select></div>
+      <div class="form-group"><label>Alcohol</label><select id="alcohol"><option value="none">None</option><option value="light">Light</option><option value="moderate">Moderate</option><option value="heavy">Heavy</option></select></div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group"><label>Sun Exposure</label><select id="sunExposure"><option value="minimal">Minimal</option><option value="moderate">Moderate</option><option value="high">High</option></select></div>
+      <div class="form-group"><label>Screen Time/Day</label><select id="screenTime"><option value="less than 2hrs">Under 2 hrs</option><option value="2-4hrs">2-4 hrs</option><option value="4-8hrs">4-8 hrs</option><option value="8+hrs">8+ hrs</option></select></div>
+    </div>
+
+    <div class="form-group">
+      <label>Supplements</label>
+      <div class="chip-group" id="suppChips">
+        <div class="chip selected" onclick="selectChip('suppChips',this,'supplements','none')">None</div>
+        <div class="chip" onclick="selectChip('suppChips',this,'supplements','basic')">Basic (Vit D, C)</div>
+        <div class="chip" onclick="selectChip('suppChips',this,'supplements','comprehensive')">Comprehensive</div>
+      </div>
+      <input type="hidden" id="supplements" value="none">
+    </div>
+
+    <div class="form-section-title" style="margin-top:20px;">Family Disease History</div>
+    <div style="font-size:10px;color:var(--muted);margin-bottom:12px;line-height:1.6;">Select any conditions present in your immediate family</div>
+    <div class="disease-grid" id="diseaseGrid">
+      <div class="disease-item" onclick="toggleDisease(this)"><div class="disease-check"></div><div class="disease-name">Heart Disease</div></div>
+      <div class="disease-item" onclick="toggleDisease(this)"><div class="disease-check"></div><div class="disease-name">Type 2 Diabetes</div></div>
+      <div class="disease-item" onclick="toggleDisease(this)"><div class="disease-check"></div><div class="disease-name">Cancer</div></div>
+      <div class="disease-item" onclick="toggleDisease(this)"><div class="disease-check"></div><div class="disease-name">Stroke</div></div>
+      <div class="disease-item" onclick="toggleDisease(this)"><div class="disease-check"></div><div class="disease-name">Hypertension</div></div>
+      <div class="disease-item" onclick="toggleDisease(this)"><div class="disease-check"></div><div class="disease-name">Thyroid Disease</div></div>
+      <div class="disease-item" onclick="toggleDisease(this)"><div class="disease-check"></div><div class="disease-name">Autoimmune</div></div>
+      <div class="disease-item" onclick="toggleDisease(this)"><div class="disease-check"></div><div class="disease-name">Mental Health</div></div>
+      <div class="disease-item" onclick="toggleDisease(this)"><div class="disease-check"></div><div class="disease-name">Obesity</div></div>
+      <div class="disease-item" onclick="toggleDisease(this)"><div class="disease-check"></div><div class="disease-name">Kidney Disease</div></div>
+      <div class="disease-item" onclick="toggleDisease(this)"><div class="disease-check"></div><div class="disease-name">Liver Disease</div></div>
+      <div class="disease-item" onclick="toggleDisease(this)"><div class="disease-check"></div><div class="disease-name">Alzheimer's</div></div>
+    </div>
+
   </div>
   <button class="next-btn" onclick="goToScan()">Continue to Scan</button>
 </div>
@@ -807,9 +887,15 @@ function goToScan() {
   document.getElementById("analyzeBtn").style.display = "none";
   document.getElementById("loading").style.display = "none";
   document.getElementById("fileInput").value = "";
-  ["age","sex","height","heightUnit","weight","weightUnit","ethnicity","bloodType","sleep","stress","diet","fitness","exerciseDays","sunExposure","smoker","alcohol","screenTime","supplements","familyHistory"].forEach(function(id) {
+["age","sex","weight","weightUnit","ethnicity","bloodType","sunExposure","smoker","alcohol","screenTime","stress","diet","supplements"].forEach(function(id) {
     var el = document.getElementById(id); if(el) userData[id] = el.value;
   });
+  userData.height = document.getElementById("height").value;
+  userData.sleep = document.getElementById("sleep").value;
+  userData.exerciseDays = document.getElementById("exerciseDays").value;
+  var diseases = [];
+  document.querySelectorAll("#diseaseGrid .disease-item.selected").forEach(function(d){ diseases.push(d.querySelector(".disease-name").textContent); });
+  userData.familyHistory = diseases.length ? diseases.join(", ") : "none known";
   showPage("page2");
 }
 function goBack() { showPage("page1"); }
@@ -1313,7 +1399,18 @@ function renderCalendar() {
 }
 function calPrev(){_calDate=new Date(_calDate.getFullYear(),_calDate.getMonth()-1,1);renderCalendar();}
 function calNext(){_calDate=new Date(_calDate.getFullYear(),_calDate.getMonth()+1,1);renderCalendar();}
+function selectChip(groupId, el, fieldId, value) {
+  document.querySelectorAll('#'+groupId+' .chip').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected');
+  var field = document.getElementById(fieldId);
+  if(field) field.value = value;
+}
 
+function toggleDisease(el) {
+  el.classList.toggle('selected');
+  var check = el.querySelector('.disease-check');
+  check.textContent = el.classList.contains('selected') ? '✓' : '';
+}
 async function signOut() {
   try{await fetch("/signout",{method:"POST"});}catch(e){}
   closeProfile();
