@@ -383,7 +383,13 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 
 <!-- PAGE 1: HEALTH PROFILE -->
 <div class="page" id="page1">
-  <div style="padding:16px 20px 8px;text-align:center;"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:-1px;">VIT<span style="color:var(--accent)">AL</span></div></div>
+  <div style="padding:16px 20px 8px;display:flex;align-items:center;justify-content:space-between;">
+  <div style="width:36px;"></div>
+  <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:-1px;">VIT<span style="color:var(--accent)">AL</span></div>
+  <div class="dash-avatar" id="formAvatar" onclick="openProfile()" style="font-size:13px;font-weight:700;font-family:'Syne',sans-serif;">N</div>
+</div>
+
+
   <div class="progress">
     <div class="step active" id="step1"><div class="step-dot">1</div></div>
     <div class="step-line"></div>
