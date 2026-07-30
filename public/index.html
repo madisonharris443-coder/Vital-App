@@ -1317,10 +1317,7 @@ function calNext(){_calDate=new Date(_calDate.getFullYear(),_calDate.getMonth()+
 async function signOut() {
   try{await fetch("/signout",{method:"POST"});}catch(e){}
   closeProfile();
-  _scanData = null; _scans = []; _habitData = {}; _habitCompletions = {};
-  document.getElementById("signinEmail").value = "";
-  document.getElementById("signinPassword").value = "";
-  showPage("page0");
+  window.location.href = "/auth.html";
 }
 </script>
 </body>
