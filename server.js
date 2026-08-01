@@ -311,6 +311,13 @@ app.post("/analyze", upload.single("photo"), async function(req, res) {
 "ADD: Smoking +3 to +7. Heavy alcohol +2 to +4. Very high stress +2 to +4. Sleep under 6hrs +2 to +4. High unprotected sun +2 to +5. Poor diet +1 to +3. Obesity markers +1 to +3. Family history of early aging +1 to +3.\n" +
 "SUBTRACT: Athlete -2 to -4. Mediterranean diet -1 to -2. Good supplement stack -1 to -2. Optimal sleep -1. Low stress -1.\n" +
 (scanHistory ? "IMPORTANT: If this person has previous scans, factor in their trajectory. A person whose bio age has been improving deserves credit for that trend.\n\n" : "\n") +
+      "OUTPUT LENGTH RULES — STRICTLY ENFORCED:\n" +
+"- topInsights: exactly 3 items. Each must be 2-3 sentences. First sentence names the specific visible finding and its zone. Second sentence explains what is driving it using this person's profile data. Third sentence states the clinical significance in plain English. No sentence should be generic enough to apply to anyone else.\n" +
+"- recommendations: exactly 4 items. Each is one sentence only — lead with the action, follow with the specific reason tied to this scan. No paragraphs.\n" +
+"- positives: exactly 3 items. Each must be 2-3 sentences. First sentence names what is performing well and gives the actual score. Second sentence explains why it matters for this person specifically. Third sentence states what will reverse it.\n" +
+"- diseaseRisk.what: 2 sentences max — name the exact visible signal and its location.\n" +
+"- diseaseRisk.drivers: each driver is 1 sentence, grounded in either a visible facial signal or a self-reported profile data point. Never generic.\n" +
+"- diseaseRisk.projection: 2 sentences max — name the skin/facial consequence and the timeline.\n\n" +
 "FIELD LENGTH RULES — STRICTLY ENFORCED:\n" +
 "- skinHealth: number score only e.g. '74/100'\n" +
 "- hydration: percentage only e.g. '68%'\n" +
