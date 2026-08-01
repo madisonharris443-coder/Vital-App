@@ -375,6 +375,18 @@ var photoUrl = null;
         }
       } catch(e) { console.error("Photo upload error:", e.message); }
     }
+if (session && SUPABASE_SERVICE_KEY) {
+  try {
+    var supabaseSave = getSupabase(session);
+    var userResSave = await supabaseSave.auth.getUser();
+    if (userResSave.data && userResSave.data.user) {
+      var userIdSave = userResSave.data.user.id;
+      var scanToSave = Object.assign({}, result, { photoUrl: photoUrl, date: new Date().toISOString(), profile: userData });
+      await supabaseSave.from("scans").insert({ user_id: userIdSave, data: scanToSave, created_at: new Date().toISOString() });
+      console.log("Scan saved to Supabase");
+    }
+  } catch(e) { console.error("Scan save error:", e.message); }
+}
 
         fs.unlinkSync(req.file.path);
 
