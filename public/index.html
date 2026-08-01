@@ -497,6 +497,11 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
       <div class="disease-item" onclick="toggleDisease(this)"><div class="disease-check"></div><div class="disease-name">Alzheimer's</div></div>
     </div>
 
+    <div class="form-group" style="margin-top:12px;">
+      <label>Other conditions not listed</label>
+      <input type="text" id="diseaseOther" placeholder="e.g. Lupus, Sickle cell, Gout...">
+    </div>
+
   </div>
   <button class="next-btn" onclick="goToScan()">Continue to Scan</button>
 </div>
@@ -900,6 +905,8 @@ function goToScan() {
   userData.exerciseDays = document.getElementById("exerciseDays").value;
   var diseases = [];
   document.querySelectorAll("#diseaseGrid .disease-item.selected").forEach(function(d){ diseases.push(d.querySelector(".disease-name").textContent); });
+  var otherDisease = document.getElementById("diseaseOther").value.trim();
+  if (otherDisease) diseases.push(otherDisease);
   userData.familyHistory = diseases.length ? diseases.join(", ") : "none known";
   showPage("page2");
 }
