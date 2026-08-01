@@ -673,7 +673,7 @@ app.post("/save-habits", async function(req, res) {
         } else {
           await supabase.from("habits").insert({ user_id: userId, data: habits, completions: completions || {} });
         }
-        return res.json({ success: true });
+        return res.json({ success: true, habits: habits, completions: completions || {} });
       }
     } catch(e) { console.error("save-habits error:", e.message); }
   }
