@@ -125,14 +125,14 @@ select:focus, input:focus { border-color: rgba(0,229,160,0.3); }
 .habit-metric-tabs { display: flex; gap: 6px; overflow-x: auto; padding: 0 20px 16px; -webkit-overflow-scrolling: touch; }
 .habit-metric-tabs::-webkit-scrollbar { display: none; }
 .habit-tab { flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 10px; color: var(--muted); cursor: pointer; white-space: nowrap; }
-.habit-tab.active { background: rgba(0,229,160,0.1); border-color: rgba(0,229,160,0.3); color: var(--accent); }
+.habit-tab.active { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.35); color: #a78bfa; }
 .habit-content { padding: 0 20px 20px; }
 .habit-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 12px; line-height: 1.7; }
 .habit-card { background: var(--surface); border: 1px solid rgba(255,107,107,0.15); border-radius: 16px; margin-bottom: 10px; overflow: hidden; }
 .habit-card.green { border-color: rgba(0,229,160,0.15); }
 .habit-card.warn { border-color: rgba(255,169,77,0.15); }
 .habit-card-top { padding: 14px 14px 10px; display: flex; gap: 10px; align-items: flex-start; }
-.habit-num { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--muted); font-family: "Syne", sans-serif; flex-shrink: 0; }
+.habit-num { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(139,92,246,0.3); background: rgba(139,92,246,0.08); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #a78bfa; font-family: "Syne", sans-serif; flex-shrink: 0; }
 .habit-info { flex: 1; }
 .habit-name { font-family: "Syne", sans-serif; font-weight: 700; font-size: 13px; margin-bottom: 3px; line-height: 1.3; }
 .habit-why { font-size: 10px; color: var(--muted); line-height: 1.5; margin-bottom: 3px; }
@@ -147,7 +147,7 @@ select:focus, input:focus { border-color: rgba(0,229,160,0.3); }
 .habit-check-lbl { font-size: 10px; color: var(--muted); }
 .habit-check-btns { display: flex; gap: 8px; }
 .habit-check-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--muted); }
-.habit-check-btn.done { background: rgba(0,229,160,0.15); border-color: var(--accent); color: var(--accent); }
+.habit-check-btn.done { background: rgba(139,92,246,0.15); border-color: #8b5cf6; color: #a78bfa; }
 .habit-check-btn.skipped { background: rgba(255,107,107,0.1); border-color: var(--bad); color: var(--bad); }
 .habit-product-trigger { border-top: 1px solid var(--border); padding: 10px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
 .habit-product-trigger-text { flex: 1; font-size: 10px; color: var(--accent); }
@@ -404,6 +404,13 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 .working-detail { font-size: 11px; color: var(--text); line-height: 1.7; margin-bottom: 10px; }
 .working-maintain { font-size: 11px; color: var(--muted); line-height: 1.6; padding-top: 10px; border-top: 1px solid rgba(0,229,160,0.1); }
 .working-maintain strong { color: var(--text); }
+.oura-badge { display: flex; align-items: center; gap: 6px; background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2); border-radius: 8px; padding: 5px 10px; }
+.oura-badge span { font-size: 9px; color: #a78bfa; }
+.wearable-strip { margin: 4px 20px 14px; background: var(--surface); border: 1px solid rgba(139,92,246,0.15); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+.wearable-strip-body { flex: 1; }
+.wearable-strip-title { font-size: 10px; color: var(--text); margin-bottom: 2px; font-family: "Syne", sans-serif; font-weight: 700; }
+.wearable-strip-sub { font-size: 9px; color: var(--muted); line-height: 1.5; }
+.wearable-connect-btn { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); color: #a78bfa; border-radius: 8px; padding: 6px 12px; font-size: 10px; font-family: "Syne", sans-serif; font-weight: 700; white-space: nowrap; flex-shrink: 0; cursor: pointer; }
 </style>
 </head>
 <body>
