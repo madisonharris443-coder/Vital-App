@@ -616,6 +616,7 @@ app.post("/analyze-improving", async function(req, res) {
 app.post("/generate-habits", async function(req, res) {
   try {
     var scanData = req.body.scanData;
+    console.log("generate-habits called, scanData:", !!scanData);
     var profile = req.body.profile || {};
     if (!scanData) return res.json({ success: false });
 
@@ -648,6 +649,7 @@ app.post("/generate-habits", async function(req, res) {
     var end = raw.lastIndexOf("}");
     if (start !== -1 && end !== -1) raw = raw.substring(start, end + 1);
     var result = JSON.parse(raw);
+    console.log("generate-habits success, keys:", Object.keys(result.habits || {}));
     res.json({ success: true, habits: result.habits });
   } catch(e) {
     console.error("generate-habits error:", e.message);
