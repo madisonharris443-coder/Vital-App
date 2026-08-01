@@ -1355,12 +1355,26 @@ async function loadHabits() {
 async function saveHabitsFromScan() {
   if (!_scanData) return;
   try {
-    var res = await fetch("/analyze-attention",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({scanData:_scanData,profile:userData})});
+    var res = await fetch("/generate-habits", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({scanData: _scanData, profile: userData})
+    });
     var data = await res.json();
-    if (data.success && data.fixes) {
-      var saveRes = await fetch("/save-habits",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fixes:data.fixes})});
+    if (data.success && data.habits) {
+      var saveRes = await fetch("/save-habits", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({habits: data.habits, completions: {}})
+      });
       var saveData = await saveRes.json();
-      if (saveData.success) { _habitData=saveData.habits||_habitData; _habitCompletions=saveData.completions||_habitCompletions; renderQuickGrid(); renderStreak(); openHabits(); }
+      if (saveData.success) {
+        _habitData = data.habits;
+        _habitCompletions = {};
+        renderQuickGrid();
+        renderStreak();
+        openHabits();
+      }
     }
   } catch(e) { alert("Could not save habits. Try again."); }
 }
