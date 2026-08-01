@@ -959,13 +959,13 @@ async function analyze() {
   try {
     var form = new FormData();
     form.append("photo", selectedFile);
-    form.append("profile", JSON.stringify(userData));
+    form.append("userData", JSON.stringify(userData));
     var res = await fetch("/analyze", {method:"POST",body:form});
     var data = await res.json();
     clearInterval(stepInterval);
     document.getElementById("loading").style.display = "none";
     if (data.success) {
-      _scanData = data.result; renderResults(data.result, data.photoUrl); showPage("page3"); loadScans();
+  _scanData = data.data; renderResults(data.data, data.photoUrl); showPage("page3"); loadScans();
     } else { alert("Analysis failed. Please try again."); document.getElementById("analyzeBtn").style.display = "block"; }
   } catch(e) {
     clearInterval(stepInterval); document.getElementById("loading").style.display = "none";
