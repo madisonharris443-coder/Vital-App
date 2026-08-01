@@ -1348,7 +1348,46 @@ async function loadHabits() {
   try {
     var res = await fetch("/get-habits");
     var data = await res.json();
-    if (data.success) { _habitData=data.habits||{}; _habitCompletions=data.completions||{}; }
+    if (data.success) {
+      _habitData = data.habits || {};
+      _habitCompletions = data.completions || {};
+      updateHabitQuickCard();
+      autoCompleteFromWearable();
+    }
+  } catch(e) {}
+}
+
+async function autoCompleteFromWearable() {
+  try {
+    var res = await fetch("/oura-data");
+    var data = await res.json();
+    if (!data.success || !data.data) return;
+    var oura = data.data;
+    var today = new Date().toISOString().split("T")[0];
+    if (!_habitCompletions[today]) _habitCompletions[today] = {};
+    var sleep = oura.avgSleep ? parseFloat(oura.avgSleep) : null;
+    var readiness = oura.avgReadiness ? parseInt(oura.avgReadiness) : null;
+    var SLEEP_KEYWORDS = ["sleep","bed","bedtime","rest"];
+    var EXERCISE_KEYWORDS = ["exercise","walk","workout","move","active","steps","training"];
+    var STRESS_KEYWORDS = ["stress","recovery","meditat","breathe","calm","relax"];
+    Object.keys(_habitData).forEach(function(metric) {
+      (_habitData[metric] || []).forEach(function(h) {
+        var name = (h.name || "").toLowerCase();
+        var alreadySet = _habitCompletions[today][h.id];
+        if (alreadySet) return;
+        var isSleep = SLEEP_KEYWORDS.some(function(k){return name.includes(k);});
+        var isExercise = EXERCISE_KEYWORDS.some(function(k){return name.includes(k);});
+        var isStress = STRESS_KEYWORDS.some(function(k){return name.includes(k);});
+        if (isSleep && sleep && sleep >= 6.5) {
+          _habitCompletions[today][h.id] = "wearable";
+        } else if (isExercise && readiness && readiness >= 65) {
+          _habitCompletions[today][h.id] = "wearable";
+        } else if (isStress && readiness && readiness >= 70) {
+          _habitCompletions[today][h.id] = "wearable";
+        }
+      });
+    });
+    updateHabitQuickCard();
   } catch(e) {}
 }
 
@@ -1407,11 +1446,14 @@ function renderHabitCards(key) {
     var pct=allKeys.length>0?Math.round((totalDone/allKeys.length)*100):0;
     var barFill=status==="done"?100:pct;
     var barColor=status==="done"?"var(--accent)":color==="green"?"var(--accent)":color==="warn"?"var(--warn)":"var(--bad)";
-    var barMeta=status==="done"?"Done today":(status==="skip"?"Skipped":(pct>0?pct+"% consistency":"Not done yet"));
+        var barMeta=status==="done"||status==="wearable"?"Done today":(status==="skip"?"Skipped":(pct>0?pct+"% consistency":"Not done yet"));
+    var isWearable=status==="wearable";
     var isProduct=isProductHabit(h.name||"");
     var productSection="";
     if(isProduct){productSection='<div class="habit-product-trigger" onclick="toggleHabitProduct('+h.id+',\''+isProduct+'\',event)"><div class="habit-product-trigger-text">See recommended product</div><div class="habit-product-trigger-chevron">›</div></div><div class="habit-product-panel" id="hpanel_'+h.id+'"></div>';}
-    return '<div class="habit-card '+color+'"><div class="habit-card-top"><div class="habit-num">'+(i+1)+'</div><div class="habit-info"><div class="habit-name">'+(h.name||"")+'</div>'+(h.why?'<div class="habit-why">'+h.why+'</div>':'')+'<div class="habit-source">'+(h.source||key)+'</div></div></div><div class="habit-bar-wrap"><div class="habit-bar-track"><div class="habit-bar-fill" style="width:'+barFill+'%;background:'+barColor+'"></div></div><div class="habit-bar-meta"><span class="habit-bar-lbl">Consistency</span><span class="habit-bar-val">'+barMeta+'</span></div></div><div class="habit-check-row"><div class="habit-check-lbl">Did you do this today?</div><div class="habit-check-btns"><button class="habit-check-btn'+(status==="done"?" done":"")+'" onclick="toggleHabit('+h.id+',\'done\')">&#9675;</button><button class="habit-check-btn'+(status==="skip"?" skipped":"")+'" onclick="toggleHabit('+h.id+',\'skip\')">&#10005;</button></div></div>'+productSection+'</div>';
+    var checkBtns=isWearable?'<div style="display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00e5a0" stroke-width="1.5"><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M9 8v8M15 8v8M3 12h18"/></svg><span style="font-size:9px;color:var(--accent);">Oura</span></div>':'<button class="habit-check-btn'+(status==="done"?" done":"")+'" onclick="toggleHabit('+h.id+',\'done\')">&#9675;</button><button class="habit-check-btn'+(status==="skip"?" skipped":"")+'" onclick="toggleHabit('+h.id+',\'skip\')">&#10005;</button>';
+    return '<div class="habit-card '+color+'"><div class="habit-card-top"><div class="habit-num">'+(i+1)+'</div><div class="habit-info"><div class="habit-name">'+(h.name||"")+'</div>'+(h.why?'<div class="habit-why">'+h.why+'</div>':'')+'<div class="habit-source">'+(h.source||key)+'</div></div></div><div class="habit-bar-wrap"><div class="habit-bar-track"><div class="habit-bar-fill" style="width:'+barFill+'%;background:'+barColor+'"></div></div><div class="habit-bar-meta"><span class="habit-bar-lbl">Consistency</span><span class="habit-bar-val">'+barMeta+'</span></div></div><div class="habit-check-row"><div class="habit-check-lbl">Did you do this today?</div><div class="habit-check-btns">'+checkBtns+'</div></div>'+productSection+'</div>';
+
   }).join("");
 }
 
@@ -1419,7 +1461,8 @@ function isProductHabit(name) { var lower=name.toLowerCase(); return PRODUCT_KEY
 
 async function toggleHabit(id, status) {
   var today=new Date().toISOString().split("T")[0];
-  if(!_habitCompletions[today]) _habitCompletions[today]={};
+    if(!_habitCompletions[today]) _habitCompletions[today]={};
+  if(_habitCompletions[today][id]==="wearable") return;
   _habitCompletions[today][id]=_habitCompletions[today][id]===status?"":status;
   renderHabitCards(_activeHabitMetric); renderQuickGrid(); renderStreak();
   try { await fetch("/toggle-habit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({habitId:id,status:_habitCompletions[today][id],date:today})}); } catch(e) {}
