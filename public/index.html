@@ -411,6 +411,36 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 .wearable-strip-title { font-size: 10px; color: var(--text); margin-bottom: 2px; font-family: "Syne", sans-serif; font-weight: 700; }
 .wearable-strip-sub { font-size: 9px; color: var(--muted); line-height: 1.5; }
 .wearable-connect-btn { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); color: #a78bfa; border-radius: 8px; padding: 6px 12px; font-size: 10px; font-family: "Syne", sans-serif; font-weight: 700; white-space: nowrap; flex-shrink: 0; cursor: pointer; }
+.wearable-panel-hero { margin: 16px 20px; background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.03)); border: 1px solid rgba(245,158,11,0.2); border-radius: 20px; padding: 24px; position: relative; overflow: hidden; }
+.wearable-panel-hero::before { content: ""; position: absolute; top: -40px; right: -40px; width: 140px; height: 140px; background: radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%); pointer-events: none; }
+.wearable-panel-eyebrow { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.wearable-panel-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -0.5px; margin-bottom: 8px; line-height: 1.2; }
+.wearable-panel-title span { color: #fbbf24; }
+.wearable-panel-sub { font-size: 11px; color: var(--muted); line-height: 1.7; }
+.wearable-how { padding: 0 20px 16px; }
+.wearable-how-title { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.wearable-how-step { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+.wearable-how-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #fbbf24; font-family: "Syne", sans-serif; flex-shrink: 0; margin-top: 2px; }
+.wearable-how-text { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.wearable-how-text strong { color: var(--text); }
+.wearable-devices { padding: 0 20px; }
+.wearable-devices-title { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+.wearable-device-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 10px; }
+.wearable-device-card.coming { opacity: 0.5; }
+.wearable-device-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.wearable-device-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.wearable-device-name { font-family: "Syne", sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 3px; }
+.wearable-device-sub { font-size: 10px; color: var(--muted); }
+.wearable-device-status { margin-left: auto; font-size: 9px; color: var(--muted); }
+.wearable-device-perks { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.wearable-device-perk { display: flex; gap: 8px; align-items: flex-start; }
+.wearable-device-perk-dot { width: 4px; height: 4px; border-radius: 50%; background: #fbbf24; flex-shrink: 0; margin-top: 6px; }
+.wearable-device-perk-text { font-size: 10px; color: var(--muted); line-height: 1.5; }
+.wearable-device-btn { width: 100%; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24; border-radius: 12px; padding: 13px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 13px; cursor: pointer; text-align: center; }
+.wearable-device-btn.coming { background: var(--surface2); border-color: var(--border); color: var(--muted); font-family: "DM Mono", monospace; font-weight: 400; }
+.wearable-privacy { margin: 14px 20px 30px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; }
+.wearable-privacy-text { font-size: 10px; color: var(--muted); line-height: 1.6; }
+
 </style>
 </head>
 <body>
@@ -841,6 +871,62 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
   </div>
 </div>
   
+  <!-- WEARABLES PANEL -->
+<div class="panel slide-right" id="wearablePanel">
+  <div class="panel-topbar">
+    <button class="panel-back" onclick="closePanel('wearablePanel')">Back</button>
+    <div class="panel-title">Wearables</div>
+    <div style="width:60px;"></div>
+  </div>
+  <div class="wearable-panel-hero">
+    <div class="wearable-panel-eyebrow">Real-time biometrics</div>
+    <div class="wearable-panel-title">Your wearable.<br><span>Your data. Auto-tracked.</span></div>
+    <div class="wearable-panel-sub">Connect your device and VITAL automatically completes habits, enriches your scans with real biometric data, and tracks your health 24/7.</div>
+  </div>
+  <div class="wearable-how">
+    <div class="wearable-how-title">How it works</div>
+    <div class="wearable-how-step"><div class="wearable-how-num">1</div><div class="wearable-how-text"><strong>Connect your device</strong> — one tap authorization, no manual setup</div></div>
+    <div class="wearable-how-step"><div class="wearable-how-num">2</div><div class="wearable-how-text"><strong>VITAL reads your data</strong> — sleep, recovery, HRV, and activity pulled daily</div></div>
+    <div class="wearable-how-step"><div class="wearable-how-num">3</div><div class="wearable-how-text"><strong>Habits auto-complete</strong> — sleep habits mark done when Oura confirms you slept. Wake up and your habits are already done.</div></div>
+  </div>
+  <div class="wearable-devices">
+    <div class="wearable-devices-title">Supported devices</div>
+    <div class="wearable-device-card">
+      <div class="wearable-device-header">
+        <div class="wearable-device-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg></div>
+        <div><div class="wearable-device-name">Oura Ring</div><div class="wearable-device-sub">Sleep · Recovery · HRV · Heart Rate</div></div>
+        <div class="wearable-device-status">Not connected</div>
+      </div>
+      <div class="wearable-device-perks">
+        <div class="wearable-device-perk"><div class="wearable-device-perk-dot"></div><div class="wearable-device-perk-text">Sleep hours and quality injected into every scan for more accurate biological age</div></div>
+        <div class="wearable-device-perk"><div class="wearable-device-perk-dot"></div><div class="wearable-device-perk-text">Recovery score auto-completes exercise and stress habits daily</div></div>
+        <div class="wearable-device-perk"><div class="wearable-device-perk-dot"></div><div class="wearable-device-perk-text">HRV trend used to refine your inflammation and stress markers over time</div></div>
+      </div>
+      <button class="wearable-device-btn" onclick="window.location.href='/oura-connect'">Connect Oura Ring</button>
+    </div>
+    <div class="wearable-device-card coming">
+      <div class="wearable-device-header">
+        <div class="wearable-device-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+        <div><div class="wearable-device-name">Apple Health</div><div class="wearable-device-sub">Steps · Workouts · Heart Rate</div></div>
+        <div class="wearable-device-status">Coming soon</div>
+      </div>
+      <div class="wearable-device-btn coming">Coming soon</div>
+    </div>
+    <div class="wearable-device-card coming">
+      <div class="wearable-device-header">
+        <div class="wearable-device-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="1.5"><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M9 8v8M15 8v8M3 12h18"/></svg></div>
+        <div><div class="wearable-device-name">WHOOP</div><div class="wearable-device-sub">Strain · Recovery · Sleep</div></div>
+        <div class="wearable-device-status">Coming soon</div>
+      </div>
+      <div class="wearable-device-btn coming">Coming soon</div>
+    </div>
+  </div>
+  <div class="wearable-privacy">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="1.5" style="flex-shrink:0;margin-top:1px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <div class="wearable-privacy-text">Your wearable data is used only to enrich your VITAL scans and auto-complete habits. It is never sold or shared with third parties.</div>
+  </div>
+</div>
+
 <!-- VITAL POD PANEL (placeholder — build out once hardware pairing exists) -->
 <div class="pod-panel" id="podPanel">
   <div class="panel-topbar">
@@ -1216,7 +1302,7 @@ function openChat() { document.getElementById("chatPanel").classList.add("open")
 function closeChat() { document.getElementById("chatPanel").classList.remove("open"); }
 function openCalendar() { openPanel("calPanel"); renderCalendar(); }
 function openMedical() { openPanel("medicalPanel"); }
-function openWearables() { window.location.href = "/auth.html?connect=oura"; }
+function openWearables() { openPanel('wearablePanel'); }
 function openScanIntelligence() { openPanel("siPanel"); renderScanIntelligence(); }
   function renderRiskPanel(r) {
   if (!r || !r.diseaseRisk) return;
@@ -1431,7 +1517,16 @@ function renderHabits() {
   if (!keys.length) { tabsEl.innerHTML=""; contentEl.innerHTML='<div class="habit-empty">Complete a scan to generate personalized habits.</div>'; return; }
   if (!_activeHabitMetric||!_habitData[_activeHabitMetric]) _activeHabitMetric=keys[0];
   tabsEl.innerHTML=keys.map(function(k){return '<div class="habit-tab'+(k===_activeHabitMetric?" active":"")+'" onclick="switchHabitTab(\''+k+'\')">'+k+'</div>';}).join("");
-  renderHabitCards(_activeHabitMetric);
+    renderHabitCards(_activeHabitMetric);
+  var existing = document.getElementById("habitWearableInfo");
+  if (!existing) {
+    var strip = document.createElement("div");
+    strip.id = "habitWearableInfo";
+    strip.className = "wearable-strip";
+    strip.style.marginTop = "4px";
+    strip.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.5"><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M9 8v8M15 8v8M3 12h18"/></svg><div class="wearable-strip-body"><div class="wearable-strip-title">Auto-complete with wearables</div><div class="wearable-strip-sub">VITAL marks habits done using your real activity data.</div></div><div class="wearable-connect-btn" onclick="openWearables()">Connect</div>';
+    document.getElementById("habitContent").parentNode.insertBefore(strip, document.getElementById("habitContent"));
+  }
 }
 
 function switchHabitTab(key) {
