@@ -613,6 +613,47 @@ app.post("/analyze-improving", async function(req, res) {
   }
 });
 
+app.post("/generate-habits", async function(req, res) {
+  try {
+    var scanData = req.body.scanData;
+    var profile = req.body.profile || {};
+    if (!scanData) return res.json({ success: false });
+
+    var prompt = "You are VITAL — an AI health system. Based on this person's scan results, generate personalized daily habits grouped by metric. Each habit must be specific, actionable, and directly tied to a visible scan finding.\n\n" +
+      "SCAN DATA:\n" +
+      "Biological Age: " + scanData.biologicalAge + "\n" +
+      "Skin Health: " + scanData.skinHealth + "\n" +
+      "Hydration: " + scanData.hydration + "\n" +
+      "Inflammation: " + scanData.inflammation + "\n" +
+      "Sleep Signal: " + scanData.sleepSignal + "\n" +
+      "Collagen Score: " + scanData.collagenScore + "\n" +
+      "Stress Markers: " + scanData.stressMarkers + "\n" +
+      "Oil Balance: " + scanData.oilBalance + "\n\n" +
+      "RULES:\n" +
+      "- Generate habits for the 3-4 metrics that need the most attention\n" +
+      "- Each metric gets 2-3 habits maximum\n" +
+      "- Each habit has: id (unique number), name (specific action, max 6 words), why (1 sentence why it helps this person), source (metric name)\n" +
+      "- Habits must be daily actions a person can actually check off\n\n" +
+      "RESPOND ONLY WITH RAW JSON. NO MARKDOWN. NO BACKTICKS:\n" +
+      "{\"habits\":{\"Inflammation\":[{\"id\":1,\"name\":\"Apply niacinamide 10% each evening\",\"why\":\"Directly targets the visible T-zone redness and sebaceous overactivity in your scan.\",\"source\":\"Inflammation\"}],\"Hydration\":[{\"id\":2,\"name\":\"Drink 500ml on waking\",\"why\":\"Your hydration at 62% is suppressing every other metric — front-loading water is the fastest fix.\",\"source\":\"Hydration\"}]}}";
+
+    var response = await client.messages.create({
+      model: "claude-opus-4-6",
+      max_tokens: 1500,
+      messages: [{ role: "user", content: prompt }]
+    });
+
+    var raw = response.content[0].text.replace(/```json|```/g, "").trim();
+    var start = raw.indexOf("{");
+    var end = raw.lastIndexOf("}");
+    if (start !== -1 && end !== -1) raw = raw.substring(start, end + 1);
+    var result = JSON.parse(raw);
+    res.json({ success: true, habits: result.habits });
+  } catch(e) {
+    console.error("generate-habits error:", e.message);
+    res.json({ success: false, error: e.message });
+  }
+});
 
 app.post("/save-habits", async function(req, res) {
   var habits = req.body.habits;
