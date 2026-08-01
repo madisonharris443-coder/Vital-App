@@ -370,6 +370,40 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 .disease-item.selected .disease-check { background: rgba(255,107,107,0.2); border-color: rgba(255,107,107,0.4); color: var(--bad); }
 .disease-name { font-size: 10px; color: var(--muted); line-height: 1.3; }
 .disease-item.selected .disease-name { color: var(--text); }
+  .tap-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tap-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; -webkit-tap-highlight-color: transparent; }
+.tap-btn-left { flex: 1; }
+.tap-btn-label { font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.tap-btn-title { font-family: "Syne", sans-serif; font-weight: 700; font-size: 12px; }
+.tap-btn-arrow { color: var(--muted); font-size: 18px; flex-shrink: 0; }
+.tap-btn.risk { border-color: rgba(255,107,107,0.2); }
+.tap-btn.risk .tap-btn-title { color: var(--bad); }
+.tap-btn.working { border-color: rgba(0,229,160,0.2); }
+.tap-btn.working .tap-btn-title { color: var(--accent); }
+.risk-card { border-radius: 18px; padding: 20px; border: 1px solid; margin-bottom: 0; }
+.risk-card.inflammation { background: rgba(255,107,107,0.04); border-color: rgba(255,107,107,0.2); }
+.risk-card.metabolic { background: rgba(255,169,77,0.04); border-color: rgba(255,169,77,0.2); }
+.risk-card.cardiovascular { background: rgba(123,92,250,0.04); border-color: rgba(123,92,250,0.2); }
+.risk-card.hormonal { background: rgba(255,169,77,0.03); border-color: rgba(255,169,77,0.15); }
+.risk-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.risk-card-name { font-family: "Syne", sans-serif; font-weight: 700; font-size: 15px; }
+.risk-card-pct { font-family: "Syne", sans-serif; font-weight: 800; font-size: 26px; }
+.risk-card-what { font-size: 11px; color: var(--text); line-height: 1.7; margin-bottom: 12px; }
+.risk-drivers { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.risk-driver { display: flex; gap: 8px; align-items: flex-start; }
+.risk-driver-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; margin-top: 7px; }
+.risk-driver-text { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.risk-trajectory { font-size: 11px; line-height: 1.6; padding-top: 12px; border-top: 1px solid var(--border); }
+.risk-trajectory strong { display: block; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+.working-intro { font-size: 11px; color: var(--muted); line-height: 1.7; }
+.working-card { background: rgba(0,229,160,0.04); border: 1px solid rgba(0,229,160,0.2); border-radius: 18px; padding: 20px; }
+.working-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.working-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+.working-metric { font-family: "Syne", sans-serif; font-weight: 700; font-size: 14px; color: var(--accent); }
+.working-trend { font-size: 10px; color: rgba(0,229,160,0.7); margin-top: 2px; }
+.working-detail { font-size: 11px; color: var(--text); line-height: 1.7; margin-bottom: 10px; }
+.working-maintain { font-size: 11px; color: var(--muted); line-height: 1.6; padding-top: 10px; border-top: 1px solid rgba(0,229,160,0.1); }
+.working-maintain strong { color: var(--text); }
 </style>
 </head>
 <body>
@@ -777,7 +811,29 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
     <div class="medical-provider-item"><div class="medical-provider-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7b5cfa" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="medical-provider-name">Cerner / Oracle Health</div><div class="medical-provider-status">Coming soon</div></div>
   </div>
 </div>
+  
+<!-- DISEASE RISK PANEL -->
+<div class="panel slide-right" id="riskPanel">
+  <div class="panel-topbar">
+    <button class="panel-back" onclick="closePanel('riskPanel')">Back</button>
+    <div class="panel-title">Disease Risk</div>
+    <div style="width:60px;"></div>
+  </div>
+  <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;" id="riskPanelContent">
+  </div>
+</div>
 
+<!-- WHATS WORKING PANEL -->
+<div class="panel slide-right" id="workingPanel">
+  <div class="panel-topbar">
+    <button class="panel-back" onclick="closePanel('workingPanel')">Back</button>
+    <div class="panel-title">What's Working</div>
+    <div style="width:60px;"></div>
+  </div>
+  <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;" id="workingPanelContent">
+  </div>
+</div>
+  
 <!-- VITAL POD PANEL (placeholder — build out once hardware pairing exists) -->
 <div class="pod-panel" id="podPanel">
   <div class="panel-topbar">
@@ -994,25 +1050,15 @@ function renderResults(r, photoUrl) {
   });
   html += '</div>';
   if (r.topInsights && r.topInsights.length) {
-    html += '<div class="result-insights"><div class="result-insights-title">What VITAL sees</div>';
+    html += '<div class="result-insights"><div class="result-insights-title">Observations</div>';
     r.topInsights.forEach(function(ins){html+='<div class="insight-item"><div class="insight-item-dot"></div><div class="insight-item-text">'+ins+'</div></div>';});
     html += '</div>';
   }
-  if (r.diseaseRisk) {
-    html += '<div class="result-risk"><div class="result-risk-title">Disease Risk</div>';
-    ["metabolic","cardiovascular","inflammation","hormonal"].forEach(function(sys) {
-      var risk = r.diseaseRisk[sys]; if(!risk) return;
-      var pct = parseFloat(risk.pct)||0;
-      var color = pct>50?"var(--bad)":pct>30?"var(--warn)":"var(--accent)";
-      html += '<div class="risk-item"><div class="risk-item-header"><span class="risk-item-name">'+sys.charAt(0).toUpperCase()+sys.slice(1)+'</span><span class="risk-item-pct" style="color:'+color+'">'+risk.pct+'</span></div><div class="risk-bar"><div class="risk-bar-fill" style="width:'+Math.min(pct,100)+'%;background:'+color+'"></div></div>'+(risk.what?'<div class="risk-item-what">'+risk.what+'</div>':'')+'</div>';
-    });
-    html += '</div>';
-  }
-  if (r.positives && r.positives.length) {
-    html += '<div class="result-positives"><div class="result-positives-title">What\'s working</div>';
-    r.positives.forEach(function(pos){html+='<div class="insight-item"><div class="insight-item-dot"></div><div class="insight-item-text">'+pos+'</div></div>';});
-    html += '</div>';
-  }
+  html += '<div class="tap-row">';
+  html += '<div class="tap-btn risk" onclick="openPanel(\'riskPanel\');renderRiskPanel(_scanData)"><div class="tap-btn-left"><div class="tap-btn-label">Tap to view</div><div class="tap-btn-title">Disease Risk</div></div><div class="tap-btn-arrow">›</div></div>';
+  html += '<div class="tap-btn working" onclick="openPanel(\'workingPanel\');renderWorkingPanel(_scanData)"><div class="tap-btn-left"><div class="tap-btn-label">Tap to view</div><div class="tap-btn-title">What\'s Working</div></div><div class="tap-btn-arrow">›</div></div>';
+  html += '</div>';
+  
   if (r.recommendations && r.recommendations.length) {
     html += '<div class="result-recs"><div class="result-recs-title">Recommendations</div>';
     r.recommendations.forEach(function(rec) {
@@ -1165,6 +1211,46 @@ function openCalendar() { openPanel("calPanel"); renderCalendar(); }
 function openMedical() { openPanel("medicalPanel"); }
 function openWearables() { window.location.href = "/auth.html?connect=oura"; }
 function openScanIntelligence() { openPanel("siPanel"); renderScanIntelligence(); }
+  function renderRiskPanel(r) {
+  if (!r || !r.diseaseRisk) return;
+  var systems = [
+    { key: "inflammation", label: "Inflammation", color: "var(--bad)", cls: "inflammation" },
+    { key: "metabolic", label: "Metabolic", color: "var(--warn)", cls: "metabolic" },
+    { key: "cardiovascular", label: "Cardiovascular", color: "var(--purple)", cls: "cardiovascular" },
+    { key: "hormonal", label: "Hormonal", color: "var(--warn)", cls: "hormonal" }
+  ];
+  var html = "";
+  systems.forEach(function(sys) {
+    var risk = r.diseaseRisk[sys.key]; if (!risk) return;
+    var pct = parseFloat(risk.pct) || 0;
+    html += '<div class="risk-card ' + sys.cls + '">';
+    html += '<div class="risk-card-header"><div class="risk-card-name">' + sys.label + '</div><div class="risk-card-pct" style="color:' + sys.color + '">' + risk.pct + '</div></div>';
+    html += '<div class="risk-bar"><div class="risk-bar-fill" style="width:' + Math.min(pct,100) + '%;background:' + sys.color + '"></div></div>';
+    if (risk.what) html += '<div class="risk-card-what">' + risk.what + '</div>';
+    if (risk.drivers && risk.drivers.length) {
+      html += '<div class="risk-drivers">';
+      risk.drivers.forEach(function(d) {
+        html += '<div class="risk-driver"><div class="risk-driver-dot" style="background:' + sys.color + '"></div><div class="risk-driver-text">' + d + '</div></div>';
+      });
+      html += '</div>';
+    }
+    if (risk.projection) html += '<div class="risk-trajectory" style="color:' + sys.color + '"><strong>The Trajectory</strong>' + risk.projection + '</div>';
+    html += '</div>';
+  });
+  document.getElementById("riskPanelContent").innerHTML = html;
+}
+
+function renderWorkingPanel(r) {
+  if (!r || !r.positives || !r.positives.length) {
+    document.getElementById("workingPanelContent").innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:32px 0;">Complete more scans to see what\'s working over time.</div>';
+    return;
+  }
+  var html = '<div class="working-intro">Here\'s what VITAL found doing well in your scan. These are worth protecting.</div>';
+  r.positives.forEach(function(pos) {
+    html += '<div class="working-card"><div class="working-card-header"><div class="working-dot"></div><div class="working-metric">' + pos + '</div></div></div>';
+  });
+  document.getElementById("workingPanelContent").innerHTML = html;
+}
 function connectMedical() { alert("Medical records integration coming soon. We are awaiting approval from Epic FHIR and Health Gorilla."); }
 function openPod() { openPanel("podPanel"); }
 
