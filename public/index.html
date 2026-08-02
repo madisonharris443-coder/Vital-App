@@ -126,7 +126,7 @@ select:focus, input:focus { border-color: rgba(0,229,160,0.3); }
 .habit-metric-tabs::-webkit-scrollbar { display: none; }
 .habit-tab { flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 10px; color: var(--muted); cursor: pointer; white-space: nowrap; }
 .habit-tab.active { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.35); color: #a78bfa; }
-.habit-content { padding: 0 20px 20px; }
+.habit-content { padding: 0 20px 100px; }
 .habit-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 12px; line-height: 1.7; }
 .habit-card { background: var(--surface); border: 1px solid rgba(255,107,107,0.15); border-radius: 16px; margin-bottom: 10px; overflow: hidden; }
 .habit-card.green { border-color: rgba(0,229,160,0.15); }
@@ -1183,7 +1183,8 @@ function renderHero(r) {
     return;
   }
   document.getElementById("dash2BioAge").textContent = r.biologicalAge || "--";
-  document.getElementById("dash2ChronoAge").textContent = (userData && userData.age) ? userData.age : "--";
+  var chronoAge = (userData && userData.age) ? userData.age : (_scans && _scans.length && _scans[_scans.length-1].data && _scans[_scans.length-1].data.profile && _scans[_scans.length-1].data.profile.age) ? _scans[_scans.length-1].data.profile.age : "--";
+document.getElementById("dash2ChronoAge").textContent = chronoAge;
   document.getElementById("dash2HeroDiff").innerHTML = r.chronologicalAgeDiff ? r.chronologicalAgeDiff : "";
   // Metric chips
 var metrics = document.getElementById("dash2Metrics");
