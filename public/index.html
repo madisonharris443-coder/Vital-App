@@ -1423,7 +1423,7 @@ function renderScanIntelligence() {
     var isLast = i === _scans.length - 1;
     var dateStr = scan.created_at ? new Date(scan.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
     photoHtml += '<div class="si-photo' + (isLast ? " active" : "") + '" onclick="selectScanPhoto(' + i + ',this)">';
-    photoHtml += '<div class="si-photo-thumb">' + (scan.data && scan.data.photoUrl ? '<img src="' + scan.data.photoUrl + '" alt="Scan ' + (i + 1) + '">' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="1.2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') + '<div class="si-photo-status" style="background:' + statusColor + '"></div></div>';
+    photoHtml += '<div class="si-photo-thumb">' + (scan.data && (scan.data.photoUrl || scan.photoUrl) ? '<img src="' + (scan.data.photoUrl || scan.photoUrl) + '" alt="Scan ' + (i + 1) + '">' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="1.2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') + '<div class="si-photo-status" style="background:' + statusColor + '"></div></div>';
     photoHtml += '<div class="si-photo-meta"><div class="si-photo-num">S' + (i + 1) + '</div><div class="si-photo-date">' + dateStr + '</div></div></div>';
   });
   photoRow.innerHTML = photoHtml;
