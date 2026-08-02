@@ -440,7 +440,43 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 .wearable-device-btn.coming { background: var(--surface2); border-color: var(--border); color: var(--muted); font-family: "DM Mono", monospace; font-weight: 400; }
 .wearable-privacy { margin: 14px 20px 30px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; }
 .wearable-privacy-text { font-size: 10px; color: var(--muted); line-height: 1.6; }
-
+.si-trajectory { margin: 0 20px 12px; }
+.si-trajectory-title { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.si-trajectory-card { background: var(--surface); border: 1px solid rgba(0,229,160,0.15); border-radius: 16px; padding: 18px; }
+.si-trajectory-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.si-trajectory-lbl { font-size: 10px; color: var(--muted); }
+.si-trajectory-trend { font-size: 10px; font-weight: 700; }
+.si-trajectory-svg { width: 100%; height: 80px; margin-bottom: 4px; }
+.si-trajectory-x { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.si-trajectory-x span { font-size: 7px; color: rgba(107,122,153,0.5); }
+.si-trajectory-vals { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.si-trajectory-val { font-family: "Syne", sans-serif; font-weight: 700; font-size: 11px; color: var(--accent); }
+.si-trajectory-note { font-size: 10px; color: var(--muted); line-height: 1.6; padding-top: 10px; border-top: 1px solid var(--border); }
+.si-trajectory-note strong { color: var(--text); }
+.si-metric-trends { margin: 0 20px 12px; }
+.si-metric-trends-title { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.si-metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 8px; cursor: pointer; }
+.si-metric-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.si-metric-card-name { font-family: "Syne", sans-serif; font-weight: 700; font-size: 13px; }
+.si-metric-card-right { display: flex; align-items: center; gap: 8px; }
+.si-metric-card-val { font-family: "Syne", sans-serif; font-weight: 800; font-size: 16px; }
+.si-metric-card-arrow { font-size: 12px; }
+.si-metric-card-change { font-size: 10px; color: var(--muted); }
+.si-metric-mini { width: 100%; height: 36px; }
+.si-metric-card-insight { font-size: 10px; color: var(--muted); line-height: 1.6; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+.si-patterns { margin: 0 20px 30px; }
+.si-patterns-title { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.si-pattern-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 8px; }
+.si-pattern-card.warn { border-color: rgba(255,169,77,0.2); background: rgba(255,169,77,0.02); }
+.si-pattern-card.good { border-color: rgba(0,229,160,0.15); background: rgba(0,229,160,0.02); }
+.si-pattern-card.bad { border-color: rgba(255,107,107,0.15); background: rgba(255,107,107,0.02); }
+.si-pattern-header { display: flex; gap: 10px; align-items: flex-start; }
+.si-pattern-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.si-pattern-body { flex: 1; }
+.si-pattern-title-text { font-family: "Syne", sans-serif; font-weight: 700; font-size: 12px; margin-bottom: 4px; }
+.si-pattern-text { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.si-pattern-badge { display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 8px; background: rgba(255,169,77,0.08); border: 1px solid rgba(255,169,77,0.2); border-radius: 4px; padding: 2px 7px; color: var(--warn); }
+.si-pattern-badge.bad { color: var(--bad); background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.2); }
 </style>
 </head>
 <body>
@@ -1367,45 +1403,176 @@ async function loadScans() {
 function renderScanIntelligence() {
   var countEl = document.getElementById("siCountText");
   var photoRow = document.getElementById("siPhotoRow");
-  var selected = document.getElementById("siSelected");
   var insights = document.getElementById("siInsights");
-  if (!_scans || !_scans.length) { countEl.textContent = "No scans yet"; photoRow.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:8px 0;">Complete your first scan to start tracking.</div>'; return; }
-  countEl.textContent = _scans.length + " scan" + (_scans.length!==1?"s":"") + " · " + getMonthRange(_scans);
+
+  if (!_scans || !_scans.length) {
+    countEl.textContent = "No scans yet";
+    photoRow.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:8px 0;">Complete your first scan to start tracking.</div>';
+    insights.innerHTML = '<div style="text-align:center;padding:32px 20px;color:var(--muted);font-size:12px;line-height:1.7;">Complete your first scan to start tracking patterns.</div>';
+    return;
+  }
+
+  countEl.textContent = _scans.length + " scan" + (_scans.length !== 1 ? "s" : "") + " · " + getMonthRange(_scans);
+
+  // Photo timeline
   var photoHtml = "";
   _scans.forEach(function(scan, i) {
-    var d = scan.data||{};
-    var bio = d.biologicalAge||0, age = parseInt(userData.age||25);
-    var statusColor = bio && age && bio <= age-2 ? "var(--accent)" : bio && age && bio <= age+1 ? "var(--warn)" : "var(--bad)";
-    var isLast = i===_scans.length-1;
-    var dateStr = scan.created_at ? new Date(scan.created_at).toLocaleDateString("en-US",{month:"short",day:"numeric"}) : "";
-    photoHtml += '<div class="si-photo'+(isLast?" active":"")+'\" onclick=\"selectScanPhoto('+i+',this)\">';
-    photoHtml += '<div class="si-photo-thumb">'+(scan.photoUrl?'<img src="'+scan.photoUrl+'" alt="Scan '+(i+1)+'">':'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="1.2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>')+'<div class="si-photo-status" style="background:'+statusColor+'"></div></div>';
-    photoHtml += '<div class="si-photo-meta"><div class="si-photo-num">S'+(i+1)+'</div><div class="si-photo-date">'+dateStr+'</div></div></div>';
+    var d = scan.data || {};
+    var bio = d.biologicalAge || 0, age = parseInt((d.profile && d.profile.age) || userData.age || 25);
+    var statusColor = bio && age && bio <= age - 2 ? "var(--accent)" : bio && age && bio <= age + 1 ? "var(--warn)" : "var(--bad)";
+    var isLast = i === _scans.length - 1;
+    var dateStr = scan.created_at ? new Date(scan.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "";
+    photoHtml += '<div class="si-photo' + (isLast ? " active" : "") + '" onclick="selectScanPhoto(' + i + ',this)">';
+    photoHtml += '<div class="si-photo-thumb">' + (scan.data && scan.data.photoUrl ? '<img src="' + scan.data.photoUrl + '" alt="Scan ' + (i + 1) + '">' : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="1.2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') + '<div class="si-photo-status" style="background:' + statusColor + '"></div></div>';
+    photoHtml += '<div class="si-photo-meta"><div class="si-photo-num">S' + (i + 1) + '</div><div class="si-photo-date">' + dateStr + '</div></div></div>';
   });
   photoRow.innerHTML = photoHtml;
-  if (_scans.length>0) selectScanPhoto(_scans.length-1, null);
-  if (_scans.length>=3) { renderScanInsights(); }
-  else { insights.innerHTML = '<div style="text-align:center;padding:32px 20px;color:var(--muted);font-size:12px;line-height:1.7;">Complete '+(3-_scans.length)+' more scan'+(3-_scans.length!==1?"s":"")+" to see patterns VITAL notices across your history.</div>"; }
+
+  if (_scans.length > 0) selectScanPhoto(_scans.length - 1, null);
+
+  // Build main content
+  var html = "";
+
+  // Bio age trajectory
+  if (_scans.length >= 2) {
+    var bioAges = _scans.map(function(s) { return s.data && s.data.biologicalAge ? parseInt(s.data.biologicalAge) : null; }).filter(Boolean);
+    var dates = _scans.map(function(s) { return s.created_at ? new Date(s.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""; });
+    if (bioAges.length >= 2) {
+      var improving = bioAges[bioAges.length - 1] < bioAges[0];
+      var maxAge = Math.max.apply(null, bioAges), minAge = Math.min.apply(null, bioAges), range = (maxAge - minAge) || 1;
+      var points = bioAges.map(function(v, i) { return (i / (bioAges.length - 1)) * 335 + "," + (60 - ((maxAge - v) / range) * 50 + 10); });
+      var trendColor = improving ? "var(--accent)" : "var(--bad)";
+      html += '<div class="si-trajectory"><div class="si-trajectory-title">Biological age over time</div>';
+      html += '<div class="si-trajectory-card">';
+      html += '<div class="si-trajectory-header"><div class="si-trajectory-lbl">Biological age · ' + bioAges.length + ' scans</div><div class="si-trajectory-trend" style="color:' + trendColor + '">' + (improving ? "↓ Improving" : "↑ Needs attention") + '</div></div>';
+      html += '<svg class="si-trajectory-svg" viewBox="0 0 335 80" preserveAspectRatio="none">';
+      html += '<defs><linearGradient id="bioGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="' + trendColor + '" stop-opacity="0.2"/><stop offset="100%" stop-color="' + trendColor + '" stop-opacity="0"/></linearGradient></defs>';
+      html += '<path d="M' + points.join(" L") + '" stroke="' + trendColor + '" stroke-width="2" fill="none"/>';
+      html += '<path d="M' + points.join(" L") + ' L335,80 L0,80Z" fill="url(#bioGrad)"/>';
+      bioAges.forEach(function(v, i) {
+        var x = (i / (bioAges.length - 1)) * 335;
+        var y = 60 - ((maxAge - v) / range) * 50 + 10;
+        html += '<circle cx="' + x + '" cy="' + y + '" r="4" fill="' + trendColor + '"/>';
+      });
+      html += '</svg>';
+      html += '<div class="si-trajectory-x">' + dates.map(function(d) { return '<span>' + d + '</span>'; }).join("") + '</div>';
+      html += '<div class="si-trajectory-vals">' + bioAges.map(function(v) { return '<span class="si-trajectory-val" style="color:' + trendColor + '">' + v + '</span>'; }).join("") + '</div>';
+      var diff = Math.abs(bioAges[0] - bioAges[bioAges.length - 1]);
+      html += '<div class="si-trajectory-note">' + (improving ? '<strong>' + diff + ' years younger</strong> than your first scan. Keep going — your current habits are working.' : '<strong>' + diff + ' years older</strong> than your first scan. Focus on sleep and hydration — they move biological age fastest.') + '</div>';
+      html += '</div></div>';
+    }
+  }
+
+  // Metric trends
+  if (_scans.length >= 2) {
+    var metricDefs = [
+      { key: "skinHealth", label: "Skin Health", good: true },
+      { key: "inflammation", label: "Inflammation", good: false },
+      { key: "hydration", label: "Hydration", good: true }
+    ];
+    html += '<div class="si-metric-trends"><div class="si-metric-trends-title">Metric trends</div>';
+    metricDefs.forEach(function(m) {
+      var vals = _scans.map(function(s) { return s.data && s.data[m.key] ? s.data[m.key] : null; }).filter(Boolean);
+      if (vals.length < 2) return;
+      var first = vals[0], last = vals[vals.length - 1];
+      var numFirst = parseFloat(first) || 0, numLast = parseFloat(last) || 0;
+      var improving = m.good ? numLast >= numFirst : numLast <= numFirst;
+      var color = improving ? "var(--accent)" : "var(--bad)";
+      var arrow = improving ? "↑" : "↓";
+      if (first === last) { color = "var(--warn)"; arrow = "→"; }
+      html += '<div class="si-metric-card">';
+      html += '<div class="si-metric-card-header"><div class="si-metric-card-name">' + m.label + '</div>';
+      html += '<div class="si-metric-card-right"><div class="si-metric-card-val" style="color:' + color + '">' + last + '</div><div class="si-metric-card-arrow" style="color:' + color + '">' + arrow + '</div></div></div>';
+      // Mini chart
+      var numVals = vals.map(function(v) { return parseFloat(v) || 0; });
+      var maxV = Math.max.apply(null, numVals) || 1, minV = Math.min.apply(null, numVals);
+      var rangeV = (maxV - minV) || 1;
+      var pts = numVals.map(function(v, i) { return (i / (numVals.length - 1)) * 335 + "," + (30 - ((v - minV) / rangeV) * 28 + 3); });
+      html += '<svg class="si-metric-mini" viewBox="0 0 335 36" preserveAspectRatio="none">';
+      html += '<path d="M' + pts.join(" L") + '" stroke="' + color + '" stroke-width="1.5" fill="none"/>';
+      numVals.forEach(function(v, i) {
+        var x = (i / (numVals.length - 1)) * 335;
+        var y = 30 - ((v - minV) / rangeV) * 28 + 3;
+        html += '<circle cx="' + x + '" cy="' + y + '" r="3" fill="' + color + '"/>';
+      });
+      html += '</svg>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Pattern insights
+  if (_scans.length >= 3) {
+    html += '<div class="si-patterns"><div class="si-patterns-title">What VITAL notices</div>';
+    var patterns = generatePatterns();
+    if (patterns.length) {
+      patterns.forEach(function(p) {
+        html += '<div class="si-pattern-card ' + p.type + '">';
+        html += '<div class="si-pattern-header"><div class="si-pattern-dot" style="background:' + p.dotColor + '"></div>';
+        html += '<div class="si-pattern-body"><div class="si-pattern-title-text">' + p.title + '</div><div class="si-pattern-text">' + p.text + '</div>';
+        if (p.badge) html += '<div class="si-pattern-badge ' + (p.type === "bad" ? "bad" : "") + '">' + p.badge + '</div>';
+        html += '</div></div></div>';
+      });
+    }
+    html += '</div>';
+  } else if (_scans.length < 3) {
+    html += '<div style="text-align:center;padding:24px 20px;color:var(--muted);font-size:12px;line-height:1.7;">Complete ' + (3 - _scans.length) + ' more scan' + (3 - _scans.length !== 1 ? "s" : "") + ' to see patterns VITAL notices across your history.</div>';
+  }
+
+  insights.innerHTML = html;
+}
+
+function generatePatterns() {
+  var patterns = [];
+  if (_scans.length < 3) return patterns;
+
+  var metrics = ["skinHealth", "inflammation", "hydration", "collagenScore", "sleepSignal", "stressMarkers"];
+  var goodMetrics = ["skinHealth", "hydration", "collagenScore"];
+
+  metrics.forEach(function(key) {
+    var vals = _scans.map(function(s) { return s.data && s.data[key] ? parseFloat(s.data[key]) || 0 : 0; });
+    var allDecline = true, allImprove = true, allFlat = true;
+    for (var i = 1; i < vals.length; i++) {
+      if (vals[i] >= vals[i-1]) allDecline = false;
+      if (vals[i] <= vals[i-1]) allImprove = false;
+      if (Math.abs(vals[i] - vals[i-1]) > 2) allFlat = false;
+    }
+    var isGood = goodMetrics.indexOf(key) !== -1;
+    var label = { skinHealth: "Skin Health", inflammation: "Inflammation", hydration: "Hydration", collagenScore: "Collagen", sleepSignal: "Sleep Signal", stressMarkers: "Stress" }[key] || key;
+    if (allImprove && isGood) {
+      patterns.push({ type: "good", dotColor: "var(--accent)", title: label + " improving every scan", text: "This metric has gone up in every single scan you have taken. Whatever you are doing is working — protect it.", badge: null });
+    } else if (allDecline && isGood) {
+      patterns.push({ type: "bad", dotColor: "var(--bad)", title: label + " declining every scan", text: "Consistent downward trend across " + _scans.length + " scans. This will start affecting your biological age if it continues.", badge: "Consistent decline · " + _scans.length + " scans" });
+    } else if (allFlat && !isGood) {
+      patterns.push({ type: "warn", dotColor: "var(--warn)", title: label + " not improving", text: "This metric has stayed flat across all " + _scans.length + " scans. It is likely a ceiling holding your other metrics back.", badge: "Repeating pattern · " + _scans.length + " scans" });
+    }
+  });
+
+  return patterns.slice(0, 3);
 }
 
 function selectScanPhoto(index, el) {
-  document.querySelectorAll(".si-photo").forEach(function(p){p.classList.remove("active");});
+  document.querySelectorAll(".si-photo").forEach(function(p) { p.classList.remove("active"); });
   if (el) el.classList.add("active");
-  else { var photos = document.querySelectorAll(".si-photo"); if(photos[index]) photos[index].classList.add("active"); }
-  var scan = _scans[index]; if(!scan) return;
-  var d = scan.data||{};
+  else { var photos = document.querySelectorAll(".si-photo"); if (photos[index]) photos[index].classList.add("active"); }
+  var scan = _scans[index]; if (!scan) return;
+  var d = scan.data || {};
   document.getElementById("siSelected").style.display = "flex";
-  var dateStr = scan.created_at ? new Date(scan.created_at).toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"}) : "";
-  document.getElementById("siSelectedTitle").textContent = "Scan "+(index+1)+" — "+dateStr;
+  var dateStr = scan.created_at ? new Date(scan.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "";
+  document.getElementById("siSelectedTitle").textContent = "Scan " + (index + 1) + " — " + dateStr;
   var thumb = document.getElementById("siSelectedThumb");
-  if (scan.photoUrl) thumb.innerHTML = '<img src="'+scan.photoUrl+'" alt="Scan" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">';
-  document.getElementById("siSelectedMetrics").innerHTML = '<div class="si-selected-metric"><strong>Bio Age:</strong> '+(d.biologicalAge||"--")+'</div><div class="si-selected-metric"><strong>Skin:</strong> '+(d.skinHealth||"--")+'</div><div class="si-selected-metric"><strong>Inflam:</strong> '+(d.inflammation||"--")+'</div>';
-  var bio = d.biologicalAge||0, age = parseInt(userData.age||25);
+  if (d.photoUrl) { thumb.innerHTML = '<img src="' + d.photoUrl + '" alt="Scan" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'; }
+  document.getElementById("siSelectedMetrics").innerHTML =
+    '<div class="si-selected-metric"><strong>Bio Age:</strong> ' + (d.biologicalAge || "--") + '</div>' +
+    '<div class="si-selected-metric"><strong>Skin:</strong> ' + (d.skinHealth || "--") + '</div>' +
+    '<div class="si-selected-metric"><strong>Inflam:</strong> ' + (d.inflammation || "--") + '</div>';
+  var bio = d.biologicalAge || 0;
+  var age = parseInt((d.profile && d.profile.age) || userData.age || 25);
   var statusEl = document.getElementById("siSelectedStatus");
   if (bio && age) {
-    if (bio<=age-2){statusEl.textContent="Aging well";statusEl.style.color="var(--accent)";}
-    else if(bio<=age+1){statusEl.textContent="On track";statusEl.style.color="var(--warn)";}
-    else{statusEl.textContent="Needs attention";statusEl.style.color="var(--bad)";}
+    if (bio <= age - 2) { statusEl.textContent = "Aging well"; statusEl.style.color = "var(--accent)"; }
+    else if (bio <= age + 1) { statusEl.textContent = "On track"; statusEl.style.color = "var(--warn)"; }
+    else { statusEl.textContent = "Needs attention"; statusEl.style.color = "var(--bad)"; }
   }
 }
 
