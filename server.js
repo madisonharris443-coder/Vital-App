@@ -85,7 +85,7 @@ app.get("/get-scans", async function(req, res) {
         var userId = userRes.data.user.id;
         var result = await supabase.from("scans").select("*").eq("user_id", userId).order("created_at", { ascending: true });
         if (result.data && result.data.length > 0) {
-          var scans = result.data.map(function(row) { return row.data; });
+          var scans = result.data.map(function(row) { var d = row.data || {}; d.photoUrl = d.photoUrl || row.photo_url || null; d._createdAt = row.created_at; return d; });
           return res.json({ success: true, scans: scans });
         }
       }
