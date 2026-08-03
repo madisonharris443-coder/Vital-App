@@ -1000,8 +1000,8 @@ var PRODUCT_KEYWORDS_HABIT = ["spf","sunscreen","retinol","retinoid","niacinamid
       updateProfileUI(d.user);
       await loadScans();
       loadHabits();
-      if (_scans && _scans.length) { _scanData = _scans[_scans.length - 1]; }
-      showDashboard(_scanData);
+      if (_scans && _scans.length) { _scanData = _scans[_scans.length - 1].data || _scans[_scans.length - 1]; }
+showDashboard(_scanData);
       return;
     }
   } catch(e) {}
@@ -1042,8 +1042,9 @@ async function doSignIn() {
   updateProfileUI(result.data.user);
   await loadScans();
   loadHabits();
-  if (_scans && _scans.length) { _scanData = _scans[_scans.length - 1]; }
-  showDashboard(_scanData);
+  if (_scans && _scans.length) { _scanData = _scans[_scans.length - 1].data || _scans[_scans.length - 1]; }
+showDashboard(_scanData);
+
 }
 
 
@@ -1498,7 +1499,12 @@ function renderScanIntelligence() {
         html += '<circle cx="' + x + '" cy="' + y + '" r="3" fill="' + color + '"/>';
       });
       html += '</svg>';
-      var insightText = m.good ? (improving ? "Consistently improving — your current habits are working for this metric." : "Declining trend — this metric needs attention before it affects your biological age.") : (improving ? "Moving in the right direction — keep the habits driving this improvement." : "Persistently elevated — this is likely holding your biological age back.");
+            var firstVal = vals[0], lastVal = vals[vals.length-1];
+      var direction = m.good ? (numLast > numFirst) : (numLast < numFirst);
+      var insightText = direction ?
+        "Up from " + firstVal + " to " + lastVal + " across your last " + vals.length + " scans. Whatever is driving this improvement — protect it." :
+        "Down from " + firstVal + " to " + lastVal + " across your last " + vals.length + " scans. This needs a habit change before it pulls your biological age up.";
+      if (numFirst === numLast) insightText = "Flat at " + lastVal + " across " + vals.length + " scans. The root cause is still present — this metric is quietly limiting your progress.";
       html += '<div class="si-metric-card-insight">' + insightText + '</div>';
       html += '</div>';
     });
@@ -1564,14 +1570,22 @@ function generatePatterns(recentScans) {
         text: "From " + first + " down to " + last + " — a " + (diff > 0 ? diff.toFixed(0) + " point drop" : "steady decline") + " across " + scanCount + " scans with no reversal. At this rate this metric will start pulling your biological age up within the next 2-3 scans.",
         badge: "Consistent decline · " + scanCount + " scans"
       });
-    } else if (allFlat && !isGood) {
+        } else if (allFlat && !isGood) {
       patterns.push({
         type: "warn",
         dotColor: "var(--warn)",
         title: label + " has not moved in " + scanCount + " scans",
-        text: "Sitting at " + last + " across all " + scanCount + " scans — no improvement, no worsening. This kind of plateau usually means the root cause is still present and untreated. It is quietly limiting how far your other metrics can go.",
+        text: (function() {
+          var specifics = {
+            inflammation: "Inflammation sitting at " + last + " for " + scanCount + " consecutive scans is a signal your body is stuck in a stress or recovery loop. Until this breaks, your skin health and biological age have a hard ceiling.",
+            sleepSignal: "Sleep signal has read " + last + " for " + scanCount + " scans straight. Chronic sleep deprivation at this level is the single fastest way to age your skin — no supplement or habit can outrun it.",
+            stressMarkers: "Stress markers locked at " + last + " across " + scanCount + " scans means your cortisol load is not recovering between sessions. This drives inflammation, disrupts sleep, and shows up directly in your face."
+          };
+          return specifics[key] || "Sitting at " + last + " across all " + scanCount + " scans with no movement. The root cause is still present and quietly limiting how far your other metrics can go.";
+        })(),
         badge: "Repeating pattern · " + scanCount + " scans"
       });
+
     } else if (!isGood && !allFlat) {
       var recentTrend = vals[vals.length-1] > vals[vals.length-2];
       if (recentTrend) {
