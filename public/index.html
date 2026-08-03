@@ -1417,7 +1417,7 @@ function renderScanIntelligence() {
   // Photo timeline
   var photoHtml = "";
   _scans.forEach(function(scan, i) {
-    var d = scan.data || {};
+    var d = scan.data || scan || {};
     var bio = d.biologicalAge || 0, age = parseInt((d.profile && d.profile.age) || userData.age || 25);
     var statusColor = bio && age && bio <= age - 2 ? "var(--accent)" : bio && age && bio <= age + 1 ? "var(--warn)" : "var(--bad)";
     var isLast = i === _scans.length - 1;
@@ -1435,8 +1435,7 @@ function renderScanIntelligence() {
 
   // Bio age trajectory
   if (_scans.length >= 2) {
-    console.log("First scan data:", JSON.stringify(_scans[0]));
-    var bioAges = _scans.map(function(s) { return s.data && s.data.biologicalAge ? parseInt(s.data.biologicalAge) : null; }).filter(Boolean);
+    var bioAges = _scans.map(function(s) { var sd = s.data || s; return sd.biologicalAge ? parseInt(sd.biologicalAge) : null; }).filter(Boolean);
     var dates = _scans.map(function(s) { return s.created_at ? new Date(s.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""; });
     if (bioAges.length >= 2) {
       var improving = bioAges[bioAges.length - 1] < bioAges[0];
@@ -1473,7 +1472,7 @@ function renderScanIntelligence() {
     ];
     html += '<div class="si-metric-trends"><div class="si-metric-trends-title">Metric trends</div>';
     metricDefs.forEach(function(m) {
-      var vals = _scans.map(function(s) { return s.data && s.data[m.key] ? s.data[m.key] : null; }).filter(Boolean);
+      var vals = _scans.map(function(s) { var sd = s.data || s; return sd[m.key] ? sd[m.key] : null; }).filter(Boolean);
       if (vals.length < 2) return;
       var first = vals[0], last = vals[vals.length - 1];
       var numFirst = parseFloat(first) || 0, numLast = parseFloat(last) || 0;
@@ -1531,7 +1530,7 @@ function generatePatterns() {
   var goodMetrics = ["skinHealth", "hydration", "collagenScore"];
 
   metrics.forEach(function(key) {
-    var vals = _scans.map(function(s) { return s.data && s.data[key] ? parseFloat(s.data[key]) || 0 : 0; });
+    var vals = _scans.map(function(s) { var sd = s.data || s; return sd[key] ? parseFloat(sd[key]) || 0 : 0; });
     var allDecline = true, allImprove = true, allFlat = true;
     for (var i = 1; i < vals.length; i++) {
       if (vals[i] >= vals[i-1]) allDecline = false;
@@ -1577,33 +1576,6 @@ function selectScanPhoto(index, el) {
   }
 }
 
-function renderScanInsights() {
-  var insights = document.getElementById("siInsights");
-  var bioAges = _scans.map(function(s){return s.data?.biologicalAge||0;}).filter(Boolean);
-  if (bioAges.length<3) { insights.innerHTML='<div style="text-align:center;padding:32px 20px;color:var(--muted);font-size:12px;">Complete more scans to generate insights.</div>'; return; }
-  var first=bioAges[0], last=bioAges[bioAges.length-1];
-  var improving=last<first;
-  var max=Math.max.apply(null,bioAges), min=Math.min.apply(null,bioAges), range=max-min||1;
-  var points = bioAges.map(function(v,i){return (i/(bioAges.length-1))*280+","+(48-((v-min)/range)*40+4);});
-  var color = improving ? "var(--accent)" : "var(--bad)";
-  var html = '<div class="si-insight open" onclick="this.classList.toggle(\'open\')">';
-  html += '<div class="si-insight-top"><div class="si-dot" style="background:'+color+'"></div><div class="si-insight-body">';
-  html += '<div class="si-metric-label">Biological Age · Trajectory</div>';
-  html += '<div class="si-insight-text">'+(improving?"Your biological age has dropped "+Math.abs(first-last)+" year"+(Math.abs(first-last)!==1?"s":"")+" since scan 1. The trend is moving in the right direction.":"Your biological age has increased slightly since scan 1 — but it's reversible with the right changes.")+'</div>';
-  html += '<div class="si-insight-sub">From '+first+' at scan 1 to '+last+' at scan '+_scans.length+'</div>';
-  html += '</div><div class="si-chevron">›</div></div>';
-  html += '<div class="si-chart-wrap"><div class="si-chart-inner">';
-  html += '<div class="si-chart-header"><div class="si-chart-lbl">Biological age</div><div class="si-chart-lbl" style="color:'+color+'">'+(improving?"Improving":"Needs attention")+'</div></div>';
-  html += '<svg class="si-chart-svg" viewBox="0 0 280 48" preserveAspectRatio="none">';
-  html += '<defs><linearGradient id="siGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+color+'" stop-opacity="0.25"/><stop offset="100%" stop-color="'+color+'" stop-opacity="0"/></linearGradient></defs>';
-  html += '<path d="M'+points.join(" L")+'" stroke="'+color+'" stroke-width="1.5" fill="none"/>';
-  html += '<path d="M'+points.join(" L")+' L280,48 L0,48Z" fill="url(#siGrad)"/>';
-  html += '</svg>';
-  html += '<div class="si-chart-x"><span>Scan 1</span><span>Scan '+Math.floor(_scans.length/2)+'</span><span>Scan '+_scans.length+'</span></div>';
-  html += '<div class="si-chart-note">'+(improving?"<strong>Keep going.</strong> Your current habits are working. At this rate you will see continued improvement over the next few months.":"<strong>Focus on sleep and hydration</strong> — they move biological age fastest. Small consistent changes compound quickly.")+'</div>';
-  html += '</div></div></div>';
-  insights.innerHTML = html;
-}
 
 function getMonthRange(scans) {
   if(!scans||!scans.length) return "";
