@@ -279,6 +279,13 @@ app.post("/analyze", upload.single("photo"), async function(req, res) {
 "HEALTH PROFILE:\n" + profile + "\n\n" +
 (ouraProfile ? "WEARABLE BIOMETRICS (Oura Ring — verified, prioritize over self-reported):\n" + ouraProfile + "\n\n" : "") +
 (scanHistory ? scanHistory + "\n" : "") +
+(scanHistory ? "SCAN COMPARISON RULES — STRICTLY ENFORCED:\n" +
+"- Explicitly reference the previous scan values when they exist. Never write as if this is the first scan if it is not.\n" +
+"- Call out what improved since last scan with exact numbers — e.g. 'Your skin health rose from 71 to 78 since your last scan'\n" +
+"- Call out what got worse with exact numbers and name the likely cause based on their profile\n" +
+"- Biological age must reference the trajectory — is it moving in the right direction compared to scan 1?\n" +
+"- topInsights must feel like a physician who has been tracking this person for months — reference their history, name the changes, project the trajectory\n" +
+"- Never write a generic insight that could apply to any person. Every sentence must be traceable to a number that changed or a pattern that persists\n\n" : "") +
 
 "WHAT TO ANALYZE IN THIS PHOTO:\n\n" +
 
