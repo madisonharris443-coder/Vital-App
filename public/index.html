@@ -1412,8 +1412,9 @@ function renderScanIntelligence() {
     return;
   }
 
-  countEl.textContent = _scans.length + " scan" + (_scans.length !== 1 ? "s" : "") + " · " + getMonthRange(_scans);
-  var displayScans = _scans.slice(-10);
+  countEl.textContent = _scans.length + " scan" + (_scans.length !== 1 ? "s" : "") + " · showing last 10";
+ var recentScans = _scans.slice(-10);
+  if (!recentScans.length) { insights.innerHTML = '<div style="text-align:center;padding:32px 20px;color:var(--muted);font-size:12px;">No scan data found.</div>'; return; }
 
   // Photo timeline
   var photoHtml = "";
@@ -1503,7 +1504,7 @@ function renderScanIntelligence() {
   }
 
   // Pattern insights
-  if (_scans.length >= 3) {
+  if (recentScans.length >= 3) {
     html += '<div class="si-patterns"><div class="si-patterns-title">What VITAL notices</div>';
     var patterns = generatePatterns();
     if (patterns.length) {
@@ -1523,15 +1524,13 @@ function renderScanIntelligence() {
   insights.innerHTML = html;
 }
 
-function generatePatterns() {
+function generatePatterns(recentScans) {
   var patterns = [];
-  if (_scans.length < 3) return patterns;
-
+  if (!recentScans || recentScans.length < 3) return patterns;
   var metrics = ["skinHealth", "inflammation", "hydration", "collagenScore", "sleepSignal", "stressMarkers"];
   var goodMetrics = ["skinHealth", "hydration", "collagenScore"];
-
   metrics.forEach(function(key) {
-    var vals = _scans.map(function(s) { var sd = s.data || s; return sd[key] ? parseFloat(sd[key]) || 0 : 0; });
+    var vals = recentScans.map(function(s) { var sd = s.data || s; return sd[key] ? parseFloat(sd[key]) || 0 : 0; });
     var allDecline = true, allImprove = true, allFlat = true;
     for (var i = 1; i < vals.length; i++) {
       if (vals[i] >= vals[i-1]) allDecline = false;
@@ -1543,12 +1542,11 @@ function generatePatterns() {
     if (allImprove && isGood) {
       patterns.push({ type: "good", dotColor: "var(--accent)", title: label + " improving every scan", text: "This metric has gone up in every single scan you have taken. Whatever you are doing is working — protect it.", badge: null });
     } else if (allDecline && isGood) {
-      patterns.push({ type: "bad", dotColor: "var(--bad)", title: label + " declining every scan", text: "Consistent downward trend across " + _scans.length + " scans. This will start affecting your biological age if it continues.", badge: "Consistent decline · " + _scans.length + " scans" });
+      patterns.push({ type: "bad", dotColor: "var(--bad)", title: label + " declining every scan", text: "Consistent downward trend across " + recentScans.length + " scans. This will start affecting your biological age if it continues.", badge: "Consistent decline · " + recentScans.length + " scans" });
     } else if (allFlat && !isGood) {
-      patterns.push({ type: "warn", dotColor: "var(--warn)", title: label + " not improving", text: "This metric has stayed flat across all " + _scans.length + " scans. It is likely a ceiling holding your other metrics back.", badge: "Repeating pattern · " + _scans.length + " scans" });
+      patterns.push({ type: "warn", dotColor: "var(--warn)", title: label + " not improving", text: "This metric has stayed flat across all " + recentScans.length + " scans. It is likely a ceiling holding your other metrics back.", badge: "Repeating pattern · " + recentScans.length + " scans" });
     }
   });
-
   return patterns.slice(0, 3);
 }
 
