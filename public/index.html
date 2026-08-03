@@ -1498,6 +1498,8 @@ function renderScanIntelligence() {
         html += '<circle cx="' + x + '" cy="' + y + '" r="3" fill="' + color + '"/>';
       });
       html += '</svg>';
+      var insightText = m.good ? (improving ? "Consistently improving — your current habits are working for this metric." : "Declining trend — this metric needs attention before it affects your biological age.") : (improving ? "Moving in the right direction — keep the habits driving this improvement." : "Persistently elevated — this is likely holding your biological age back.");
+      html += '<div class="si-metric-card-insight">' + insightText + '</div>';
       html += '</div>';
     });
     html += '</div>';
@@ -1506,7 +1508,7 @@ function renderScanIntelligence() {
   // Pattern insights
   if (recentScans.length >= 3) {
     html += '<div class="si-patterns"><div class="si-patterns-title">What VITAL notices</div>';
-    var patterns = generatePatterns();
+    var patterns = generatePatterns(recentScans);
     if (patterns.length) {
       patterns.forEach(function(p) {
         html += '<div class="si-pattern-card ' + p.type + '">';
@@ -1517,8 +1519,8 @@ function renderScanIntelligence() {
       });
     }
     html += '</div>';
-  } else if (_scans.length < 3) {
-    html += '<div style="text-align:center;padding:24px 20px;color:var(--muted);font-size:12px;line-height:1.7;">Complete ' + (3 - _scans.length) + ' more scan' + (3 - _scans.length !== 1 ? "s" : "") + ' to see patterns VITAL notices across your history.</div>';
+ } else if (recentScans.length < 3) {
+    html += '<div style="text-align:center;padding:24px 20px;color:var(--muted);font-size:12px;line-height:1.7;">Complete ' + (3 - recentScans.length) + ' more scan' + (3 - recentScans.length !== 1 ? "s" : "") + ' to see patterns VITAL notices across your history.</div>';
   }
 
   insights.innerHTML = html;
