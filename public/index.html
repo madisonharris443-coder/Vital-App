@@ -1435,6 +1435,7 @@ function renderScanIntelligence() {
 
   // Bio age trajectory
   if (_scans.length >= 2) {
+    console.log("First scan data:", JSON.stringify(_scans[0]));
     var bioAges = _scans.map(function(s) { return s.data && s.data.biologicalAge ? parseInt(s.data.biologicalAge) : null; }).filter(Boolean);
     var dates = _scans.map(function(s) { return s.created_at ? new Date(s.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""; });
     if (bioAges.length >= 2) {
