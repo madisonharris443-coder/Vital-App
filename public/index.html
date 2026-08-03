@@ -1413,10 +1413,11 @@ function renderScanIntelligence() {
   }
 
   countEl.textContent = _scans.length + " scan" + (_scans.length !== 1 ? "s" : "") + " · " + getMonthRange(_scans);
+  var displayScans = _scans.slice(-10);
 
   // Photo timeline
   var photoHtml = "";
-  _scans.forEach(function(scan, i) {
+  recentScans.forEach(function(scan, i) {
     var d = scan.data || scan || {};
     var bio = d.biologicalAge || 0, age = parseInt((d.profile && d.profile.age) || userData.age || 25);
     var statusColor = bio && age && bio <= age - 2 ? "var(--accent)" : bio && age && bio <= age + 1 ? "var(--warn)" : "var(--bad)";
@@ -1428,15 +1429,15 @@ function renderScanIntelligence() {
   });
   photoRow.innerHTML = photoHtml;
 
-  if (_scans.length > 0) selectScanPhoto(_scans.length - 1, null);
+  if (recentScans.length > 0) selectScanPhoto(recentScans.length - 1, null);
 
   // Build main content
   var html = "";
 
   // Bio age trajectory
-  if (_scans.length >= 2) {
-    var bioAges = _scans.map(function(s) { var sd = s.data || s; return sd.biologicalAge ? parseInt(sd.biologicalAge) : null; }).filter(Boolean);
-    var dates = _scans.map(function(s) { return s.created_at ? new Date(s.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""; });
+   if (recentScans.length >= 2) {
+    var bioAges = recentScans.map(function(s) { var sd = s.data || s; return sd.biologicalAge ? parseInt(sd.biologicalAge) : null; }).filter(Boolean);
+    var dates = recentScans.map(function(s) { return (s._createdAt || s.created_at) ? new Date(s._createdAt || s.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""; });
     if (bioAges.length >= 2) {
       var improving = bioAges[bioAges.length - 1] < bioAges[0];
       var maxAge = Math.max.apply(null, bioAges), minAge = Math.min.apply(null, bioAges), range = (maxAge - minAge) || 1;
@@ -1464,7 +1465,7 @@ function renderScanIntelligence() {
   }
 
   // Metric trends
-  if (_scans.length >= 2) {
+ if (recentScans.length >= 2) {
     var metricDefs = [
       { key: "skinHealth", label: "Skin Health", good: true },
       { key: "inflammation", label: "Inflammation", good: false },
@@ -1472,7 +1473,7 @@ function renderScanIntelligence() {
     ];
     html += '<div class="si-metric-trends"><div class="si-metric-trends-title">Metric trends</div>';
     metricDefs.forEach(function(m) {
-      var vals = _scans.map(function(s) { var sd = s.data || s; return sd[m.key] ? sd[m.key] : null; }).filter(Boolean);
+      var vals = recentScans.map(function(s) { var sd = s.data || s; return sd[m.key] ? sd[m.key] : null; }).filter(Boolean);
       if (vals.length < 2) return;
       var first = vals[0], last = vals[vals.length - 1];
       var numFirst = parseFloat(first) || 0, numLast = parseFloat(last) || 0;
@@ -1558,7 +1559,7 @@ function selectScanPhoto(index, el) {
   var scan = _scans[index]; if (!scan) return;
   var d = scan.data || {};
   document.getElementById("siSelected").style.display = "flex";
-  var dateStr = scan.created_at ? new Date(scan.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "";
+  var dateStr = (scan._createdAt || scan.created_at) ? new Date(scan._createdAt || scan.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "";
   document.getElementById("siSelectedTitle").textContent = "Scan " + (index + 1) + " — " + dateStr;
   var thumb = document.getElementById("siSelectedThumb");
   if (d.photoUrl) { thumb.innerHTML = '<img src="' + d.photoUrl + '" alt="Scan" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'; }
