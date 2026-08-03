@@ -1532,7 +1532,9 @@ function generatePatterns(recentScans) {
   var metrics = ["skinHealth", "inflammation", "hydration", "collagenScore", "sleepSignal", "stressMarkers"];
   var goodMetrics = ["skinHealth", "hydration", "collagenScore"];
   metrics.forEach(function(key) {
-    var vals = recentScans.map(function(s) { var sd = s.data || s; return sd[key] ? parseFloat(sd[key]) || 0 : 0; });
+    var rawVals = recentScans.map(function(s) { var sd = s.data || s; return sd[key] || null; }).filter(Boolean);
+    var vals = rawVals.map(function(v) { return parseFloat(v) || 0; });
+    if (vals.length < 3) return;
     var allDecline = true, allImprove = true, allFlat = true;
     for (var i = 1; i < vals.length; i++) {
       if (vals[i] >= vals[i-1]) allDecline = false;
@@ -1541,16 +1543,51 @@ function generatePatterns(recentScans) {
     }
     var isGood = goodMetrics.indexOf(key) !== -1;
     var label = { skinHealth: "Skin Health", inflammation: "Inflammation", hydration: "Hydration", collagenScore: "Collagen", sleepSignal: "Sleep Signal", stressMarkers: "Stress" }[key] || key;
+    var first = rawVals[0], last = rawVals[rawVals.length - 1];
+    var firstNum = vals[0], lastNum = vals[vals.length - 1];
+    var diff = Math.abs(lastNum - firstNum);
+    var scanCount = recentScans.length;
+
     if (allImprove && isGood) {
-      patterns.push({ type: "good", dotColor: "var(--accent)", title: label + " improving every scan", text: "This metric has gone up in every single scan you have taken. Whatever you are doing is working — protect it.", badge: null });
+      patterns.push({
+        type: "good",
+        dotColor: "var(--accent)",
+        title: label + " has improved every single scan",
+        text: "From " + first + " at scan 1 to " + last + " now — a " + (diff > 0 ? diff.toFixed(0) + " point gain" : "steady climb") + " across " + scanCount + " scans. This is not luck. Something you are doing consistently is working at a biological level. Do not change it.",
+        badge: null
+      });
     } else if (allDecline && isGood) {
-      patterns.push({ type: "bad", dotColor: "var(--bad)", title: label + " declining every scan", text: "Consistent downward trend across " + recentScans.length + " scans. This will start affecting your biological age if it continues.", badge: "Consistent decline · " + recentScans.length + " scans" });
+      patterns.push({
+        type: "bad",
+        dotColor: "var(--bad)",
+        title: label + " has declined in every scan",
+        text: "From " + first + " down to " + last + " — a " + (diff > 0 ? diff.toFixed(0) + " point drop" : "steady decline") + " across " + scanCount + " scans with no reversal. At this rate this metric will start pulling your biological age up within the next 2-3 scans.",
+        badge: "Consistent decline · " + scanCount + " scans"
+      });
     } else if (allFlat && !isGood) {
-      patterns.push({ type: "warn", dotColor: "var(--warn)", title: label + " not improving", text: "This metric has stayed flat across all " + recentScans.length + " scans. It is likely a ceiling holding your other metrics back.", badge: "Repeating pattern · " + recentScans.length + " scans" });
+      patterns.push({
+        type: "warn",
+        dotColor: "var(--warn)",
+        title: label + " has not moved in " + scanCount + " scans",
+        text: "Sitting at " + last + " across all " + scanCount + " scans — no improvement, no worsening. This kind of plateau usually means the root cause is still present and untreated. It is quietly limiting how far your other metrics can go.",
+        badge: "Repeating pattern · " + scanCount + " scans"
+      });
+    } else if (!isGood && !allFlat) {
+      var recentTrend = vals[vals.length-1] > vals[vals.length-2];
+      if (recentTrend) {
+        patterns.push({
+          type: "warn",
+          dotColor: "var(--warn)",
+          title: label + " is trending up recently",
+          text: "After some variation, " + label.toLowerCase() + " has risen in your last 2 scans — now at " + last + ". This is worth watching closely. If it continues upward it will start affecting your biological age calculation.",
+          badge: "Recent uptick · watch closely"
+        });
+      }
     }
   });
   return patterns.slice(0, 3);
 }
+
 
 function selectScanPhoto(index, el) {
   document.querySelectorAll(".si-photo").forEach(function(p) { p.classList.remove("active"); });
