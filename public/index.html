@@ -1617,6 +1617,7 @@ function selectScanPhoto(index, el) {
   document.getElementById("siSelectedTitle").textContent = "Scan " + (index + 1) + " — " + dateStr;
   var thumb = document.getElementById("siSelectedThumb");
   if (d.photoUrl) { thumb.innerHTML = '<img src="' + d.photoUrl + '" alt="Scan" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'; }
+  console.log("selected scan d:", d.biologicalAge, d.skinHealth, d.inflammation);
   document.getElementById("siSelectedMetrics").innerHTML =
     '<div class="si-selected-metric"><strong>Bio Age:</strong> ' + (d.biologicalAge || "--") + '</div>' +
     '<div class="si-selected-metric"><strong>Skin:</strong> ' + (d.skinHealth || "--") + '</div>' +
