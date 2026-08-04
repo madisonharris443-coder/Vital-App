@@ -1226,12 +1226,15 @@ function renderHero(r) {
     return;
   }
   document.getElementById("dash2BioAge").textContent = r.biologicalAge || "--";
-  var chronoAge = (userData && userData.age) ? userData.age : (_scans && _scans.length && _scans[_scans.length-1].data && _scans[_scans.length-1].data.profile && _scans[_scans.length-1].data.profile.age) ? _scans[_scans.length-1].data.profile.age : "--";
+  var sd = _scans && _scans.length ? (_scans[_scans.length-1].data || _scans[_scans.length-1]) : null;
+var chronoAge = (userData && userData.age) ? userData.age : (sd && sd.profile && sd.profile.age) ? sd.profile.age : (r && r.chronologicalAgeDiff ? r.chronologicalAgeDiff.match(/\d+/) ? r.chronologicalAgeDiff.match(/\d+/)[0] : "--" : "--");
+document.getElementById("dash2ChronoAge").textContent = chronoAge;
 document.getElementById("dash2ChronoAge").textContent = chronoAge;
   document.getElementById("dash2HeroDiff").innerHTML = r.chronologicalAgeDiff ? r.chronologicalAgeDiff : "";
   // Metric chips
 var metrics = document.getElementById("dash2Metrics");
 if (metrics) { metrics.style.display = "grid"; }
+console.log("renderHero r:", r && r.skinHealth, r && r.hydration, r && r.inflammation);
   var sk = document.getElementById("dash2Skin"); if(sk) sk.textContent = r.skinHealth || "--";
   var hy = document.getElementById("dash2Hydration"); if(hy) hy.textContent = r.hydration || "--";
   var inf = document.getElementById("dash2Inflammation"); if(inf) inf.textContent = r.inflammation || "--";
