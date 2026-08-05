@@ -1662,31 +1662,34 @@ function selectScanPhoto(index, el) {
     else if (bio <= age + 1) { statusEl.textContent = "On track"; statusEl.className = "scan-expand-status-badge warn"; }
     else { statusEl.textContent = "Needs attention"; statusEl.className = "scan-expand-status-badge bad"; }
   }
-  var notesEl = document.getElementById("siSelectedNotes");
+ var notesEl = document.getElementById("siSelectedNotes");
   if (notesEl) {
     var notes = [];
-    if (d.inflammation && (d.inflammation.toLowerCase().includes("high") || d.inflammation.toLowerCase().includes("severe"))) {
-      notes.push({ color: "var(--bad)", text: "Inflammation reading " + d.inflammation + " — vascular load visible across mid-face and T-zone." });
-    }
-    if (d.collagenScore) {
-      var colNum = parseFloat(d.collagenScore) || 0;
-      if (colNum >= 75) notes.push({ color: "var(--accent)", text: "Collagen at " + d.collagenScore + " — strong structural integrity. This is protecting your biological age." });
-      else notes.push({ color: "var(--warn)", text: "Collagen at " + d.collagenScore + " — showing early signs of structural thinning. Prioritize sleep and hydration." });
-    }
-    if (d.hydration) {
-      var hydNum = parseFloat(d.hydration) || 0;
-      if (hydNum < 55) notes.push({ color: "var(--warn)", text: "Hydration at " + d.hydration + " — significantly below optimal. Front-load water first thing tomorrow." });
-      else if (hydNum >= 70) notes.push({ color: "var(--accent)", text: "Hydration at " + d.hydration + " — well maintained. Keep this consistent." });
-    }
-    if (d.sleepSignal && d.sleepSignal.toLowerCase().includes("depriv")) {
-      notes.push({ color: "var(--bad)", text: "Sleep signal showing deprivation — fastest lever for improving every other metric in this scan." });
-    }
-    if (d.skinHealth) {
-      var skinNum = parseFloat(d.skinHealth) || 0;
-      if (skinNum >= 75) notes.push({ color: "var(--accent)", text: "Skin health at " + d.skinHealth + " — performing well despite other stress markers." });
-    }
-    if (!notes.length) {
-      notes.push({ color: "var(--muted)", text: "Tap a newer scan to see detailed VITAL observations." });
+    if (d.topInsights && d.topInsights.length) {
+      d.topInsights.slice(0, 3).forEach(function(insight, i) {
+        var dotColors = ["var(--accent)", "var(--warn)", "var(--bad)"];
+        notes.push({ color: dotColors[i] || "var(--muted)", text: insight });
+      });
+    } else {
+      if (d.inflammation && (d.inflammation.toLowerCase().includes("high") || d.inflammation.toLowerCase().includes("severe"))) {
+        notes.push({ color: "var(--bad)", text: "Inflammation reading " + d.inflammation + " — vascular load visible across mid-face and T-zone." });
+      }
+      if (d.collagenScore) {
+        var colNum = parseFloat(d.collagenScore) || 0;
+        if (colNum >= 75) notes.push({ color: "var(--accent)", text: "Collagen at " + d.collagenScore + " — strong structural integrity protecting your biological age." });
+        else notes.push({ color: "var(--warn)", text: "Collagen at " + d.collagenScore + " — showing early structural thinning. Prioritize sleep and hydration." });
+      }
+      if (d.hydration) {
+        var hydNum = parseFloat(d.hydration) || 0;
+        if (hydNum < 55) notes.push({ color: "var(--warn)", text: "Hydration at " + d.hydration + " — significantly below optimal. Front-load water first thing tomorrow." });
+        else if (hydNum >= 70) notes.push({ color: "var(--accent)", text: "Hydration at " + d.hydration + " — well maintained. Keep this consistent." });
+      }
+      if (d.sleepSignal && d.sleepSignal.toLowerCase().includes("depriv")) {
+        notes.push({ color: "var(--bad)", text: "Sleep signal showing deprivation — fastest lever for improving every other metric in this scan." });
+      }
+      if (!notes.length) {
+        notes.push({ color: "var(--muted)", text: "Complete a new scan to see detailed VITAL observations." });
+      }
     }
     notesEl.innerHTML = notes.slice(0, 3).map(function(n) {
       return '<div class="scan-note"><div class="scan-note-dot" style="background:' + n.color + '"></div><div class="scan-note-text">' + n.text + '</div></div>';
