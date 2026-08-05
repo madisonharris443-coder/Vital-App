@@ -1672,26 +1672,27 @@ function selectScanPhoto(index, el) {
       });
     } else {
       if (d.inflammation && (d.inflammation.toLowerCase().includes("high") || d.inflammation.toLowerCase().includes("severe"))) {
-        notes.push({ color: "var(--bad)", text: "Inflammation reading " + d.inflammation + " — vascular load visible across mid-face and T-zone." });
+        notes.push({ color: "var(--bad)", text: "Inflammation " + d.inflammation + " — active vascular load mid-face." });
       }
       if (d.collagenScore) {
         var colNum = parseFloat(d.collagenScore) || 0;
-        if (colNum >= 75) notes.push({ color: "var(--accent)", text: "Collagen at " + d.collagenScore + " — strong structural integrity protecting your biological age." });
-        else notes.push({ color: "var(--warn)", text: "Collagen at " + d.collagenScore + " — showing early structural thinning. Prioritize sleep and hydration." });
+        if (colNum >= 75) notes.push({ color: "var(--accent)", text: "Collagen " + d.collagenScore + " — structurally strong. Protecting your bio age." });
+        else notes.push({ color: "var(--warn)", text: "Collagen " + d.collagenScore + " — thinning early. Sleep and hydration first." });
       }
       if (d.hydration) {
         var hydNum = parseFloat(d.hydration) || 0;
-        if (hydNum < 55) notes.push({ color: "var(--warn)", text: "Hydration at " + d.hydration + " — significantly below optimal. Front-load water first thing tomorrow." });
-        else if (hydNum >= 70) notes.push({ color: "var(--accent)", text: "Hydration at " + d.hydration + " — well maintained. Keep this consistent." });
+       if (hydNum < 55) notes.push({ color: "var(--warn)", text: "Hydration " + d.hydration + " — below optimal. Front-load water tomorrow." });
+        else if (hydNum >= 70) notes.push({ color: "var(--accent)", text: "Hydration " + d.hydration + " — well maintained." });
       }
       if (d.sleepSignal && d.sleepSignal.toLowerCase().includes("depriv")) {
-        notes.push({ color: "var(--bad)", text: "Sleep signal showing deprivation — fastest lever for improving every other metric in this scan." });
+        notes.push({ color: "var(--bad)", text: "Sleep deprived — fastest lever for every other metric." });
       }
       if (!notes.length) {
         notes.push({ color: "var(--muted)", text: "Complete a new scan to see detailed VITAL observations." });
       }
     }
-    notesEl.innerHTML = notes.slice(0, 3).map(function(n) {
+   var scanLabel = "Scan " + (index + 1) + " · " + dateStr;
+    notesEl.innerHTML = '<div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">This scan only</div>' + notes.slice(0, 3).map(function(n) {
       return '<div class="scan-note"><div class="scan-note-dot" style="background:' + n.color + '"></div><div class="scan-note-text">' + n.text + '</div></div>';
     }).join("");
   }
