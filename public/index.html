@@ -476,7 +476,22 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 .si-pattern-title-text { font-family: "Syne", sans-serif; font-weight: 700; font-size: 12px; margin-bottom: 4px; }
 .si-pattern-text { font-size: 11px; color: var(--muted); line-height: 1.6; }
 .si-pattern-badge { display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 8px; background: rgba(255,169,77,0.08); border: 1px solid rgba(255,169,77,0.2); border-radius: 4px; padding: 2px 7px; color: var(--warn); }
-.si-pattern-badge.bad { color: var(--bad); background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.2); }
+.si-pattern-badge.bad { color: var(--bad); background: rgba(255,107,107,0.08); border-color: rgba(255,107,107,0.2); }.scan-expand-card { margin: 12px 20px 0; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,229,160,0.15); background: var(--surface); display: none; }
+.scan-expand-card.open { display: block; }
+.scan-expand-photo { width: 100%; height: 260px; background: var(--surface2); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.scan-expand-photo img { width: 100%; height: 100%; object-fit: cover; }
+.scan-expand-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(5,7,10,0.92)); padding: 24px 14px 12px; display: flex; align-items: flex-end; justify-content: space-between; }
+.scan-expand-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 13px; }
+.scan-expand-date { font-size: 8px; color: var(--muted); margin-top: 1px; }
+.scan-expand-status-badge { font-size: 9px; padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
+.scan-expand-status-badge.good { background: rgba(0,229,160,0.12); color: var(--accent); border: 1px solid rgba(0,229,160,0.2); }
+.scan-expand-status-badge.warn { background: rgba(255,169,77,0.1); color: var(--warn); border: 1px solid rgba(255,169,77,0.2); }
+.scan-expand-status-badge.bad { background: rgba(255,107,107,0.1); color: var(--bad); border: 1px solid rgba(255,107,107,0.2); }
+.scan-expand-body { padding: 14px; }
+.scan-notes { display: flex; flex-direction: column; gap: 8px; }
+.scan-note { display: flex; gap: 8px; align-items: flex-start; }
+.scan-note-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.scan-note-text { font-size: 11px; color: var(--text); line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -786,12 +801,19 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
     <div class="si-photo-label">Your scan history — tap to view</div>
     <div class="si-photo-row" id="siPhotoRow"></div>
   </div>
-  <div class="si-selected" id="siSelected" style="display:none;">
-    <div class="si-selected-thumb" id="siSelectedThumb"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="1.2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-    <div class="si-selected-body">
-      <div class="si-selected-title" id="siSelectedTitle">--</div>
-      <div class="si-selected-metrics" id="siSelectedMetrics"></div>
-      <div class="si-selected-status" id="siSelectedStatus"></div>
+  <div class="scan-expand-card" id="siSelected">
+    <div class="scan-expand-photo" id="siSelectedPhoto">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="1.2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <div class="scan-expand-overlay">
+        <div>
+          <div class="scan-expand-title" id="siSelectedTitle">--</div>
+          <div class="scan-expand-date" id="siSelectedDate"></div>
+        </div>
+        <div class="scan-expand-status-badge" id="siSelectedStatus"></div>
+      </div>
+    </div>
+    <div class="scan-expand-body">
+      <div class="scan-notes" id="siSelectedNotes"></div>
     </div>
   </div>
   <div class="si-insights" id="siInsights"><div style="text-align:center;padding:32px 20px;color:var(--muted);font-size:12px;line-height:1.7;">Complete multiple scans to see patterns VITAL notices across your history.</div></div>
@@ -982,12 +1004,12 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
     <div class="pod-hero-sub">Pairing, cellular scan history, and hydration/collagen/inflammation trend data will appear here once your VITAL Pod is set up.</div>
   </div>
 </div>
-
 </div>
 <script>
 var userData = {}, selectedFile = null, stream = null, _scanData = null, _scans = [];
 var _habitData = {}, _habitCompletions = {}, _activeHabitMetric = null, _calDate = new Date();
 var _habitProductCache = {};
+var recentScans = [];
 var supabaseClient = null;
 var PRODUCT_KEYWORDS = ["spf","sunscreen","retinol","niacinamide","vitamin c serum","collagen peptides","hyaluronic acid","zinc","omega-3","magnesium","vitamin d","cerave","ordinary","moisturizer","serum","eye cream","peptide","glycolic","salicylic","supplement","probiotic"];
 var PRODUCT_KEYWORDS_HABIT = ["spf","sunscreen","retinol","retinoid","niacinamide","vitamin c","collagen","hyaluronic","zinc","omega-3","fish oil","magnesium","vitamin d","cerave","ordinary","moisturizer","serum","eye cream","peptide","glycolic","salicylic","supplement","probiotic"];
@@ -1417,7 +1439,7 @@ function renderScanIntelligence() {
   }
 
   countEl.textContent = _scans.length + " scan" + (_scans.length !== 1 ? "s" : "") + " · showing last 10";
- var recentScans = _scans.slice(-10);
+ recentScans = _scans.slice(-10);
   if (!recentScans.length) { insights.innerHTML = '<div style="text-align:center;padding:32px 20px;color:var(--muted);font-size:12px;">No scan data found.</div>'; return; }
 
   // Photo timeline
@@ -1610,29 +1632,68 @@ function selectScanPhoto(index, el) {
   document.querySelectorAll(".si-photo").forEach(function(p) { p.classList.remove("active"); });
   if (el) el.classList.add("active");
   else { var photos = document.querySelectorAll(".si-photo"); if (photos[index]) photos[index].classList.add("active"); }
-  var scan = _scans[index]; if (!scan) return;
-  var d = scan.data || {};
-  document.getElementById("siSelected").style.display = "flex";
-  var dateStr = (scan._createdAt || scan.created_at) ? new Date(scan._createdAt || scan.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "";
-  document.getElementById("siSelectedTitle").textContent = "Scan " + (index + 1) + " — " + dateStr;
-  var thumb = document.getElementById("siSelectedThumb");
-  if (d.photoUrl) { thumb.innerHTML = '<img src="' + d.photoUrl + '" alt="Scan" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'; }
-  console.log("selected scan d:", d.biologicalAge, d.skinHealth, d.inflammation);
-  document.getElementById("siSelectedMetrics").innerHTML =
-    '<div class="si-selected-metric"><strong>Bio Age:</strong> ' + (d.biologicalAge || "--") + '</div>' +
-    '<div class="si-selected-metric"><strong>Skin:</strong> ' + (d.skinHealth || "--") + '</div>' +
-    '<div class="si-selected-metric"><strong>Inflam:</strong> ' + (d.inflammation || "--") + '</div>';
-  var bio = d.biologicalAge || 0;
+  var scan = recentScans ? recentScans[index] : _scans[index]; if (!scan) return;
+  var d = scan.data || scan || {};
+  var card = document.getElementById("siSelected");
+  card.classList.add("open");
+  var photoEl = document.getElementById("siSelectedPhoto");
+  if (d.photoUrl || scan.photoUrl) {
+    var url = d.photoUrl || scan.photoUrl;
+    photoEl.innerHTML = '<img src="' + url + '" alt="Scan">' +
+      '<div class="scan-expand-overlay">' +
+      '<div><div class="scan-expand-title" id="siSelectedTitle"></div><div class="scan-expand-date" id="siSelectedDate"></div></div>' +
+      '<div class="scan-expand-status-badge" id="siSelectedStatus"></div>' +
+      '</div>';
+  } else {
+    photoEl.innerHTML = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="1.2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' +
+      '<div class="scan-expand-overlay">' +
+      '<div><div class="scan-expand-title" id="siSelectedTitle"></div><div class="scan-expand-date" id="siSelectedDate"></div></div>' +
+      '<div class="scan-expand-status-badge" id="siSelectedStatus"></div>' +
+      '</div>';
+  }
+  var dateStr = (d._createdAt || scan.created_at || d.date) ? new Date(d._createdAt || scan.created_at || d.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
+  var titleEl = document.getElementById("siSelectedTitle"); if(titleEl) titleEl.textContent = "Scan " + (index + 1) + " — " + dateStr;
+  var dateEl = document.getElementById("siSelectedDate"); if(dateEl) dateEl.textContent = "Bio age " + (d.biologicalAge || "--");
+  var bio = parseInt(d.biologicalAge) || 0;
   var age = parseInt((d.profile && d.profile.age) || userData.age || 25);
   var statusEl = document.getElementById("siSelectedStatus");
-  if (bio && age) {
-    if (bio <= age - 2) { statusEl.textContent = "Aging well"; statusEl.style.color = "var(--accent)"; }
-    else if (bio <= age + 1) { statusEl.textContent = "On track"; statusEl.style.color = "var(--warn)"; }
-    else { statusEl.textContent = "Needs attention"; statusEl.style.color = "var(--bad)"; }
+  if (statusEl && bio && age) {
+    if (bio <= age - 2) { statusEl.textContent = "Aging well"; statusEl.className = "scan-expand-status-badge good"; }
+    else if (bio <= age + 1) { statusEl.textContent = "On track"; statusEl.className = "scan-expand-status-badge warn"; }
+    else { statusEl.textContent = "Needs attention"; statusEl.className = "scan-expand-status-badge bad"; }
+  }
+  var notesEl = document.getElementById("siSelectedNotes");
+  if (notesEl) {
+    var notes = [];
+    if (d.inflammation && (d.inflammation.toLowerCase().includes("high") || d.inflammation.toLowerCase().includes("severe"))) {
+      notes.push({ color: "var(--bad)", text: "Inflammation reading " + d.inflammation + " — vascular load visible across mid-face and T-zone." });
+    }
+    if (d.collagenScore) {
+      var colNum = parseFloat(d.collagenScore) || 0;
+      if (colNum >= 75) notes.push({ color: "var(--accent)", text: "Collagen at " + d.collagenScore + " — strong structural integrity. This is protecting your biological age." });
+      else notes.push({ color: "var(--warn)", text: "Collagen at " + d.collagenScore + " — showing early signs of structural thinning. Prioritize sleep and hydration." });
+    }
+    if (d.hydration) {
+      var hydNum = parseFloat(d.hydration) || 0;
+      if (hydNum < 55) notes.push({ color: "var(--warn)", text: "Hydration at " + d.hydration + " — significantly below optimal. Front-load water first thing tomorrow." });
+      else if (hydNum >= 70) notes.push({ color: "var(--accent)", text: "Hydration at " + d.hydration + " — well maintained. Keep this consistent." });
+    }
+    if (d.sleepSignal && d.sleepSignal.toLowerCase().includes("depriv")) {
+      notes.push({ color: "var(--bad)", text: "Sleep signal showing deprivation — fastest lever for improving every other metric in this scan." });
+    }
+    if (d.skinHealth) {
+      var skinNum = parseFloat(d.skinHealth) || 0;
+      if (skinNum >= 75) notes.push({ color: "var(--accent)", text: "Skin health at " + d.skinHealth + " — performing well despite other stress markers." });
+    }
+    if (!notes.length) {
+      notes.push({ color: "var(--muted)", text: "Tap a newer scan to see detailed VITAL observations." });
+    }
+    notesEl.innerHTML = notes.slice(0, 3).map(function(n) {
+      return '<div class="scan-note"><div class="scan-note-dot" style="background:' + n.color + '"></div><div class="scan-note-text">' + n.text + '</div></div>';
+    }).join("");
   }
 }
-
-
+  
 function getMonthRange(scans) {
   if(!scans||!scans.length) return "";
   var first=new Date(scans[0].created_at), last=new Date(scans[scans.length-1].created_at);
