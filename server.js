@@ -795,7 +795,7 @@ app.get("/oura-data", async function(req, res) {
 });
 app.post("/vital-chat", async function(req, res) {
   try {
-    var messages = req.body.messages || [];
+    var messages = req.body.messages || [{ role: "user", content: req.body.message || "" }];
     var healthContext = req.body.healthContext || {};
 
     var context = "";
