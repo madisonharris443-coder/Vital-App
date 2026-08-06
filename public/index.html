@@ -1865,7 +1865,28 @@ async function chatSend() {
   input.value=""; input.style.height="auto";
   chatAddMessage("user",msg); chatShowThinking();
   try {
-    var body={message:msg}; if(_scanData) body.scanData=_scanData; if(userData) body.profile=userData;
+    var allHabits = [];
+Object.keys(_habitData || {}).forEach(function(k){ allHabits = allHabits.concat(_habitData[k]||[]); });
+var body={
+  message: msg,
+  messages: [{role:"user", content: msg}],
+  healthContext: {
+    biologicalAge: _scanData && _scanData.biologicalAge,
+    skinHealth: _scanData && _scanData.skinHealth,
+    hydration: _scanData && _scanData.hydration,
+    inflammation: _scanData && _scanData.inflammation,
+    sleepSignal: _scanData && _scanData.sleepSignal,
+    collagenScore: _scanData && _scanData.collagenScore,
+    stressMarkers: _scanData && _scanData.stressMarkers,
+    oilBalance: _scanData && _scanData.oilBalance,
+    faceSymmetry: _scanData && _scanData.faceSymmetry,
+    agingRate: _scanData && _scanData.agingRate,
+    scanCount: _scans && _scans.length,
+    habits: allHabits
+  }
+};
+if(userData) body.profile=userData;
+
     var res=await fetch("/vital-chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
     var data=await res.json();
     chatHideThinking();
