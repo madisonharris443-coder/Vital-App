@@ -492,6 +492,33 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 .scan-note { display: flex; gap: 8px; align-items: flex-start; }
 .scan-note-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
 .scan-note-text { font-size: 11px; color: var(--text); line-height: 1.6; }
+.pod-hero { margin: 20px 20px 0; background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.02)); border: 1px solid rgba(59,130,246,0.2); border-radius: 24px; padding: 32px 24px; text-align: center; position: relative; overflow: hidden; }
+.pod-hero::before { content: ""; position: absolute; top: -60px; right: -60px; width: 180px; height: 180px; background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%); pointer-events: none; }
+.pod-hero-icon { width: 72px; height: 72px; border-radius: 20px; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+.pod-hero-eyebrow { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: #60a5fa; margin-bottom: 10px; }
+.pod-hero-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 26px; letter-spacing: -1px; margin-bottom: 12px; line-height: 1.1; }
+.pod-hero-title span { color: #60a5fa; }
+.pod-hero-sub { font-size: 11px; color: var(--muted); line-height: 1.8; max-width: 280px; margin: 0 auto; }
+.coming-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 20px; padding: 6px 14px; margin: 20px auto 0; font-size: 10px; color: #60a5fa; }
+.pod-features { padding: 24px 20px 0; }
+.pod-features-title { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+.pod-feature { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+.pod-feature-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.pod-feature-body { flex: 1; }
+.pod-feature-title { font-family: "Syne", sans-serif; font-weight: 700; font-size: 13px; margin-bottom: 3px; }
+.pod-feature-text { font-size: 10px; color: var(--muted); line-height: 1.6; }
+.pod-diff { margin: 24px 20px 0; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px; }
+.pod-diff-title { font-family: "Syne", sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 14px; }
+.pod-diff-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+.pod-diff-item:last-child { margin-bottom: 0; }
+.pod-diff-dot { width: 5px; height: 5px; border-radius: 50%; background: #60a5fa; flex-shrink: 0; margin-top: 5px; }
+.pod-diff-text { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.pod-diff-text strong { color: var(--text); }
+.pod-notify { margin: 20px 20px 30px; background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.18); border-radius: 16px; padding: 20px; text-align: center; }
+.pod-notify-title { font-family: "Syne", sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+.pod-notify-sub { font-size: 10px; color: var(--muted); margin-bottom: 16px; line-height: 1.6; }
+.pod-notify-input { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; font-family: "DM Mono", monospace; font-size: 13px; color: var(--text); outline: none; width: 100%; margin-bottom: 10px; }
+.pod-notify-btn { width: 100%; background: #3b82f6; color: #fff; border: none; border-radius: 12px; padding: 13px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 13px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -991,7 +1018,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
   </div>
 </div>
 
-<!-- VITAL POD PANEL (placeholder — build out once hardware pairing exists) -->
+<!-- VITAL POD PANEL -->
 <div class="pod-panel" id="podPanel">
   <div class="panel-topbar">
     <button class="panel-back" onclick="closePanel('podPanel')">Back</button>
@@ -999,11 +1026,31 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
     <div style="width:60px;"></div>
   </div>
   <div class="pod-hero">
-    <div class="pod-hero-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7b5cfa" stroke-width="1.6"><rect x="8" y="2" width="8" height="15" rx="4"/><circle cx="12" cy="8.5" r="2"/><path d="M9 20h6M12 17v3"/></svg></div>
-    <div class="pod-hero-title">Not paired yet</div>
-    <div class="pod-hero-sub">Pairing, cellular scan history, and hydration/collagen/inflammation trend data will appear here once your VITAL Pod is set up.</div>
+    <div class="pod-hero-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.4"><rect x="8" y="2" width="8" height="15" rx="4"/><circle cx="12" cy="8.5" r="2"/><path d="M9 20h6M12 17v3"/></svg></div>
+    <div class="pod-hero-eyebrow">Coming soon</div>
+    <div class="pod-hero-title">The scan that goes<br><span>beneath the surface.</span></div>
+    <div class="pod-hero-sub">VITAL Pod reads what a camera phone never can — cellular hydration, collagen density, inflammation, and microcirculation measured directly from your skin.</div>
+    <div class="coming-badge"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>In development</div>
   </div>
-</div>
+  <div class="pod-features">
+    <div class="pod-features-title">What Pod measures</div>
+    <div class="pod-feature"><div class="pod-feature-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.5"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg></div><div class="pod-feature-body"><div class="pod-feature-title">Cellular Hydration</div><div class="pod-feature-text">Water content inside the dermal layer — not just surface dryness. The difference between treating symptoms and fixing the root cause.</div></div></div>
+    <div class="pod-feature"><div class="pod-feature-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div><div class="pod-feature-body"><div class="pod-feature-title">Collagen Density</div><div class="pod-feature-text">Near-infrared light penetrates 0.5mm beneath the skin to measure structural protein quality — the most reliable indicator of how you're aging.</div></div></div>
+    <div class="pod-feature"><div class="pod-feature-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="pod-feature-body"><div class="pod-feature-title">Microcirculation</div><div class="pod-feature-text">Blood flow velocity in facial capillaries — an early marker of cardiovascular and metabolic stress that shows up in your face years before symptoms.</div></div></div>
+    <div class="pod-feature"><div class="pod-feature-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><div class="pod-feature-body"><div class="pod-feature-title">Skin Barrier Integrity</div><div class="pod-feature-text">Transepidermal water loss measured directly — tells you if your barrier is holding or leaking before you can see it in the mirror.</div></div></div>
+  </div>
+  <div class="pod-diff">
+    <div class="pod-diff-title">Why Pod changes everything</div>
+    <div class="pod-diff-item"><div class="pod-diff-dot"></div><div class="pod-diff-text"><strong>No lighting. No angles. No guessing.</strong> Pod reads biological signals directly — same result every time regardless of conditions.</div></div>
+    <div class="pod-diff-item"><div class="pod-diff-dot"></div><div class="pod-diff-text"><strong>Clinical-grade at home.</strong> This technology exists in dermatology clinics and research settings. Pod brings it to your bathroom.</div></div>
+    <div class="pod-diff-item"><div class="pod-diff-dot"></div><div class="pod-diff-text"><strong>Feeds everything.</strong> Pod data flows directly into your VITAL scan analysis, habit recommendations, and biological age calculation.</div></div>
+  </div>
+  <div class="pod-notify">
+    <div class="pod-notify-title">Be first to know</div>
+    <div class="pod-notify-sub">We'll notify you when VITAL Pod is ready. No spam — just one email when it launches.</div>
+    <input class="pod-notify-input" type="email" placeholder="your@email.com">
+    <button class="pod-notify-btn" onclick="submitPodNotify(this)">Notify Me</button>
+  </div>
 </div>
 <script>
 var userData = {}, selectedFile = null, stream = null, _scanData = null, _scans = [];
@@ -1960,6 +2007,15 @@ function toggleDisease(el) {
   var check = el.querySelector('.disease-check');
   check.textContent = el.classList.contains('selected') ? '✓' : '';
 }
+function submitPodNotify(btn) {
+  var input = btn.previousElementSibling;
+  var email = input.value.trim();
+  if (!email) return;
+  btn.textContent = "You're on the list.";
+  btn.style.background = "rgba(59,130,246,0.3)";
+  input.disabled = true;
+}
+
 async function signOut() {
   try{await fetch("/signout",{method:"POST"});}catch(e){}
   closeProfile();
