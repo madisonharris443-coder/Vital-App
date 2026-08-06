@@ -1898,7 +1898,10 @@ if(userData) body.profile=userData;
 function chatAddMessage(role, text) {
   var msgs=document.getElementById("chatMessages");
   var div=document.createElement("div"); div.className="chat-msg "+role;
-  div.innerHTML=(role==="ai"?'<div class="chat-sender">VITAL AI</div>':'')+'<div class="chat-bubble">'+text.replace(/\n/g,"<br>")+'</div>';
+  var formatted = text
+  .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  .replace(/\n/g, "<br>");
+div.innerHTML=(role==="ai"?'<div class="chat-sender">VITAL AI</div>':'')+'<div class="chat-bubble">'+formatted+'</div>';
   msgs.appendChild(div);
   if(role==="ai"){msgs.scrollTo({top:div.offsetTop-16,behavior:"smooth"});}
   else{msgs.scrollTo({top:msgs.scrollHeight,behavior:"smooth"});}
