@@ -913,4 +913,58 @@ app.get("/product-search", async function(req, res) {
   }
 });
 
+app.post("/analyze-medical-doc", upload.single("doc"), async function(req, res) {
+  try {
+    var file = req.file;
+    if (!file) return res.json({ success: false, error: "No file uploaded" });
+    var imageData = fs.readFileSync(file.path);
+    var base64Data = imageData.toString("base64");
+    var mimeType = file.mimetype;
+    var scanData = {};
+    if (req.body.scanData) { try { scanData = JSON.parse(req.body.scanData); } catch(e) {} }
+    var scanContext = "";
+    if (scanData.inflammation) scanContext += "Latest facial scan inflammation: " + scanData.inflammation + ". ";
+    if (scanData.biologicalAge) scanContext += "Biological age: " + scanData.biologicalAge + ". ";
+    if (scanData.hydration) scanContext += "Hydration: " + scanData.hydration + ". ";
+    if (scanData.sleepSignal) scanContext += "Sleep signal: " + scanData.sleepSignal + ". ";
+    var prompt = "You are VITAL — an AI health intelligence system. A user has uploaded a medical document. Your job is to:\n\n" +
+      "1. Identify what type of document this is\n" +
+      "2. Extract every value, result, and finding\n" +
+      "3. Translate each into plain English — what it means, what normal range is, where this person sits\n" +
+      "4. Flag anything outside normal range\n" +
+      "5. Write a 2-sentence plain English summary of the overall document\n" +
+      "6. Cross-reference with their facial scan data if relevant\n\n" +
+      "HARD RULES:\n" +
+      "- NEVER diagnose a specific condition\n" +
+      "- NEVER recommend a specific medication\n" +
+      "- NEVER say something is definitely caused by a specific disease\n" +
+      "- DO translate medical jargon into plain English every time\n" +
+      "- DO flag values outside normal range clearly\n" +
+      "- DO connect findings to their facial scan data when relevant\n\n" +
+      (scanContext ? "USER'S FACIAL SCAN DATA:\n" + scanContext + "\n\n" : "") +
+      "RESPOND ONLY WITH RAW JSON. NO MARKDOWN. NO BACKTICKS:\n" +
+      "{\"docType\":\"Blood Panel — Quest Diagnostics\",\"summary\":\"2 sentence plain English summary of the whole document.\",\"flags\":[{\"label\":\"LDL Cholesterol 142 mg/dL\",\"text\":\"borderline high. Normal is under 100. Worth monitoring with diet changes.\",\"severity\":\"warn\"},{\"label\":\"CRP 3.8 mg/L\",\"text\":\"elevated systemic inflammation marker. Normal is under 1.0.\",\"severity\":\"bad\"},{\"label\":\"Vitamin D 52 ng/mL\",\"text\":\"optimal range. Your supplementation is working.\",\"severity\":\"good\"}],\"crossRef\":\"Your elevated CRP aligns with the high inflammation flagged in your recent facial scans — these findings are likely connected.\"}";
+
+    var response = await client.messages.create({
+      model: "claude-opus-4-6",
+      max_tokens: 2000,
+      messages: [{
+        role: "user",
+        content: [
+          { type: "image", source: { type: "base64", media_type: mimeType === "application/pdf" ? "image/jpeg" : mimeType, data: base64Data } },
+          { type: "text", text: prompt }
+        ]
+      }]
+    });
+    var raw = response.content[0].text.replace(/```json|```/g, "").trim();
+    var start = raw.indexOf("{"), end = raw.lastIndexOf("}");
+    if (start !== -1 && end !== -1) raw = raw.substring(start, end + 1);
+    var result = JSON.parse(raw);
+    fs.unlinkSync(file.path);
+    res.json({ success: true, docType: result.docType, summary: result.summary, flags: result.flags, crossRef: result.crossRef });
+  } catch(e) {
+    console.error("analyze-medical-doc error:", e.message);
+    res.json({ success: false, error: e.message });
+  }
+});
 app.listen(3000, function() { console.log("VITAL running on port 3000"); });
