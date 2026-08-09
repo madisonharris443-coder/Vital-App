@@ -519,6 +519,8 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 .pod-notify-sub { font-size: 10px; color: var(--muted); margin-bottom: 16px; line-height: 1.6; }
 .pod-notify-input { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; font-family: "DM Mono", monospace; font-size: 13px; color: var(--text); outline: none; width: 100%; margin-bottom: 10px; }
 .pod-notify-btn { width: 100%; background: #3b82f6; color: #fff; border: none; border-radius: 12px; padding: 13px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 13px; cursor: pointer; }
+  .cal-day.cal-done { position: relative; }
+.cal-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); }
 </style>
 </head>
 <body>
@@ -1989,7 +1991,12 @@ function renderCalendar() {
   for(var i=0;i<first.getDay();i++) html+='<div class="cal-day other-month"></div>';
   for(var day=1;day<=last.getDate();day++){
     var isToday=d.getFullYear()===today.getFullYear()&&d.getMonth()===today.getMonth()&&day===today.getDate();
-    html+='<div class="cal-day'+(isToday?" today":"")+'">'+day+'</div>';
+    var dateKey=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(day).padStart(2,"0");
+    var allHabits=[]; Object.keys(_habitData||{}).forEach(function(k){allHabits=allHabits.concat(_habitData[k]||[]);});
+    var comp=(_habitCompletions&&_habitCompletions[dateKey])||{};
+    var doneCount=allHabits.filter(function(h){return comp[h.id]==="done"||comp[h.id]==="wearable";}).length;
+    var hasStreak=allHabits.length>0&&doneCount>=Math.ceil(allHabits.length*0.5);
+    html+='<div class="cal-day'+(isToday?" today":"")+(hasStreak?" cal-done":"")+'">'+day+(hasStreak?'<div class="cal-dot"></div>':'')+'</div>';
   }
   document.getElementById("calDays").innerHTML=html;
 }
