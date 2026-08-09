@@ -521,6 +521,36 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
 .pod-notify-btn { width: 100%; background: #3b82f6; color: #fff; border: none; border-radius: 12px; padding: 13px; font-family: "Syne", sans-serif; font-weight: 800; font-size: 13px; cursor: pointer; }
   .cal-day.cal-done { position: relative; }
 .cal-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); }
+  .doc-upload-section { margin: 16px 20px 0; }
+.doc-upload-header { text-align: center; margin-bottom: 16px; }
+.doc-upload-header-title { font-family: "Syne", sans-serif; font-weight: 800; font-size: 16px; margin-bottom: 6px; }
+.doc-upload-header-sub { font-size: 10px; color: var(--muted); line-height: 1.7; }
+.doc-upload-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.doc-upload-btn { background: var(--surface); border: 1px solid rgba(123,92,250,0.2); border-radius: 16px; padding: 20px 14px; text-align: center; cursor: pointer; }
+.doc-upload-btn-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(123,92,250,0.1); border: 1px solid rgba(123,92,250,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+.doc-upload-btn-title { font-family: "Syne", sans-serif; font-weight: 700; font-size: 12px; margin-bottom: 3px; }
+.doc-upload-btn-sub { font-size: 9px; color: var(--muted); }
+.doc-types { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.doc-type-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 10px; font-size: 8px; color: var(--muted); }
+.doc-loading { display: none; flex-direction: column; align-items: center; gap: 16px; padding: 40px 20px; }
+.docs-section { padding: 20px 20px 0; }
+.docs-section-title { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.doc-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 8px; }
+.doc-item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.doc-item-icon { width: 36px; height: 36px; border-radius: 9px; background: rgba(123,92,250,0.08); border: 1px solid rgba(123,92,250,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.doc-item-title { font-family: "Syne", sans-serif; font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+.doc-item-date { font-size: 9px; color: var(--muted); }
+.doc-item-flag-count { margin-left: auto; font-size: 9px; padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+.doc-flags { display: flex; flex-direction: column; gap: 7px; }
+.doc-flag { display: flex; gap: 8px; align-items: flex-start; }
+.doc-flag-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.doc-flag-text { font-size: 10px; color: var(--muted); line-height: 1.6; }
+.doc-flag-text strong { color: var(--text); }
+.doc-crossref { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 10px; color: var(--purple2); line-height: 1.6; }
+.doc-ask-btn { width: 100%; background: rgba(123,92,250,0.08); border: 1px solid rgba(123,92,250,0.2); color: var(--purple2); border-radius: 10px; padding: 10px; font-family: "Syne", sans-serif; font-weight: 700; font-size: 12px; cursor: pointer; margin-top: 10px; }
+.medical-doc-row { border-top: 1px solid var(--border); padding: 10px 15px; display: flex; align-items: center; gap: 10px; cursor: pointer; background: rgba(123,92,250,0.03); }
+.medical-doc-row-icon { width: 28px; height: 28px; border-radius: 7px; background: rgba(123,92,250,0.08); border: 1px solid rgba(123,92,250,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.medical-doc-row-badge { font-size: 8px; color: var(--purple2); background: rgba(123,92,250,0.08); border: 1px solid rgba(123,92,250,0.15); border-radius: 4px; padding: 2px 6px; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -779,6 +809,11 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
       <div class="dash2-wide-tag">Pending</div>
       <div class="dash2-wide-arrow">&#8250;</div>
     </div>
+    <div class="medical-doc-row" onclick="openMedicalDocs()">
+      <div class="medical-doc-row-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6M9 17h4"/></svg></div>
+      <div style="flex:1;"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:10px;color:var(--text);">Analyze Medical Docs</div><div style="font-size:8px;color:var(--muted);margin-top:1px;">Blood work · Lab results · Doctor notes · X-rays</div></div>
+      <div class="medical-doc-row-badge">New</div>
+    </div>
 <div id="dash2WearableStrip" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;align-items:center;gap:10px;margin:0 20px 10px;">
   <div style="width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;animation:livePulse 2s infinite;"></div>
   <div style="flex:1;font-size:10px;color:var(--muted);"><strong style="color:var(--text);">Oura Ring</strong> · Last night</div>
@@ -961,6 +996,51 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18p
     <div style="width:60px;"></div>
   </div>
   <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;" id="workingPanelContent">
+  </div>
+</div>
+
+  <!-- MEDICAL DOCS PANEL -->
+<div class="panel slide-right" id="medicalDocsPanel">
+  <div class="panel-topbar">
+    <div style="width:60px;"></div>
+    <div class="panel-title">Medical Docs</div>
+    <button class="panel-back" onclick="closePanel('medicalDocsPanel')">Back</button>
+  </div>
+  <div class="doc-upload-section">
+    <div class="doc-upload-header">
+      <div class="doc-upload-header-title">Analyze a document</div>
+      <div class="doc-upload-header-sub">VITAL reads your results, flags anything outside normal range, and connects it to your scan data.</div>
+    </div>
+    <div class="doc-upload-btns">
+      <div class="doc-upload-btn" onclick="document.getElementById('docCameraInput').click()">
+        <input type="file" id="docCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleMedicalDoc(this)">
+        <div class="doc-upload-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        <div class="doc-upload-btn-title">Take Photo</div>
+        <div class="doc-upload-btn-sub">Point at document</div>
+      </div>
+      <div class="doc-upload-btn" onclick="document.getElementById('docFileInput').click()">
+        <input type="file" id="docFileInput" accept="image/*,.pdf" style="display:none" onchange="handleMedicalDoc(this)">
+        <div class="doc-upload-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="13" x2="12" y2="19"/><line x1="9" y1="16" x2="15" y2="16"/></svg></div>
+        <div class="doc-upload-btn-title">Upload File</div>
+        <div class="doc-upload-btn-sub">PDF or image</div>
+      </div>
+    </div>
+    <div class="doc-types">
+      <div class="doc-type-chip">Blood Work</div>
+      <div class="doc-type-chip">Lab Results</div>
+      <div class="doc-type-chip">Doctor Notes</div>
+      <div class="doc-type-chip">X-Ray Report</div>
+      <div class="doc-type-chip">Prescriptions</div>
+    </div>
+  </div>
+  <div class="doc-loading" id="docLoading">
+    <div class="loading-spinner"></div>
+    <div class="loading-step">Reading document...</div>
+    <div class="loading-text">VITAL is analyzing your document.<br>This takes about 20 seconds.</div>
+  </div>
+  <div class="docs-section">
+    <div class="docs-section-title">Your documents</div>
+    <div id="docsList"><div style="text-align:center;padding:32px 20px;color:var(--muted);font-size:12px;line-height:1.7;">Upload your first document to get started.</div></div>
   </div>
 </div>
   
@@ -2022,7 +2102,64 @@ function submitPodNotify(btn) {
   btn.style.background = "rgba(59,130,246,0.3)";
   input.disabled = true;
 }
+function openMedicalDocs() { openPanel('medicalDocsPanel'); renderDocsList(); }
 
+var _medicalDocs = [];
+
+async function handleMedicalDoc(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  document.getElementById('docLoading').style.display = 'flex';
+  try {
+    var form = new FormData();
+    form.append('doc', file);
+    if (_scanData) form.append('scanData', JSON.stringify(_scanData));
+    var res = await fetch('/analyze-medical-doc', { method: 'POST', body: form });
+    var data = await res.json();
+    document.getElementById('docLoading').style.display = 'none';
+    if (data.success) {
+      _medicalDocs.unshift({ date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }), type: data.docType, summary: data.summary, flags: data.flags, crossRef: data.crossRef });
+      renderDocsList();
+    } else { alert('Could not analyze document. Try again.'); }
+  } catch(e) { document.getElementById('docLoading').style.display = 'none'; alert('Something went wrong. Try again.'); }
+}
+
+function renderDocsList() {
+  var el = document.getElementById('docsList');
+  if (!_medicalDocs.length) { el.innerHTML = '<div style="text-align:center;padding:32px 20px;color:var(--muted);font-size:12px;line-height:1.7;">Upload your first document to get started.</div>'; return; }
+  el.innerHTML = _medicalDocs.map(function(doc) {
+    var redFlags = (doc.flags || []).filter(function(f) { return f.severity === 'bad'; }).length;
+    var warnFlags = (doc.flags || []).filter(function(f) { return f.severity === 'warn'; }).length;
+    var totalFlags = redFlags + warnFlags;
+    var flagColor = redFlags > 0 ? 'var(--bad)' : warnFlags > 0 ? 'var(--warn)' : 'var(--accent)';
+    var flagBg = redFlags > 0 ? 'rgba(255,107,107,0.1)' : warnFlags > 0 ? 'rgba(255,169,77,0.1)' : 'rgba(0,229,160,0.1)';
+    var flagBorder = redFlags > 0 ? 'rgba(255,107,107,0.2)' : warnFlags > 0 ? 'rgba(255,169,77,0.2)' : 'rgba(0,229,160,0.2)';
+    var html = '<div class="doc-item">';
+    html += '<div class="doc-item-header"><div class="doc-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>';
+    html += '<div><div class="doc-item-title">' + (doc.type || 'Medical Document') + '</div><div class="doc-item-date">' + doc.date + '</div></div>';
+    html += '<div class="doc-item-flag-count" style="background:' + flagBg + ';color:' + flagColor + ';border:1px solid ' + flagBorder + '">' + (totalFlags > 0 ? totalFlags + ' flag' + (totalFlags !== 1 ? 's' : '') : 'All clear') + '</div></div>';
+    if (doc.flags && doc.flags.length) {
+      html += '<div class="doc-flags">';
+      doc.flags.forEach(function(f) {
+        var color = f.severity === 'bad' ? 'var(--bad)' : f.severity === 'warn' ? 'var(--warn)' : 'var(--accent)';
+        html += '<div class="doc-flag"><div class="doc-flag-dot" style="background:' + color + '"></div><div class="doc-flag-text"><strong>' + f.label + '</strong> — ' + f.text + '</div></div>';
+      });
+      html += '</div>';
+    }
+    if (doc.crossRef) html += '<div class="doc-crossref">↗ ' + doc.crossRef + '</div>';
+    html += '<button class="doc-ask-btn" onclick="openDocChat(\'' + (doc.type || 'document') + '\')">Ask VITAL about this document</button>';
+    html += '</div>';
+    return html;
+  }).join('');
+}
+
+function openDocChat(docType) {
+  openChat();
+  var input = document.getElementById('chatInput');
+  input.value = 'Tell me more about my ' + docType + ' results';
+  input.focus();
+}
+  
 async function signOut() {
   try{await fetch("/signout",{method:"POST"});}catch(e){}
   closeProfile();
